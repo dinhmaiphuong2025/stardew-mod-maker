@@ -6,11 +6,6 @@
 
 set -e
 
-# Kết nối stdin với tty nếu chạy qua pipe curl | bash
-if [ -e /dev/tty ]; then
-    exec < /dev/tty
-fi
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 REPO_DIR="$HOME/.stardew-proot-vibecoding"
 
@@ -18,10 +13,15 @@ REPO_DIR="$HOME/.stardew-proot-vibecoding"
 if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     echo "Dang chuan bi goi cai dat tu GitHub..."
     pkg update -y >/dev/null 2>&1 || true
-    pkg install -y git curl -y >/dev/null 2>&1
+    pkg install -y git curl jq tar >/dev/null 2>&1
     rm -rf "$REPO_DIR"
     git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git "$REPO_DIR"
-    exec bash "$REPO_DIR/install.sh" "$@"
+
+    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        exec bash "$REPO_DIR/install.sh" "$@" < /dev/tty
+    else
+        exec bash "$REPO_DIR/install.sh" "$@"
+    fi
 fi
 
 # Tải thư viện UI style
