@@ -27,6 +27,20 @@ fi
 # Tải thư viện UI style
 source "$SCRIPT_DIR/scripts/ui.sh"
 
+# Hàm kiểm tra container ubuntu tồn tại (tương thích cả proot-distro cũ và mới 5.x)
+is_ubuntu_installed() {
+    if proot-distro login ubuntu -- true >/dev/null 2>&1; then
+        return 0
+    fi
+    if proot-distro list -q 2>/dev/null | grep -qx "ubuntu"; then
+        return 0
+    fi
+    if proot-distro list 2>/dev/null | grep -E "(^|[[:space:]])ubuntu($|[[:space:]]|\()"; then
+        return 0
+    fi
+    return 1
+}
+
 clear_screen
 banner "STARDEW MOD VIBECODING" "Cài đặt tự động môi trường Termux & PRoot Ubuntu"
 
@@ -51,13 +65,18 @@ print_step_bar 2 6 "Cài đặt các gói công cụ nền tảng Termux"
 spin_task "Cập nhật danh sách kho gói Termux" pkg update -y
 spin_task "Cài đặt proot-distro, git, curl, nodejs, jq, tar" pkg install -y proot-distro git curl nodejs jq tar
 
-# Bước 3: Cài đặt PRoot Ubuntu (chạy trực tiếp để hiển thị tiến trình tải layer OCI)
+# Bước 3: Cài đặt PRoot Ubuntu
 print_step_bar 3 6 "Cài đặt hệ điều hành PRoot Ubuntu aarch64"
-if proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
+if is_ubuntu_installed; then
     print_success "PRoot Ubuntu đã tồn tại sẵn trên thiết bị."
 else
-    print_info "Đang tải và giải nén Ubuntu aarch64 (tiến trình tải hiển thị trực tiếp bên dưới)..."
-    proot-distro install ubuntu
+    print_info "Đang tải và cài đặt Ubuntu (tiến trình tải hiển thị trực tiếp bên dưới)..."
+    if ! proot-distro install ubuntu; then
+        if ! is_ubuntu_installed; then
+            print_error "Không thể cài đặt container Ubuntu. Vui lòng kiểm tra lại kết nối mạng."
+            exit 1
+        fi
+    fi
     print_success "Cài đặt PRoot Ubuntu hoàn tất."
 fi
 
@@ -81,7 +100,11 @@ proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
 
 # Bước 6: Khởi tạo tài khoản người dùng sudo & workspace
 print_step_bar 6 6 "Khởi tạo tài khoản sudo và không gian làm việc"
-proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh
+if [ -f "/root/stardew-env/scripts/init-user.sh" ]; then
+    proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh
+else
+    proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh
+fi
 
 # Lưu lại tên tài khoản mặc định trên Termux
 SD_USER=$(proot-distro login ubuntu -- cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')

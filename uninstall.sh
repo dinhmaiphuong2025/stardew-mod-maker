@@ -91,11 +91,9 @@ print_success "Đã gỡ bỏ lệnh 'ubuntu', 'Ubuntu', 'stardew-code' và cấ
 # Bước 2: Gỡ bỏ container PRoot Ubuntu
 print_step_bar 2 4 "Gỡ bỏ hệ điều hành PRoot Ubuntu"
 if command -v proot-distro >/dev/null 2>&1; then
-    if proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
-        spin_task "Đang xóa sạch container PRoot Ubuntu" proot-distro remove ubuntu
-    else
-        print_info "PRoot Ubuntu chưa từng được cài đặt hoặc đã được gỡ trước đó."
-    fi
+    print_info "Đang gỡ bỏ container PRoot Ubuntu..."
+    proot-distro remove ubuntu 2>/dev/null || proot-distro reset ubuntu 2>/dev/null || true
+    print_success "Đã dọn sạch container PRoot Ubuntu."
 fi
 
 # Bước 3: Dọn dẹp file cấu hình override mount
