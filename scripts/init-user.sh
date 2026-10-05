@@ -23,15 +23,23 @@ banner "KHỞI TẠO NGƯỜI DÙNG" "Thiết lập tài khoản sudo cho không
 print_info "Khởi động lần đầu: Vui lòng thiết lập tài khoản người dùng cho Ubuntu."
 echo
 
-# 1. Nhập tên người dùng
+# 1. Nhập tên người dùng (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
 printf "  Nhập tên người dùng (viết thường không dấu, mặc định: stardew): "
-read -r INPUT_USER
+if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    read -r INPUT_USER < /dev/tty 2>/dev/null || read -r INPUT_USER 2>/dev/null || INPUT_USER="stardew"
+else
+    read -r INPUT_USER 2>/dev/null || INPUT_USER="stardew"
+fi
 INPUT_USER=$(echo "$INPUT_USER" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-')
 [ -z "$INPUT_USER" ] && INPUT_USER="stardew"
 
 # 2. Nhập mật khẩu (tùy chọn)
 printf "  Nhập mật khẩu (nhấn Enter để trống nếu không cần mật khẩu): "
-read -rs INPUT_PASS
+if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    read -rs INPUT_PASS < /dev/tty 2>/dev/null || read -rs INPUT_PASS 2>/dev/null || INPUT_PASS=""
+else
+    read -rs INPUT_PASS 2>/dev/null || INPUT_PASS=""
+fi
 echo
 
 # 3. Hỏi tắt hỏi mật khẩu sudo

@@ -51,12 +51,14 @@ print_step_bar 2 6 "Cài đặt các gói công cụ nền tảng Termux"
 spin_task "Cập nhật danh sách kho gói Termux" pkg update -y
 spin_task "Cài đặt proot-distro, git, curl, nodejs, jq, tar" pkg install -y proot-distro git curl nodejs jq tar
 
-# Bước 3: Cài đặt PRoot Ubuntu
+# Bước 3: Cài đặt PRoot Ubuntu (chạy trực tiếp để hiển thị tiến trình tải layer OCI)
 print_step_bar 3 6 "Cài đặt hệ điều hành PRoot Ubuntu aarch64"
 if proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
     print_success "PRoot Ubuntu đã tồn tại sẵn trên thiết bị."
 else
-    spin_task "Tải về và giải nén PRoot Ubuntu aarch64" proot-distro install ubuntu
+    print_info "Đang tải và giải nén Ubuntu aarch64 (tiến trình tải hiển thị trực tiếp bên dưới)..."
+    proot-distro install ubuntu
+    print_success "Cài đặt PRoot Ubuntu hoàn tất."
 fi
 
 # Bước 4: Cấu hình liên kết thư mục /sdcard
@@ -74,7 +76,8 @@ print_success "Liên kết lưu trữ /sdcard:/sdcard đã sẵn sàng."
 print_step_bar 5 6 "Thiết lập .NET 10.0 SDK và công cụ hệ thống"
 spin_task "Đồng bộ mã nguồn vào container" bash -c "tar -C '$SCRIPT_DIR' -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -'"
 
-spin_task "Cài đặt .NET 10 SDK và đồng bộ thư viện" proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
+print_info "Đang cấu hình .NET 10.0 SDK và các công cụ bên trong Ubuntu..."
+proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
 
 # Bước 6: Khởi tạo tài khoản người dùng sudo & workspace
 print_step_bar 6 6 "Khởi tạo tài khoản sudo và không gian làm việc"

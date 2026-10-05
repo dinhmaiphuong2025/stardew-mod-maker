@@ -122,8 +122,8 @@ spin_task() {
     # Ẩn con trỏ terminal
     printf "\033[?25l"
 
-    # Chạy tác vụ ngầm
-    "$@" >/dev/null 2>&1 &
+    # Chạy tác vụ ngầm (chặn stdin để tránh bị dừng bởi SIGTTIN)
+    "$@" </dev/null >/dev/null 2>&1 &
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
@@ -148,26 +148,38 @@ spin_task() {
     fi
 }
 
-# Chờ phím Enter
+# Chờ phím Enter (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
 wait_for_enter() {
     printf "${GRAY}Nhấn phím Enter để tiếp tục...${RESET}"
-    read -r
+    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        read -r _ < /dev/tty 2>/dev/null || read -r _ 2>/dev/null || true
+    else
+        read -r _ 2>/dev/null || true
+    fi
 }
 
-# Đọc lựa chọn của người dùng
+# Đọc lựa chọn của người dùng (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
 get_choice() {
-    local choice
+    local choice=""
     print_prompt
-    read -r choice
+    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        read -r choice < /dev/tty 2>/dev/null || read -r choice 2>/dev/null || choice="0"
+    else
+        read -r choice 2>/dev/null || choice="0"
+    fi
     echo "$choice"
 }
 
-# Xác nhận Có / Không
+# Xác nhận Có / Không (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
 confirm() {
     local msg="$1"
-    local resp
+    local resp=""
     printf "%s (y/N): " "$msg"
-    read -r resp
+    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        read -r resp < /dev/tty 2>/dev/null || read -r resp 2>/dev/null || resp="n"
+    else
+        read -r resp 2>/dev/null || resp="n"
+    fi
     case "$resp" in
         [yY]|[yY][eE][sS]) return 0 ;;
         *) return 1 ;;

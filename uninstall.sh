@@ -35,15 +35,19 @@ else
         printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$1" "$border"
     }
     confirm() {
-        local resp
-        printf "%s (y/N): " "$1"
-        read -r resp
+        local msg="$1" resp=""
+        printf "%s (y/N): " "$msg"
+        if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+            read -r resp < /dev/tty 2>/dev/null || read -r resp 2>/dev/null || resp="n"
+        else
+            read -r resp 2>/dev/null || resp="n"
+        fi
         case "$resp" in [yY]|[yY][eE][sS]) return 0 ;; *) return 1 ;; esac
     }
     spin_task() {
         local label="$1"; shift
         printf "  %s... " "$label"
-        if "$@" >/dev/null 2>&1; then
+        if "$@" </dev/null >/dev/null 2>&1; then
             printf "${GREEN}✓ Hoàn tất.${RESET}\n"
         else
             printf "${RED}✗ Thất bại.${RESET}\n"
@@ -55,6 +59,13 @@ else
     }
 fi
 
+FORCE=0
+for arg in "$@"; do
+    case "$arg" in
+        -y|--yes|-f|--force) FORCE=1 ;;
+    esac
+done
+
 clear_screen
 banner "GỠ CÀI ĐẶT MÔI TRƯỜNG" "Dọn sạch PRoot Ubuntu & công cụ Stardew VibeCoding"
 
@@ -62,10 +73,14 @@ print_warning "Hành động này sẽ gỡ bỏ container Ubuntu, tài khoản 
 print_info "Lưu ý: Thư mục game gốc và mod tại /sdcard/StardewValley sẽ ĐƯỢC GIỮ NGUYÊN AN TOÀN."
 echo
 
-if ! confirm "Bạn có chắc chắn muốn tiến hành dọn sạch để cài đặt lại từ đầu?"; then
-    echo
-    print_info "Đã hủy thao tác gỡ cài đặt."
-    exit 0
+if [ "$FORCE" -eq 0 ]; then
+    if ! confirm "Bạn có chắc chắn muốn tiến hành dọn sạch để cài đặt lại từ đầu?"; then
+        echo
+        print_info "Đã hủy thao tác gỡ cài đặt."
+        exit 0
+    fi
+else
+    print_info "Chế độ tự động (-y): Bỏ qua bước xác nhận."
 fi
 
 # Bước 1: Xóa các binary lệnh thực thi trên Termux
@@ -75,10 +90,12 @@ print_success "Đã gỡ bỏ lệnh 'ubuntu', 'Ubuntu', 'stardew-code' và cấ
 
 # Bước 2: Gỡ bỏ container PRoot Ubuntu
 print_step_bar 2 4 "Gỡ bỏ hệ điều hành PRoot Ubuntu"
-if command -v proot-distro >/dev/null 2>&1 && proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
-    spin_task "Đang gỡ bỏ container PRoot Ubuntu" proot-distro remove ubuntu
-else
-    print_info "PRoot Ubuntu chưa từng được cài đặt hoặc đã được gỡ trước đó."
+if command -v proot-distro >/dev/null 2>&1; then
+    if proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
+        spin_task "Đang xóa sạch container PRoot Ubuntu" proot-distro remove ubuntu
+    else
+        print_info "PRoot Ubuntu chưa từng được cài đặt hoặc đã được gỡ trước đó."
+    fi
 fi
 
 # Bước 3: Dọn dẹp file cấu hình override mount
