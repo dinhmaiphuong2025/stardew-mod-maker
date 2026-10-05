@@ -11,7 +11,8 @@ Bộ công cụ này giúp người dùng Android tự tạo mod C# SMAPI cho St
 Đặc biệt, hệ thống tối ưu cho phương pháp **VibeCoding** với sự hỗ trợ của trợ lý AI **OpenCode CLI** (hoàn toàn miễn phí, tự động sửa code và kiểm tra build ngay trong terminal) hoặc các mô hình web như ChatGPT, Claude, Gemini.
 
 ### Đặc điểm chính:
-- Thao tác 1 bước: Tự động hóa toàn bộ quá trình cài đặt môi trường trên Termux.
+- Cài đặt 1 lệnh duy nhất: Chỉ cần chạy 1 dòng lệnh `curl ... | bash` trên Termux là hoàn tất toàn bộ.
+- Khởi động cực nhanh: Sau khi cài xong, chỉ cần gõ lệnh `ubuntu` trong Termux là vào thẳng không gian làm việc.
 - Không gian làm việc chuẩn Sudo User: Tự động tạo người dùng sudo riêng và đặt workspace tại `~/stardew-workspace` (`/home/<user>/stardew-workspace`), tránh hoàn toàn các lỗi xung đột file hoặc quyền sở hữu root.
 - Tích hợp OpenCode CLI: Hỗ trợ cài đặt trợ lý AI miễn phí để ra lệnh tạo mod trực tiếp bằng tiếng Việt ngay trong dòng lệnh.
 - Không cần Root: Chạy hoàn toàn trong không gian người dùng thông qua PRoot Distro (Ubuntu aarch64).
@@ -22,12 +23,12 @@ Bộ công cụ này giúp người dùng Android tự tạo mod C# SMAPI cho St
 
 ---
 
-## 2. Hướng dẫn cài đặt
+## 2. Hướng dẫn cài đặt (1 Lệnh Duy Nhất)
 
-Mở ứng dụng Termux và chạy dòng lệnh sau:
+Mở ứng dụng Termux và chạy duy nhất dòng lệnh sau:
 
 ```bash
-pkg install -y git && git clone https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git && cd stardew-proot-vibecoding && bash install.sh
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash
 ```
 
 Trong quá trình chạy:
@@ -36,17 +37,19 @@ Trong quá trình chạy:
 
 ---
 
-## 3. Cách sử dụng
+## 3. Cách sử dụng hàng ngày
 
-Sau khi cài đặt xong, mỗi khi muốn bắt đầu làm việc, bạn mở Termux và gõ:
+Sau khi cài đặt xong, mỗi khi muốn bắt đầu làm việc, bạn mở Termux và chỉ cần gõ:
 
 ```bash
-stardew-code
+ubuntu
 ```
 
 Lệnh này sẽ tự động đưa bạn vào môi trường Ubuntu với tư cách tài khoản người dùng của bạn tại thư mục `~/stardew-workspace`.
 
-### Các lệnh quản lý:
+*(Bạn cũng có thể dùng lệnh `stardew-code` với tác vụ tương đương).*
+
+### Các lệnh quản lý trong Ubuntu:
 
 | Lệnh | Chức năng |
 | :--- | :--- |
@@ -87,7 +90,7 @@ Lệnh này sẽ tự động đưa bạn vào môi trường Ubuntu với tư c
 
 ## 5. Tài liệu hướng dẫn chuyên sâu
 
-- `docs/01-chuan-bi-va-cai-dat.md`: Hướng dẫn cài Termux và cấu hình ban đầu.
+- `docs/01-chuan-bi-va-cai-dat.md`: Hướng dẫn cài Termux và lệnh 1-Click.
 - `docs/02-cau-truc-cinderbox.md`: Bản đồ thư mục game và vị trí các file hệ thống.
 - `docs/03-bi-kip-vibecoding.md`: Kỹ thuật mô tả yêu cầu cho AI và cách khắc phục lỗi code.
 - `docs/04-cac-loi-thuong-gap.md`: Danh mục các lỗi phổ biến (CS1705, thiếu DLL, bàn phím ảo, cảm ứng).
@@ -98,7 +101,7 @@ Lệnh này sẽ tự động đưa bạn vào môi trường Ubuntu với tư c
 
 ```
 stardew-proot-vibecoding/
-├── install.sh                     # Kịch bản cài đặt ban đầu trên Termux host
+├── install.sh                     # Kịch bản cài đặt ban đầu (hỗ trợ curl pipe)
 ├── README.md                      # Tài liệu tổng quan dự án
 ├── VIBECODE_PROMPT_TEMPLATE.md    # Khung mẫu chỉ dẫn dành cho AI
 ├── docs/                          # Hệ thống tài liệu chi tiết

@@ -6,7 +6,23 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Kết nối stdin với tty nếu chạy qua pipe curl | bash
+if [ -e /dev/tty ]; then
+    exec < /dev/tty
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+REPO_DIR="$HOME/.stardew-proot-vibecoding"
+
+# Xử lý tự động khi chạy trực tiếp bằng: curl ... | bash
+if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
+    echo "Dang chuan bi goi cai dat tu GitHub..."
+    pkg update -y >/dev/null 2>&1 || true
+    pkg install -y git curl -y >/dev/null 2>&1
+    rm -rf "$REPO_DIR"
+    git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git "$REPO_DIR"
+    exec bash "$REPO_DIR/install.sh" "$@"
+fi
 
 # Tải thư viện UI style
 if [ -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
@@ -41,7 +57,7 @@ else
 fi
 
 clear_screen
-banner "STARDEW MOD VIBECODING" "Cai dat moi truong Termux & PRoot Ubuntu"
+banner "STARDEW MOD VIBECODING" "Cai dat 1-Click Termux & PRoot Ubuntu"
 
 # 1. Kiem tra Termux
 if [ -z "$PREFIX" ] || [ ! -d "$PREFIX" ]; then
@@ -99,8 +115,9 @@ echo
 print_info "Khoi tao tai khoan nguoi dung sudo..."
 proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh
 
-# 8. Tao lenh tat tren Termux (tu dong dang nhap bang user sudo da tao)
-cat << 'EOF' > "$PREFIX/bin/stardew-code"
+# 8. Tao binary lenh 'ubuntu' tren Termux (chi can go 'ubuntu' la vao proot)
+mkdir -p "$PREFIX/bin"
+cat << 'EOF' > "$PREFIX/bin/ubuntu"
 #!/data/data/com.termux/files/usr/bin/bash
 USER_FILE="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/stardew-default-user"
 if [ -f "$USER_FILE" ]; then
@@ -111,13 +128,17 @@ if [ -f "$USER_FILE" ]; then
 fi
 exec proot-distro login ubuntu
 EOF
-chmod +x "$PREFIX/bin/stardew-code"
+chmod +x "$PREFIX/bin/ubuntu"
+
+# Tao cac alias tien ich bo sung
+cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" 2>/dev/null || true
+cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/stardew-code" 2>/dev/null || true
 
 echo
 print_line
-print_box "Cai dat thanh cong! Lenh truy cap nhanh: stardew-code"
+print_box "Cai dat thanh cong! Tu gio chi can go 'ubuntu' de vao proot."
 echo
 
-if confirm "Ban co muon khoi dong vao khong gian lam viec ngay bay gio?"; then
-    exec "$PREFIX/bin/stardew-code"
+if confirm "Ban co muon khoi dong vao Ubuntu ngay bay gio?"; then
+    exec "$PREFIX/bin/ubuntu"
 fi

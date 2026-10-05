@@ -16,12 +16,12 @@ Sau khi cài đặt xong, mở ứng dụng Termux.
 
 ---
 
-## 2. Khởi chạy cài đặt tự động
+## 2. Khởi chạy cài đặt 1-Lệnh duy nhất
 
-Trên màn hình Termux, chạy dòng lệnh sau:
+Trên màn hình Termux, dán và chạy duy nhất dòng lệnh sau:
 
 ```bash
-pkg install -y git && git clone https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git && cd stardew-proot-vibecoding && bash install.sh
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash
 ```
 
 ---
@@ -30,20 +30,22 @@ pkg install -y git && git clone https://github.com/dinhmaiphuong2025/stardew-pro
 
 Kịch bản `install.sh` sẽ lần lượt thực hiện:
 1. Kiểm tra và yêu cầu cấp quyền truy cập bộ nhớ: Khi hộp thoại Android xuất hiện, chọn "Cho phép" (Allow).
-2. Cài đặt các gói nền tảng Termux: `proot-distro`, `git`, `curl`, `nodejs`, `jq`, `tar`.
+2. Tự động tải mã nguồn cài đặt và các gói nền tảng Termux (`proot-distro`, `git`, `curl`, `jq`, `tar`).
 3. Cài đặt môi trường Linux Ubuntu aarch64 qua PRoot Distro.
 4. Cấu hình liên kết tự động thư mục `/sdcard` vào container để đồng bộ dữ liệu game.
-5. Cài đặt .NET 10.0 SDK từ Microsoft bên trong Ubuntu để phù hợp với SMAPI Cinderbox.
-6. Cài đặt bộ công cụ dòng lệnh `stardew-mod` và lệnh truy cập nhanh `stardew-code`.
+5. Cài đặt .NET 10.0 SDK từ Microsoft vào `/opt/dotnet` cho toàn hệ thống.
+6. Thiết lập tài khoản sudo riêng của bạn và tạo thư mục làm việc tại `~/stardew-workspace`.
+7. Cài đặt trợ lý OpenCode AI CLI nếu bạn đồng ý.
+8. Tạo binary khởi động `ubuntu` trên Termux.
 
 ---
 
 ## 4. Truy cập không gian làm việc
 
-Mỗi khi cần thao tác viết mod hoặc sử dụng AI, bạn mở Termux và gõ:
+Mỗi khi cần thao tác viết mod hoặc sử dụng AI, bạn chỉ cần mở Termux và gõ:
 
 ```bash
-stardew-code
+ubuntu
 ```
 
-Lệnh này sẽ đưa bạn thẳng vào thư mục làm việc `/root/stardew-workspace` bên trong Ubuntu.
+Lệnh này sẽ đưa bạn thẳng vào thư mục làm việc `~/stardew-workspace` bên trong Ubuntu dưới tư cách tài khoản người dùng của bạn.
