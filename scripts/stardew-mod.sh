@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # stardew-mod: Công cụ dòng lệnh hỗ trợ phát triển mod Stardew Valley Cinderbox
-# Tuân thủ UI Style Shell (ui-style-shell)
+# Tuân thủ UI Style Shell (ui-style-shell) - Tiếng Việt đầy đủ dấu
 # ==============================================================================
 
 set -e
@@ -15,50 +15,6 @@ elif [ -f "$SCRIPT_DIR/ui.sh" ]; then
     source "$SCRIPT_DIR/ui.sh"
 elif [ -f "$HOME/stardew-workspace/scripts/ui.sh" ]; then
     source "$HOME/stardew-workspace/scripts/ui.sh"
-else
-    RESET='\033[0m'   BOLD='\033[1m'    GRAY='\033[90m'
-    RED='\033[1;31m'  GREEN='\033[1;32m' YELLOW='\033[1;33m'
-    BLUE='\033[1;34m' CYAN='\033[1;36m'  WHITE='\033[1;37m'
-    clear_screen() { printf "\033[2J\033[H"; }
-    print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
-    print_prompt() { printf "${GREEN}❯ ${RESET}"; }
-    print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
-    print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
-    print_warning() { printf "${YELLOW}⚠ %s${RESET}\n" "$1"; }
-    print_info() { printf "${BLUE}ℹ %s${RESET}\n" "$1"; }
-    banner() {
-        printf "      ${BOLD}${WHITE}%s${RESET}\n" "$1"
-        [ -n "$2" ] && printf "      ${GRAY}%s${RESET}\n" "$2"
-        print_line
-    }
-    print_header() {
-        printf "${BOLD}== %s ==${RESET}\n" "$1"
-        print_line
-    }
-    print_menu() {
-        local items=("$@") idx=1
-        for item in "${items[@]}"; do
-            printf "  ${CYAN}[%d]${RESET} %s\n" "$idx" "$item"
-            idx=$((idx + 1))
-        done
-        printf "  ${GRAY}[0]${RESET} Thoát\n"
-        print_line
-    }
-    print_box() {
-        local len=${#1} border=""
-        for ((i=0; i<len+2; i++)); do border="${border}─"; done
-        printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$1" "$border"
-    }
-    get_choice() {
-        local c
-        printf "${GREEN}❯ ${RESET}"
-        read -r c
-        echo "$c"
-    }
-    wait_for_enter() {
-        printf "${GRAY}Nhấn Enter để tiếp tục...${RESET}"
-        read -r
-    }
 fi
 
 DOTNET_CMD="/opt/dotnet/dotnet"
@@ -72,72 +28,73 @@ SMAPI_DIR="$GAME_DIR/smapi-internal"
 MODS_DIR="$GAME_DIR/desktop/Mods"
 
 cmd_doctor() {
-    print_header "KIEM TRA MOI TRUONG CINDERBOX"
-    
+    print_header "KIỂM TRA MÔI TRƯỜNG CINDERBOX"
+
     # 1. Kiểm tra .NET
     if command -v "$DOTNET_CMD" >/dev/null 2>&1 || [ -f "$DOTNET_CMD" ]; then
         local ver=$("$DOTNET_CMD" --version 2>/dev/null || echo "10.0")
-        print_success ".NET SDK: Phien ban $ver"
+        print_success ".NET SDK: Phiên bản $ver"
     else
-        print_error ".NET SDK: Chua tim thay bo bien dich dotnet."
+        print_error ".NET SDK: Chưa tìm thấy bộ biên dịch dotnet."
     fi
 
     # 2. Kiểm tra bộ nhớ /sdcard
     if [ -d "/sdcard" ]; then
-        print_success "Bo nho /sdcard: Da ket noi thanh cong"
+        print_success "Bộ nhớ /sdcard: Đã kết nối thành công"
     else
-        print_error "Bo nho /sdcard: Khong the truy cap."
+        print_error "Bộ nhớ /sdcard: Không thể truy cập."
     fi
 
     # 3. Kiểm tra game files
     if [ -f "$GAME_FILES/Stardew Valley.dll" ]; then
-        print_success "Game Files: Tim thay Stardew Valley.dll"
+        print_success "Game Files: Tìm thấy Stardew Valley.dll"
     else
-        print_warning "Chua thay $GAME_FILES/Stardew Valley.dll"
-        print_info "Hay mo game Cinderbox len it nhat 1 lan tren may."
+        print_warning "Chưa thấy $GAME_FILES/Stardew Valley.dll"
+        print_info "Hãy mở game Cinderbox lên ít nhất 1 lần trên máy."
     fi
 
     # 4. Kiểm tra SMAPI
     if [ -f "$SMAPI_DIR/StardewModdingAPI.dll" ]; then
-        print_success "SMAPI: Tim thay StardewModdingAPI.dll tai smapi-internal"
+        print_success "SMAPI: Tìm thấy StardewModdingAPI.dll tại smapi-internal"
     elif [ -f "$GAME_FILES/StardewModdingAPI.dll" ]; then
-        print_success "SMAPI: Tim thay StardewModdingAPI.dll tai GameFiles"
+        print_success "SMAPI: Tìm thấy StardewModdingAPI.dll tại GameFiles"
     else
-        print_warning "Chua thay StardewModdingAPI.dll (Dam bao da cai dat SMAPI)"
+        print_warning "Chưa thấy StardewModdingAPI.dll (Đảm bảo đã cài đặt SMAPI)"
     fi
 
     # 5. Kiểm tra thư mục Mods
     if [ -d "$MODS_DIR" ]; then
-        print_success "Thu muc Mods: San sang tai $MODS_DIR"
+        print_success "Thư mục Mods: Sẵn sàng tại $MODS_DIR"
     else
         mkdir -p "$MODS_DIR" 2>/dev/null || true
-        print_success "Da tao thu muc Mods tai $MODS_DIR"
+        print_success "Đã tạo thư mục Mods tại $MODS_DIR"
     fi
 }
 
 cmd_new() {
     local mod_name="$1"
     if [ -z "$mod_name" ]; then
-        printf "Nhap ten mod (khong dau, viet lien, vi du SieuNongDan): "
+        printf "  Nhập tên mod (không dấu, viết liền, ví dụ SieuNongDan): "
         read -r mod_name
     fi
 
     if [ -z "$mod_name" ]; then
-        print_error "Ten mod khong duoc de trong."
+        print_error "Tên mod không được để trống."
         return 1
     fi
 
     local target_dir="$WORKSPACE/mods/$mod_name"
     if [ -d "$target_dir" ]; then
-        print_error "Thu muc mod $target_dir da ton tai."
+        print_error "Thư mục mod $target_dir đã tồn tại."
         return 1
     fi
 
     local template_dir="$WORKSPACE/templates/starter-mod"
+    [ ! -d "$template_dir" ] && template_dir="/usr/local/share/stardew-template/templates/starter-mod"
     [ ! -d "$template_dir" ] && template_dir="/root/stardew-env/templates/starter-mod"
     [ ! -d "$template_dir" ] && template_dir="$SCRIPT_DIR/../templates/starter-mod"
 
-    print_info "Dang tao du an mod: $mod_name..."
+    print_info "Đang tạo dự án mod: $mod_name..."
     mkdir -p "$target_dir"
     cp -r "$template_dir/"* "$target_dir/"
 
@@ -147,39 +104,33 @@ cmd_new() {
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/ModEntry.cs" 2>/dev/null || true
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/deploy.sh" 2>/dev/null || true
 
-    print_success "Tao mod moi thanh cong!"
-    print_box "Vi tri: $target_dir"
+    print_success "Khởi tạo mod mới thành công!"
+    print_box "Vị trí: $target_dir"
     echo
-    print_info "Huong dan tiep theo:"
+    print_info "Hướng dẫn tiếp theo:"
     echo "  1. cd $target_dir"
-    echo "  2. Dung AI hoac sua file ModEntry.cs theo y thich"
-    echo "  3. Chay: stardew-mod build"
-    echo "  4. Chay: stardew-mod deploy"
+    echo "  2. Dùng AI (opencode) hoặc sửa file ModEntry.cs theo ý thích"
+    echo "  3. Chạy: stardew-mod build"
+    echo "  4. Chạy: stardew-mod deploy"
 }
 
 cmd_build() {
     local csproj
     csproj=$(find . -maxdepth 1 -name "*.csproj" 2>/dev/null | head -n 1)
     if [ -z "$csproj" ]; then
-        print_error "Khong tim thay file .csproj trong thu muc hien tai."
-        print_info "Hay dung lenh 'cd' vao thu muc mod cua ban truoc."
+        print_error "Không tìm thấy file .csproj trong thư mục hiện tại."
+        print_info "Hãy dùng lệnh 'cd' vào thư mục mod của bạn trước."
         return 1
     fi
 
-    print_info "Dang bien dich du an ($csproj)..."
-    if "$DOTNET_CMD" build "$csproj" -c Release; then
-        print_success "Bien dich hoan tat (Release build)."
-    else
-        print_error "Bien dich that bai! Hay kiem tra thong bao loi o tren."
-        return 1
-    fi
+    spin_task "Đang biên dịch dự án ($csproj)" "$DOTNET_CMD" build "$csproj" -c Release
 }
 
 cmd_deploy() {
     local csproj
     csproj=$(find . -maxdepth 1 -name "*.csproj" 2>/dev/null | head -n 1)
     if [ -z "$csproj" ]; then
-        print_error "Khong tim thay file .csproj trong thu muc hien tai."
+        print_error "Không tìm thấy file .csproj trong thư mục hiện tại."
         return 1
     fi
 
@@ -190,44 +141,44 @@ cmd_deploy() {
     local dll_output
     dll_output=$(find bin/Release/ -name "${mod_name}.dll" 2>/dev/null | head -n 1)
     if [ -z "$dll_output" ]; then
-        print_warning "Chua tim thay ban build, he thong se tu dong build..."
+        print_warning "Chưa tìm thấy bản build Release, đang tiến hành build tự động..."
         cmd_build || return 1
         dll_output=$(find bin/Release/ -name "${mod_name}.dll" 2>/dev/null | head -n 1)
     fi
 
     if [ -z "$dll_output" ]; then
-        print_error "Khong tim thay file ${mod_name}.dll sau khi build."
+        print_error "Không tìm thấy file ${mod_name}.dll sau khi build."
         return 1
     fi
 
-    print_info "Dang copy file mod vao Cinderbox..."
+    print_info "Đang triển khai file mod vào Cinderbox..."
     mkdir -p "$target_mod_dir"
-    
+
     local out_dir
     out_dir=$(dirname "$dll_output")
     cp "$out_dir"/*.dll "$target_mod_dir/" 2>/dev/null || true
     cp "$out_dir"/*.pdb "$target_mod_dir/" 2>/dev/null || true
-    
+
     [ -f "manifest.json" ] && cp manifest.json "$target_mod_dir/"
     [ -d "assets" ] && cp -r assets "$target_mod_dir/"
 
-    print_success "Da cai dat mod '$mod_name' vao Cinderbox!"
-    print_box "Duong dan: $target_mod_dir"
+    print_success "Đã cài đặt mod '$mod_name' vào Cinderbox thành công!"
+    print_box "Đường dẫn: $target_mod_dir"
 }
 
-# Menu tuong tac khi khong truyen tham so
+# Menu tương tác khi không truyền tham số
 interactive_menu() {
     while true; do
         clear_screen
-        banner "STARDEW MOD MANAGER" "Cong cu ho tro VibeCoding Mod Cinderbox"
+        banner "STARDEW MOD MANAGER" "Công cụ hỗ trợ VibeCoding Mod Cinderbox"
         local menu_items=(
-            "Kiem tra moi truong (Doctor)"
-            "Tao du an mod moi (New)"
-            "Bien dich mod hien tai (Build)"
-            "Trien khai vao game (Deploy)"
+            "Kiểm tra môi trường (Doctor)"
+            "Tạo dự án mod mới (New)"
+            "Biên dịch mod hiện tại (Build)"
+            "Triển khai vào game (Deploy)"
         )
         print_menu "${menu_items[@]}"
-        
+
         local choice
         choice=$(get_choice)
         case "$choice" in
@@ -257,18 +208,18 @@ interactive_menu() {
                 ;;
             0|q|Q)
                 echo
-                print_info "Tam biet!"
+                print_info "Tạm biệt!"
                 break
                 ;;
             *)
-                print_warning "Lua chon khong hop le."
+                print_warning "Lựa chọn không hợp lệ."
                 sleep 1
                 ;;
         esac
     done
 }
 
-# Dieu huong lenh
+# Điều hướng lệnh
 case "$1" in
     doctor)
         cmd_doctor
@@ -283,19 +234,19 @@ case "$1" in
         cmd_deploy
         ;;
     help|--help|-h)
-        print_header "HUONG DAN LENH STARDEW-MOD"
-        echo "  stardew-mod doctor       Kiem tra game files va .NET SDK"
-        echo "  stardew-mod new <TenMod>  Tao du an mod moi tu template chuan"
-        echo "  stardew-mod build        Bien dich mod trong thu muc hien tai"
-        echo "  stardew-mod deploy       Cai dat mod vao thu muc game Mods/"
+        print_header "HƯỚNG DẪN LỆNH STARDEW-MOD"
+        echo "  stardew-mod doctor        Kiểm tra game files và .NET SDK"
+        echo "  stardew-mod new <TênMod>   Tạo dự án mod mới từ template chuẩn"
+        echo "  stardew-mod build         Biên dịch mod trong thư mục hiện tại"
+        echo "  stardew-mod deploy        Cài đặt mod vào thư mục game Mods/"
         print_line
         ;;
     "")
         interactive_menu
         ;;
     *)
-        print_error "Lenh khong hop le: $1"
-        print_info "Chay 'stardew-mod help' de xem cac lenh ho tro."
+        print_error "Lệnh không hợp lệ: $1"
+        print_info "Chạy 'stardew-mod help' để xem các lệnh hỗ trợ."
         exit 1
         ;;
 esac

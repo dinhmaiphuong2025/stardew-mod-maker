@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # UI Style Shell - Bộ hàm giao diện dòng lệnh (TUI)
+# Phong cách OpenCode & DankMaterialShell - Tiếng Việt đầy đủ dấu
 # ==============================================================================
 
 # Màu sắc
@@ -31,7 +32,7 @@ print_prompt() {
     printf "${GREEN}❯ ${RESET}"
 }
 
-# Thông báo trạng thái
+# Thông báo trạng thái (Tiếng Việt chuẩn)
 print_success() {
     printf "${GREEN}✓ %s${RESET}\n" "$1"
 }
@@ -90,16 +91,12 @@ print_box() {
     printf "  ${GRAY}└%s┘${RESET}\n" "$border"
 }
 
-# Thanh tiến trình (Progress Bar)
-print_progress_bar() {
-    local label="$1"
-    local current="$2"
-    local total="$3"
-    local width="${4:-20}"
-
-    if [ "$total" -le 0 ]; then
-        total=1
-    fi
+# Thanh tiến trình bước (Step Progress Bar phong cách DankMaterialShell / OpenCode)
+print_step_bar() {
+    local current="$1"
+    local total="$2"
+    local title="$3"
+    local width=16
 
     local percent=$(( current * 100 / total ))
     local filled=$(( current * width / total ))
@@ -107,29 +104,53 @@ print_progress_bar() {
 
     local bar=""
     for ((i=0; i<filled; i++)); do bar="${bar}█"; done
-    for ((i=0; i<empty; i++)); do bar="${bar} "; done
+    for ((i=0; i<empty; i++)); do bar="${bar}░"; done
 
-    printf "\r  %s [${CYAN}%s${RESET}] %3d%%" "$label" "$bar" "$percent"
+    printf "\n  ${GRAY}[%d/%d]${RESET} ${CYAN}[%s]${RESET} ${BOLD}%3d%%${RESET}  %s\n" \
+        "$current" "$total" "$bar" "$percent" "$title"
+    print_line
 }
 
-# Spinner hiệu ứng chờ
-spinner_animate() {
-    local steps="${1:-20}"
-    local delay_us="${2:-60000}"
+# Spinner động chạy ngầm tác vụ thực tế (Active Task Spinner)
+spin_task() {
+    local label="$1"
+    shift
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
+    local i=0
 
-    for ((s=0; s<steps; s++)); do
-        local idx=$(( s % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} " "${spin_chars[$idx]}"
-        usleep "$delay_us" 2>/dev/null || sleep 0.06
+    # Ẩn con trỏ terminal
+    printf "\033[?25l"
+
+    # Chạy tác vụ ngầm
+    "$@" >/dev/null 2>&1 &
+    local pid=$!
+
+    while kill -0 "$pid" 2>/dev/null; do
+        local idx=$(( i % n_chars ))
+        printf "\r  ${CYAN}%s${RESET} %s..." "${spin_chars[$idx]}" "$label"
+        i=$(( i + 1 ))
+        sleep 0.08
     done
-    printf "\r     \r"
+
+    wait "$pid"
+    local exit_code=$?
+
+    # Hiện lại con trỏ terminal và xóa dòng hiện tại
+    printf "\033[?25h"
+    printf "\r\033[K"
+
+    if [ "$exit_code" -eq 0 ]; then
+        print_success "$label hoàn tất."
+    else
+        print_error "$label thất bại (mã lỗi: $exit_code)."
+        return "$exit_code"
+    fi
 }
 
 # Chờ phím Enter
 wait_for_enter() {
-    printf "${GRAY}Nhấn Enter để tiếp tục...${RESET}"
+    printf "${GRAY}Nhấn phím Enter để tiếp tục...${RESET}"
     read -r
 }
 

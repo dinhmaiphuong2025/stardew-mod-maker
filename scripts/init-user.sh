@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script khởi tạo tài khoản người dùng sudo cho PRoot Ubuntu
-# Tuân thủ UI Style Shell (ui-style-shell)
+# Tuân thủ UI Style Shell (ui-style-shell) - Tiếng Việt đầy đủ dấu
 # ==============================================================================
 
 set -e
@@ -11,33 +11,6 @@ if [ -f "/usr/local/bin/ui.sh" ]; then
     source "/usr/local/bin/ui.sh"
 elif [ -f "$SCRIPT_DIR/ui.sh" ]; then
     source "$SCRIPT_DIR/ui.sh"
-else
-    RESET='\033[0m'   BOLD='\033[1m'    GRAY='\033[90m'
-    RED='\033[1;31m'  GREEN='\033[1;32m' YELLOW='\033[1;33m'
-    BLUE='\033[1;34m' CYAN='\033[1;36m'  WHITE='\033[1;37m'
-    clear_screen() { printf "\033[2J\033[H"; }
-    print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
-    print_prompt() { printf "${GREEN}❯ ${RESET}"; }
-    print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
-    print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
-    print_warning() { printf "${YELLOW}⚠ %s${RESET}\n" "$1"; }
-    print_info() { printf "${BLUE}ℹ %s${RESET}\n" "$1"; }
-    banner() {
-        printf "      ${BOLD}${WHITE}%s${RESET}\n" "$1"
-        [ -n "$2" ] && printf "      ${GRAY}%s${RESET}\n" "$2"
-        print_line
-    }
-    print_box() {
-        local len=${#1} border=""
-        for ((i=0; i<len+2; i++)); do border="${border}─"; done
-        printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$1" "$border"
-    }
-    confirm() {
-        local resp
-        printf "%s (y/N): " "$1"
-        read -r resp
-        case "$resp" in [yY]|[yY][eE][sS]) return 0 ;; *) return 1 ;; esac
-    }
 fi
 
 if [ -f "/etc/stardew-user-created" ]; then
@@ -45,29 +18,29 @@ if [ -f "/etc/stardew-user-created" ]; then
 fi
 
 clear_screen
-banner "KHOI TAO NGUOI DUNG" "Thiet lap tai khoan sudo cho Ubuntu PRoot"
+banner "KHỞI TẠO NGƯỜI DÙNG" "Thiết lập tài khoản sudo cho không gian làm việc"
 
-print_info "Khoi dong lan dau: Thiet lap tai khoan nguoi dung cho khong gian lam viec."
+print_info "Khởi động lần đầu: Vui lòng thiết lập tài khoản người dùng cho Ubuntu."
 echo
 
 # 1. Nhập tên người dùng
-printf "Nhap ten nguoi dung (viet thuong khong dau, mac dinh: stardew): "
+printf "  Nhập tên người dùng (viết thường không dấu, mặc định: stardew): "
 read -r INPUT_USER
 INPUT_USER=$(echo "$INPUT_USER" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-')
 [ -z "$INPUT_USER" ] && INPUT_USER="stardew"
 
 # 2. Nhập mật khẩu (tùy chọn)
-printf "Nhap mat khau (nhan Enter de trong neu khong can dat mat khau): "
+printf "  Nhập mật khẩu (nhấn Enter để trống nếu không cần mật khẩu): "
 read -rs INPUT_PASS
 echo
 
 # 3. Hỏi tắt hỏi mật khẩu sudo
 NOPASSWD=0
-if confirm "Tat hoi mat khau khi su dung sudo? (Khuyen dung cho Termux)"; then
+if confirm "  Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng cho Termux)"; then
     NOPASSWD=1
 fi
 
-print_info "Dang tao nguoi dung '$INPUT_USER'..."
+print_info "Đang khởi tạo tài khoản '$INPUT_USER'..."
 
 # Tạo user nếu chưa tồn tại
 if ! id "$INPUT_USER" >/dev/null 2>&1; then
@@ -112,18 +85,15 @@ fi
 
 # Cài đặt OpenCode AI CLI nếu người dùng muốn
 echo
-if confirm "Cai dat OpenCode AI CLI (Mien phi, ho tro code mod bang AI truc tiep)?"; then
-    print_info "Dang tai va cai dat OpenCode CLI..."
-    curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
+if confirm "  Cài đặt OpenCode AI CLI (Miễn phí, hỗ trợ code mod bằng AI)?"; then
+    spin_task "Đang tải và cài đặt OpenCode CLI" bash -c "curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash" || true
+    if ! command -v opencode >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+        spin_task "Cài đặt OpenCode qua npm fallback" npm install -g opencode-ai || true
+    fi
     if command -v opencode >/dev/null 2>&1; then
-        print_success "OpenCode CLI da duoc cai dat thanh cong!"
-    elif command -v npm >/dev/null 2>&1; then
-        npm install -g opencode-ai >/dev/null 2>&1 || true
-        if command -v opencode >/dev/null 2>&1; then
-            print_success "OpenCode CLI da duoc cai dat thanh cong qua npm!"
-        else
-            print_warning "Chua the cai OpenCode tu dong. Ban co the cai sau bang lenh: curl -fsSL https://opencode.ai/install | bash"
-        fi
+        print_success "OpenCode CLI đã sẵn sàng."
+    else
+        print_warning "Chưa thể cài OpenCode tự động. Bạn có thể cài sau qua: curl -fsSL https://opencode.ai/install | bash"
     fi
 fi
 
@@ -133,10 +103,10 @@ cat << 'EOF' >> "$USER_HOME/.bashrc"
 if [ -f /usr/local/bin/ui.sh ]; then
     source /usr/local/bin/ui.sh
     clear_screen
-    banner "STARDEW MOD VIBECODING" "Khong gian sang tao Mod Cinderbox Android"
-    print_info "Go 'stardew-mod' de mo Menu dieu khien."
+    banner "STARDEW MOD VIBECODING" "Không gian sáng tạo Mod Cinderbox Android"
+    print_info "Gõ 'stardew-mod' để mở Menu điều khiển."
     if command -v opencode >/dev/null 2>&1; then
-        print_info "Go 'opencode' de bat dau VibeCoding bang AI."
+        print_info "Gõ 'opencode' để bắt đầu VibeCoding bằng AI."
     fi
     print_line
 fi
@@ -151,7 +121,7 @@ echo "$INPUT_USER" > /etc/stardew-default-user
 touch /etc/stardew-user-created
 
 echo
-print_success "Da tao tai khoan '$INPUT_USER' va cap quyen sudo thanh cong."
-print_box "Workspace nguoi dung: $USER_WORKSPACE"
+print_success "Đã tạo tài khoản '$INPUT_USER' và cấp quyền sudo thành công!"
+print_box "Không gian làm việc: $USER_WORKSPACE"
 echo
 sleep 1
