@@ -2,74 +2,60 @@
 
 VibeCoding là phương pháp phát triển phần mềm bằng cách truyền đạt ý tưởng bằng ngôn ngữ tự nhiên thông qua AI, để AI tự động chuyển hóa thành mã nguồn kỹ thuật chuẩn xác.
 
-Dưới đây là quy trình 5 bước để tạo một bản mod hoàn chỉnh cho Cinderbox Android.
+Toàn bộ quá trình diễn ra bên trong không gian làm việc của người dùng (`~/stardew-workspace/mods/`), đảm bảo quyền sở hữu file thuộc tài khoản người dùng thông thường, không bị vướng quyền root.
 
 ---
 
-## Quy trình 5 bước thực hiện
+## Hai phương thức VibeCoding phổ biến
 
-### Bước 1: Khởi tạo dự án mod mới
-Mở Termux và thực thi:
-```bash
-stardew-code
-stardew-mod new SieuCauCa
-```
-(Thay `SieuCauCa` bằng tên mod mong muốn, viết liền không dấu).
+### Cách 1: Sử dụng OpenCode AI CLI (Khuyên dùng - Miễn phí & Tự động)
 
-Thư mục dự án sẽ được tạo tại `/root/stardew-workspace/mods/SieuCauCa`.
+OpenCode là trợ lý AI mã nguồn mở chạy trực tiếp trong terminal Linux, hoàn toàn miễn phí và cực kỳ dễ sử dụng:
 
----
-
-### Bước 2: Chuẩn bị nội dung yêu cầu
-Mô tả rõ ràng hành vi của mod:
-- Mức độ cơ bản: Tự động tưới cây, điều chỉnh tốc độ di chuyển, hồi phục thể lực khi nghỉ ngơi.
-- Mức độ trung bình: Hiển thị radar tìm kiếm tài nguyên rơi trên bản đồ, hiển thị mức độ tình cảm của dân làng.
-- Mức độ nâng cao: Bổ sung menu nút bấm cảm ứng, chèn thêm vật phẩm mới vào cửa hàng Pierre.
-
----
-
-### Bước 3: Sử dụng khuôn mẫu Prompt
-Mở file `VIBECODE_PROMPT_TEMPLATE.md` có sẵn trong thư mục làm việc, sao chép toàn bộ nội dung khuôn mẫu kèm theo yêu cầu tính năng của bạn và gửi cho AI (Claude, ChatGPT, Gemini, DeepSeek).
-
-Khuôn mẫu này đảm bảo AI tuân thủ đúng phiên bản `net10.0`, cấu trúc API của Stardew Valley 1.6 và quy chuẩn cảm ứng màn hình trên thiết bị di động.
+1. Di chuyển vào thư mục mod vừa tạo:
+   ```bash
+   cd ~/stardew-workspace/mods/SieuCauCa
+   ```
+2. Khởi chạy OpenCode:
+   ```bash
+   opencode
+   ```
+3. Ra lệnh trực tiếp cho OpenCode bằng tiếng Việt:
+   > "Hãy đọc file ../../VIBECODE_PROMPT_TEMPLATE.md và giúp tôi viết tính năng: Mỗi khi thức dậy, hồi phục 100% thể lực và tặng 500 vàng. Hãy sửa trực tiếp vào file ModEntry.cs rồi chạy lệnh stardew-mod build để kiểm tra."
+4. OpenCode sẽ tự động phân tích cấu trúc dự án, tự điền code và tự chạy build. Bạn không cần phải copy-paste thủ công.
+5. Sau khi OpenCode hoàn thành, chỉ cần thoát và gõ:
+   ```bash
+   stardew-mod deploy
+   ```
 
 ---
 
-### Bước 4: Lưu mã nguồn vào mod
-AI sẽ cung cấp mã nguồn hoàn chỉnh của file `ModEntry.cs`. Bạn có thể cập nhật vào file theo một trong hai cách:
+### Cách 2: Sử dụng Web AI (ChatGPT, Claude, Gemini)
 
-- Cách 1: Dùng trình soạn thảo trong terminal:
-  ```bash
-  cd /root/stardew-workspace/mods/SieuCauCa
-  nano ModEntry.cs
-  ```
-  Xóa nội dung cũ, dán mã nguồn mới, nhấn `Ctrl + O` rồi `Enter` để lưu và `Ctrl + X` để thoát.
+Nếu bạn quen dùng các trang web AI trên trình duyệt:
 
-- Cách 2: Dùng ứng dụng quản lý tệp trên Android:
-  Mở MT Manager, ZArchiver hoặc Acode, tìm đến thư mục mod tương ứng và chỉnh sửa tệp như file văn bản thông thường.
-
----
-
-### Bước 5: Biên dịch và cài đặt vào game
-Tại thư mục của mod, chạy hai lệnh:
-
-```bash
-stardew-mod build
-stardew-mod deploy
-```
-
-- Lệnh `build`: Biên dịch mã nguồn C# thành file nhị phân `.dll`.
-- Lệnh `deploy`: Chuyển file kết quả vào thư mục `/sdcard/StardewValley/desktop/Mods/SieuCauCa`.
-
-Sau khi hoàn tất, mở game Stardew Valley trên Cinderbox để kiểm tra.
+1. Khởi tạo dự án mod:
+   ```bash
+   stardew-code
+   stardew-mod new SieuCauCa
+   ```
+2. Mở file `VIBECODE_PROMPT_TEMPLATE.md` trong thư mục `~/stardew-workspace/`, sao chép toàn bộ nội dung khuôn mẫu và gửi kèm ý tưởng tính năng cho AI.
+3. Nhận mã nguồn C# từ AI và cập nhật vào file:
+   ```bash
+   cd ~/stardew-workspace/mods/SieuCauCa
+   nano ModEntry.cs
+   ```
+   (Hoặc mở app Acode / MT Manager trên Android vào `stardew-workspace/mods/SieuCauCa/ModEntry.cs` để dán).
+4. Chạy kiểm tra và cài đặt:
+   ```bash
+   stardew-mod build
+   stardew-mod deploy
+   ```
 
 ---
 
 ## Xử lý khi gặp lỗi biên dịch
 
-Nếu lệnh `stardew-mod build` trả về thông báo lỗi:
-
-1. Sao chép toàn bộ khối văn bản báo lỗi trên màn hình terminal.
-2. Gửi lại cho AI kèm chỉ dẫn:
-   > "Quá trình biên dịch báo lỗi sau đây. Hãy phân tích nguyên nhân và cung cấp lại file ModEntry.cs hoàn chỉnh đã được sửa lỗi: [Dán nội dung lỗi vào đây]"
-3. Cập nhật lại file `ModEntry.cs` và tiến hành biên dịch lại.
+Nếu xảy ra lỗi biên dịch:
+- Với OpenCode CLI: Chỉ cần nói: "Lệnh build bị lỗi, hãy đọc thông báo và sửa lại cho tôi".
+- Với Web AI: Sao chép toàn bộ đoạn báo lỗi màu đỏ trong terminal, dán cho AI và yêu cầu viết lại file `ModEntry.cs` đã khắc phục.

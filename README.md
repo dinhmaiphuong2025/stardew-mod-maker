@@ -8,10 +8,12 @@ Bộ công cụ thiết lập môi trường PRoot Distro tự động dành cho
 
 Bộ công cụ này giúp người dùng Android tự tạo mod C# SMAPI cho Stardew Valley 1.6 chạy trên Cinderbox mà không cần máy tính PC, không cần quyền Root và không cần kiến thức lập trình chuyên sâu.
 
-Nhờ cơ chế VibeCoding, bạn chỉ cần mô tả ý tưởng tính năng bằng tiếng Việt thông thường, các mô hình AI (ChatGPT, Claude, Gemini, DeepSeek) sẽ sinh toàn bộ mã nguồn theo đúng chuẩn kỹ thuật của Android Cinderbox.
+Đặc biệt, hệ thống tối ưu cho phương pháp **VibeCoding** với sự hỗ trợ của trợ lý AI **OpenCode CLI** (hoàn toàn miễn phí, tự động sửa code và kiểm tra build ngay trong terminal) hoặc các mô hình web như ChatGPT, Claude, Gemini.
 
 ### Đặc điểm chính:
 - Thao tác 1 bước: Tự động hóa toàn bộ quá trình cài đặt môi trường trên Termux.
+- Không gian làm việc chuẩn Sudo User: Tự động tạo người dùng sudo riêng và đặt workspace tại `~/stardew-workspace` (`/home/<user>/stardew-workspace`), tránh hoàn toàn các lỗi xung đột file hoặc quyền sở hữu root.
+- Tích hợp OpenCode CLI: Hỗ trợ cài đặt trợ lý AI miễn phí để ra lệnh tạo mod trực tiếp bằng tiếng Việt ngay trong dòng lệnh.
 - Không cần Root: Chạy hoàn toàn trong không gian người dùng thông qua PRoot Distro (Ubuntu aarch64).
 - Liên kết bộ nhớ trực tiếp: Tự động mount thư mục `/sdcard` của Android vào container, cho phép xem và sửa file bằng các ứng dụng quản lý tệp quen thuộc (MT Manager, ZArchiver, Acode).
 - Tương thích .NET 10.0: Cài đặt .NET 10.0 SDK chính thức từ Microsoft, giải quyết triệt để lỗi bionic libc và lỗi xung đột assembly CS1705 với SMAPI Cinderbox.
@@ -28,7 +30,9 @@ Mở ứng dụng Termux và chạy dòng lệnh sau:
 pkg install -y git && git clone https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git && cd stardew-proot-vibecoding && bash install.sh
 ```
 
-Khi hệ thống hiển thị thông báo yêu cầu cấp quyền truy cập bộ nhớ, chọn "Cho phép" (Allow).
+Trong quá trình chạy:
+1. Khi có hộp thoại Android yêu cầu quyền bộ nhớ: Chọn "Cho phép" (Allow).
+2. Khi hệ thống hỏi thiết lập người dùng: Nhập tên tài khoản của bạn (ví dụ: `stardew`) và chọn có muốn cài đặt OpenCode AI CLI hay không.
 
 ---
 
@@ -40,7 +44,7 @@ Sau khi cài đặt xong, mỗi khi muốn bắt đầu làm việc, bạn mở 
 stardew-code
 ```
 
-Lệnh này sẽ đưa bạn vào môi trường Ubuntu với thư mục làm việc `/root/stardew-workspace`.
+Lệnh này sẽ tự động đưa bạn vào môi trường Ubuntu với tư cách tài khoản người dùng của bạn tại thư mục `~/stardew-workspace`.
 
 ### Các lệnh quản lý:
 
@@ -51,26 +55,33 @@ Lệnh này sẽ đưa bạn vào môi trường Ubuntu với thư mục làm vi
 | `stardew-mod new <TenMod>` | Tạo một dự án mod mới từ khung mẫu chuẩn |
 | `stardew-mod build` | Biên dịch mã nguồn C# thành file thư viện `.dll` |
 | `stardew-mod deploy` | Tự động chép file mod đã biên dịch vào thư mục `Mods/` của game |
+| `opencode` | Mở trợ lý AI OpenCode để VibeCoding trực tiếp |
 
 ---
 
 ## 4. Quy trình VibeCoding tạo mod cùng AI
 
-1. Khởi tạo mod mới:
+### Cách 1: Dùng OpenCode CLI (Tự động & Miễn phí - Khuyên dùng)
+1. Tạo mod mới:
    ```bash
-   stardew-mod new NongDanVuiVe
-   cd mods/NongDanVuiVe
+   stardew-mod new SieuNongDan
+   cd mods/SieuNongDan
    ```
-2. Chuẩn bị prompt cho AI:
-   Sao chép nội dung trong file `VIBECODE_PROMPT_TEMPLATE.md`, bổ sung ý tưởng tính năng mong muốn và gửi cho AI (ChatGPT, Claude, Gemini).
-3. Cập nhật mã nguồn:
-   Lấy đoạn code C# do AI tạo ra và dán vào file `ModEntry.cs` (bằng trình biên tập `nano ModEntry.cs` hoặc ứng dụng chỉnh sửa văn bản trên Android).
-4. Biên dịch và triển khai:
+2. Khởi động AI:
    ```bash
-   stardew-mod build
+   opencode
+   ```
+3. Nhập yêu cầu bằng tiếng Việt:
+   > "Đọc file ../../VIBECODE_PROMPT_TEMPLATE.md và giúp tôi thêm tính năng tăng 20% tốc độ chạy khi ở ngoài trời vào ModEntry.cs, sau đó chạy stardew-mod build để kiểm tra."
+4. Triển khai vào game:
+   ```bash
    stardew-mod deploy
    ```
-5. Mở game Stardew Valley trên Cinderbox để kiểm tra tính năng.
+
+### Cách 2: Dùng Web AI (ChatGPT, Claude, Gemini)
+1. Tạo mod mới bằng `stardew-mod new <TenMod>`.
+2. Sao chép nội dung `VIBECODE_PROMPT_TEMPLATE.md` kèm ý tưởng gửi cho Web AI.
+3. Dán code AI tạo vào `ModEntry.cs` và chạy `stardew-mod build` rồi `stardew-mod deploy`.
 
 ---
 
@@ -98,6 +109,7 @@ stardew-proot-vibecoding/
 ├── scripts/
 │   ├── ui.sh                      # Thư viện giao diện dòng lệnh TUI
 │   ├── setup-proot.sh             # Cấu hình bên trong container Ubuntu
+│   ├── init-user.sh               # Khởi tạo user sudo và cài OpenCode
 │   └── stardew-mod.sh             # Bộ công cụ dòng lệnh quản lý mod
 └── templates/
     └── starter-mod/               # Dự án mẫu SMAPI 1.6 net10.0

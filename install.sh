@@ -94,12 +94,17 @@ cp -r "$SCRIPT_DIR/"* "$UBUNTU_ROOT/root/stardew-env/"
 
 proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
 
-# 7. Tao lenh tat tren Termux (ho tro chuyen user tu dong)
+# 7. Khoi tao ngay tai khoan nguoi dung sudo va thiet lap workspace
+echo
+print_info "Khoi tao tai khoan nguoi dung sudo..."
+proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh
+
+# 8. Tao lenh tat tren Termux (tu dong dang nhap bang user sudo da tao)
 cat << 'EOF' > "$PREFIX/bin/stardew-code"
 #!/data/data/com.termux/files/usr/bin/bash
 USER_FILE="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/stardew-default-user"
 if [ -f "$USER_FILE" ]; then
-    SD_USER=$(cat "$USER_FILE" 2>/dev/null)
+    SD_USER=$(cat "$USER_FILE" 2>/dev/null | tr -d '[:space:]')
     if [ -n "$SD_USER" ]; then
         exec proot-distro login ubuntu --user "$SD_USER" --workdir "/home/$SD_USER/stardew-workspace"
     fi
@@ -113,6 +118,6 @@ print_line
 print_box "Cai dat thanh cong! Lenh truy cap nhanh: stardew-code"
 echo
 
-if confirm "Ban co muon khoi dong vao moi truong de thiet lap tai khoan ngay bay gio?"; then
+if confirm "Ban co muon khoi dong vao khong gian lam viec ngay bay gio?"; then
     exec "$PREFIX/bin/stardew-code"
 fi

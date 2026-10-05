@@ -64,9 +64,9 @@ else
     print_error "Khong the khoi dong .NET SDK. Vui long kiem tra lai ket noi mang."
 fi
 
-# 3. Cài đặt các kịch bản và công cụ hệ thống
-WORKSPACE="/root/stardew-workspace"
-mkdir -p "$WORKSPACE/lib" "$WORKSPACE/mods" "$WORKSPACE/scripts"
+# 3. Lưu trữ template toàn cục và cài đặt các công cụ CLI
+TEMPLATE_STORE="/usr/local/share/stardew-template"
+mkdir -p "$TEMPLATE_STORE"
 
 if [ -f "$SCRIPT_DIR/ui.sh" ]; then
     cp "$SCRIPT_DIR/ui.sh" /usr/local/bin/ui.sh
@@ -84,8 +84,8 @@ if [ -f "$SCRIPT_DIR/init-user.sh" ]; then
 fi
 
 if [ -d "/root/stardew-env" ]; then
-    cp -r /root/stardew-env/templates "$WORKSPACE/"
-    cp -r /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$WORKSPACE/"
+    cp -r /root/stardew-env/templates "$TEMPLATE_STORE/" 2>/dev/null || true
+    cp /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$TEMPLATE_STORE/" 2>/dev/null || true
 fi
 
 # 4. Cấu hình kiểm tra tạo user khi đăng nhập root lần đầu
@@ -98,7 +98,7 @@ fi
 
 # Tu dong chuyen sang tai khoan nguoi dung mac dinh neu co
 if [ -f /etc/stardew-default-user ]; then
-    SD_USER=$(cat /etc/stardew-default-user)
+    SD_USER=$(cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
     if [ "$USER" = "root" ] && [ -n "$SD_USER" ] && id "$SD_USER" >/dev/null 2>&1; then
         exec su - "$SD_USER"
     fi

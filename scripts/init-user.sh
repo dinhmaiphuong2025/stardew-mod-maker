@@ -47,7 +47,7 @@ fi
 clear_screen
 banner "KHOI TAO NGUOI DUNG" "Thiet lap tai khoan sudo cho Ubuntu PRoot"
 
-print_info "Khoi dong lan dau: He thong can thiet lap mot tai khoan nguoi dung."
+print_info "Khoi dong lan dau: Thiet lap tai khoan nguoi dung cho khong gian lam viec."
 echo
 
 # 1. Nhập tên người dùng
@@ -90,23 +90,41 @@ else
 fi
 chmod 0440 "/etc/sudoers.d/$INPUT_USER"
 
-# Thiết lập thư mục workspace cho user mới
+# Thiết lập thư mục workspace riêng biệt trong /home/$INPUT_USER
 USER_HOME="/home/$INPUT_USER"
 USER_WORKSPACE="$USER_HOME/stardew-workspace"
 mkdir -p "$USER_WORKSPACE"
 mkdir -p "$USER_WORKSPACE/mods"
 mkdir -p "$USER_WORKSPACE/lib"
 
-if [ -d "/root/stardew-env/templates" ]; then
+TEMPLATE_SRC="/usr/local/share/stardew-template"
+if [ -d "$TEMPLATE_SRC/templates" ]; then
+    cp -r "$TEMPLATE_SRC/templates" "$USER_WORKSPACE/"
+elif [ -d "/root/stardew-env/templates" ]; then
     cp -r /root/stardew-env/templates "$USER_WORKSPACE/"
-elif [ -d "/root/stardew-workspace/templates" ]; then
-    cp -r /root/stardew-workspace/templates "$USER_WORKSPACE/"
 fi
 
-if [ -f "/root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md" ]; then
+if [ -f "$TEMPLATE_SRC/VIBECODE_PROMPT_TEMPLATE.md" ]; then
+    cp "$TEMPLATE_SRC/VIBECODE_PROMPT_TEMPLATE.md" "$USER_WORKSPACE/"
+elif [ -f "/root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md" ]; then
     cp /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$USER_WORKSPACE/"
-elif [ -f "/root/stardew-workspace/VIBECODE_PROMPT_TEMPLATE.md" ]; then
-    cp /root/stardew-workspace/VIBECODE_PROMPT_TEMPLATE.md "$USER_WORKSPACE/"
+fi
+
+# Cài đặt OpenCode AI CLI nếu người dùng muốn
+echo
+if confirm "Cai dat OpenCode AI CLI (Mien phi, ho tro code mod bang AI truc tiep)?"; then
+    print_info "Dang tai va cai dat OpenCode CLI..."
+    curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
+    if command -v opencode >/dev/null 2>&1; then
+        print_success "OpenCode CLI da duoc cai dat thanh cong!"
+    elif command -v npm >/dev/null 2>&1; then
+        npm install -g opencode-ai >/dev/null 2>&1 || true
+        if command -v opencode >/dev/null 2>&1; then
+            print_success "OpenCode CLI da duoc cai dat thanh cong qua npm!"
+        else
+            print_warning "Chua the cai OpenCode tu dong. Ban co the cai sau bang lenh: curl -fsSL https://opencode.ai/install | bash"
+        fi
+    fi
 fi
 
 # Thêm banner khởi động vào .bashrc của user
@@ -117,11 +135,15 @@ if [ -f /usr/local/bin/ui.sh ]; then
     clear_screen
     banner "STARDEW MOD VIBECODING" "Khong gian sang tao Mod Cinderbox Android"
     print_info "Go 'stardew-mod' de mo Menu dieu khien."
+    if command -v opencode >/dev/null 2>&1; then
+        print_info "Go 'opencode' de bat dau VibeCoding bang AI."
+    fi
     print_line
 fi
 cd ~/stardew-workspace
 EOF
 
+# Đảm bảo phân quyền toàn bộ thuộc về user mới (không bị dính quyền root)
 chown -R "$INPUT_USER:$INPUT_USER" "$USER_HOME"
 
 # Đánh dấu đã tạo user và lưu tên user mặc định
@@ -130,6 +152,6 @@ touch /etc/stardew-user-created
 
 echo
 print_success "Da tao tai khoan '$INPUT_USER' va cap quyen sudo thanh cong."
-print_box "Chuyen huong vao khong gian lam viec cua '$INPUT_USER'..."
+print_box "Workspace nguoi dung: $USER_WORKSPACE"
 echo
 sleep 1
