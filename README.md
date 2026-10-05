@@ -1,110 +1,106 @@
-# 🌾 Stardew Valley Cinderbox Modding Kit (PRoot Android)
-### 🚀 Bộ Công Cụ & Môi Trường 1-Click Dành Cho Người Không Biết Code Tự VibeCoding Tạo Mod
+# Stardew Valley Cinderbox Modding Kit (PRoot Android)
 
-[![Platform: Android](https://img.shields.io/badge/Platform-Android%20(Termux)-green.svg)](https://termux.dev)
-[![Engine: PRoot Ubuntu](https://img.shields.io/badge/PRoot-Ubuntu%2024.04%20aarch64-orange.svg)](https://github.com/termux/proot-distro)
-[![SDK: .NET 10.0](https://img.shields.io/badge/.NET-10.0%20SDK-purple.svg)](https://dotnet.microsoft.com)
-[![Game: Stardew Valley 1.6 Cinderbox](https://img.shields.io/badge/Game-Stardew%20Valley%201.6%20Cinderbox-blue.svg)](https://stardewvalley.net)
+Bộ công cụ thiết lập môi trường PRoot Distro tự động dành cho việc xây dựng và VibeCoding mod Stardew Valley chạy trên Cinderbox Android. Thiết kế đơn giản hóa tối đa cho người chưa từng lập trình.
 
 ---
 
-## 💡 Giới Thiệu
+## 1. Giới thiệu
 
-Bạn muốn tự tạo ra những tính năng kỳ diệu cho game **Stardew Valley** chạy trên Android (thông qua Cinderbox) — ví dụ: tự động tưới nước, tăng tốc chạy, radar tìm kho báu, hay menu tùy biến — nhưng bạn **không biết một dòng code C# nào**?
+Bộ công cụ này giúp người dùng Android tự tạo mod C# SMAPI cho Stardew Valley 1.6 chạy trên Cinderbox mà không cần máy tính PC, không cần quyền Root và không cần kiến thức lập trình chuyên sâu.
 
-Đây chính là bộ công cụ dành cho bạn! Dự án này thiết lập một môi trường lập trình Linux chuẩn (PRoot Ubuntu) ngay trên chiếc điện thoại Android của bạn, kết hợp hoàn hảo cùng các AI mạnh nhất hiện nay (ChatGPT, Claude, Gemini, DeepSeek) để bạn có thể **"VibeCode"** (chỉ cần mô tả ý tưởng bằng tiếng Việt, AI sẽ viết toàn bộ code mod cho bạn).
+Nhờ cơ chế VibeCoding, bạn chỉ cần mô tả ý tưởng tính năng bằng tiếng Việt thông thường, các mô hình AI (ChatGPT, Claude, Gemini, DeepSeek) sẽ sinh toàn bộ mã nguồn theo đúng chuẩn kỹ thuật của Android Cinderbox.
 
-### ✨ Điểm Nổi Bật:
-- **Zero-Config (Không cần cấu hình phức tạp):** Chỉ cần dán 1 dòng lệnh duy nhất vào Termux là xong từ A đến Z.
-- **Không cần Root máy:** Hoạt động an toàn 100% trên mọi điện thoại Android thông qua PRoot.
-- **Tự động Mount `/sdcard`:** Toàn bộ file game và mod được liên kết trực tiếp với bộ nhớ điện thoại. Bạn có thể dùng ZArchiver, MT Manager hoặc Acode để xem và sửa file như bình thường.
-- **Đầy đủ .NET 10.0 SDK:** Sửa sạch hoàn toàn các lỗi thiếu thư viện bionic libc hay xung đột phiên bản `net6.0`/`net10.0` của Cinderbox.
-- **Bộ lệnh bỏ túi `stardew-mod`:** Tạo mod mới, kiểm tra lỗi, build và deploy vào game chỉ bằng 1 từ khóa.
-- **Sẵn sàng Prompt Template:** Tích hợp bộ quy chuẩn đặc biệt để AI không bao giờ viết sai API của Stardew 1.6 hay cơ chế chạm cảm ứng di động.
+### Đặc điểm chính:
+- Thao tác 1 bước: Tự động hóa toàn bộ quá trình cài đặt môi trường trên Termux.
+- Không cần Root: Chạy hoàn toàn trong không gian người dùng thông qua PRoot Distro (Ubuntu aarch64).
+- Liên kết bộ nhớ trực tiếp: Tự động mount thư mục `/sdcard` của Android vào container, cho phép xem và sửa file bằng các ứng dụng quản lý tệp quen thuộc (MT Manager, ZArchiver, Acode).
+- Tương thích .NET 10.0: Cài đặt .NET 10.0 SDK chính thức từ Microsoft, giải quyết triệt để lỗi bionic libc và lỗi xung đột assembly CS1705 với SMAPI Cinderbox.
+- Công cụ stardew-mod: Quản lý kiểm tra lỗi, tạo mod, biên dịch và triển khai vào game qua giao diện dòng lệnh đơn giản.
+- Khung mẫu prompt chuẩn: Đi kèm template chỉ dẫn dành cho AI để tránh lỗi phiên bản và hỗ trợ đúng cơ chế cảm ứng di động.
 
 ---
 
-## ⚡ Cài Đặt Siêu Tốc (Chỉ 1 Bước)
+## 2. Hướng dẫn cài đặt
 
-Mở ứng dụng **Termux** (tải từ F-Droid hoặc GitHub) và dán lệnh sau:
+Mở ứng dụng Termux và chạy dòng lệnh sau:
 
 ```bash
 pkg install -y git && git clone https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git && cd stardew-proot-vibecoding && bash install.sh
 ```
 
-*(Hộp thoại cấp quyền bộ nhớ sẽ hiện lên, hãy chọn **CHO PHÉP / ALLOW** để môi trường có thể kết nối với thư mục game).*
+Khi hệ thống hiển thị thông báo yêu cầu cấp quyền truy cập bộ nhớ, chọn "Cho phép" (Allow).
 
 ---
 
-## 🎮 Cách Sử Dụng Hàng Ngày
+## 3. Cách sử dụng
 
-Sau khi cài đặt xong, bất cứ khi nào muốn làm mod, bạn chỉ cần mở Termux và gõ:
+Sau khi cài đặt xong, mỗi khi muốn bắt đầu làm việc, bạn mở Termux và gõ:
 
 ```bash
 stardew-code
 ```
 
-Bạn sẽ bước thẳng vào không gian làm việc. Tại đây, bạn có các lệnh trợ thủ sau:
+Lệnh này sẽ đưa bạn vào môi trường Ubuntu với thư mục làm việc `/root/stardew-workspace`.
 
-| Lệnh | Ý nghĩa |
+### Các lệnh quản lý:
+
+| Lệnh | Chức năng |
 | :--- | :--- |
-| `stardew-mod doctor` | Tự động kiểm tra file game Cinderbox và SMAPI đã sẵn sàng chưa |
-| `stardew-mod new <TenMod>` | Tạo nhanh một bản mod mới hoàn chỉnh trong 1 giây |
-| `stardew-mod build` | Biên dịch mã nguồn C# thành file mod `.dll` |
-| `stardew-mod deploy` | Cài đặt mod vừa build thẳng vào thư mục `Mods/` của game |
+| `stardew-mod` | Mở menu tương tác trực quan để chọn thao tác |
+| `stardew-mod doctor` | Kiểm tra kết nối thư mục game Cinderbox và các file thư viện SMAPI |
+| `stardew-mod new <TenMod>` | Tạo một dự án mod mới từ khung mẫu chuẩn |
+| `stardew-mod build` | Biên dịch mã nguồn C# thành file thư viện `.dll` |
+| `stardew-mod deploy` | Tự động chép file mod đã biên dịch vào thư mục `Mods/` của game |
 
 ---
 
-## 🧙‍♂️ Quy Trình "VibeCoding" Tạo Mod Bằng AI
+## 4. Quy trình VibeCoding tạo mod cùng AI
 
-Bạn không cần học ngữ pháp C#. Hãy làm theo các bước sau:
-
-1. **Tạo mod:**
+1. Khởi tạo mod mới:
    ```bash
-   stardew-mod new NongDanSieuDang
-   cd mods/NongDanSieuDang
+   stardew-mod new NongDanVuiVe
+   cd mods/NongDanVuiVe
    ```
-2. **Mô tả ý tưởng cho AI:**
-   Mở file [`VIBECODE_PROMPT_TEMPLATE.md`](./VIBECODE_PROMPT_TEMPLATE.md), copy toàn bộ nội dung mẫu đó vào ChatGPT / Claude / Gemini cùng với ý tưởng của bạn (ví dụ: *"Tôi muốn mỗi khi thức dậy, năng lượng của tôi đầy 100% và nhận thêm 1000 vàng"*).
-3. **Dán code vào mod:**
-   AI sẽ viết cho bạn mã nguồn hoàn chỉnh. Bạn dán vào file `ModEntry.cs` (bằng lệnh `nano ModEntry.cs` hoặc dùng app quản lý file trên điện thoại).
-4. **Build & Thưởng thức:**
+2. Chuẩn bị prompt cho AI:
+   Sao chép nội dung trong file `VIBECODE_PROMPT_TEMPLATE.md`, bổ sung ý tưởng tính năng mong muốn và gửi cho AI (ChatGPT, Claude, Gemini).
+3. Cập nhật mã nguồn:
+   Lấy đoạn code C# do AI tạo ra và dán vào file `ModEntry.cs` (bằng trình biên tập `nano ModEntry.cs` hoặc ứng dụng chỉnh sửa văn bản trên Android).
+4. Biên dịch và triển khai:
    ```bash
    stardew-mod build
    stardew-mod deploy
    ```
-   Mở game Stardew Valley trên điện thoại lên và tận hưởng tính năng do chính bạn "vibe" ra!
+5. Mở game Stardew Valley trên Cinderbox để kiểm tra tính năng.
 
 ---
 
-## 📚 Tài Liệu Chi Tiết
+## 5. Tài liệu hướng dẫn chuyên sâu
 
-Mọi thắc mắc và hướng dẫn chi tiết từng bước được chia nhỏ trong thư mục `docs/`:
-
-- [**01. Hướng dẫn cài đặt Termux & Chuẩn bị**](./docs/01-chuan-bi-va-cai-dat.md): Dành cho người chưa từng dùng Termux.
-- [**02. Cấu trúc Cinderbox & Vị trí thư mục game**](./docs/02-cau-truc-cinderbox.md): Bản đồ lưu trữ file game trên Android.
-- [**03. Bí kíp VibeCoding tạo mod chi tiết**](./docs/03-bi-kip-vibecoding.md): Hướng dẫn ra lệnh cho AI, các mẹo sửa lỗi khi AI viết code sai.
-- [**04. Sổ tay khắc phục lỗi thường gặp**](./docs/04-cac-loi-thuong-gap.md): Xử lý lỗi CS1705, thiếu DLL, lỗi cảm ứng màn hình, v.v.
+- `docs/01-chuan-bi-va-cai-dat.md`: Hướng dẫn cài Termux và cấu hình ban đầu.
+- `docs/02-cau-truc-cinderbox.md`: Bản đồ thư mục game và vị trí các file hệ thống.
+- `docs/03-bi-kip-vibecoding.md`: Kỹ thuật mô tả yêu cầu cho AI và cách khắc phục lỗi code.
+- `docs/04-cac-loi-thuong-gap.md`: Danh mục các lỗi phổ biến (CS1705, thiếu DLL, bàn phím ảo, cảm ứng).
 
 ---
 
-## 📂 Cấu Trúc Thư Mục Dự Án
+## 6. Cấu trúc thư mục
 
 ```
 stardew-proot-vibecoding/
-├── install.sh                     # Script 1-Click chạy ngoài Termux Host
-├── README.md                      # Hướng dẫn tổng quan
-├── VIBECODE_PROMPT_TEMPLATE.md    # Mẫu prompt thần thánh nạp cho AI
-├── docs/                          # Hệ thống tài liệu tiếng Việt chi tiết
+├── install.sh                     # Kịch bản cài đặt ban đầu trên Termux host
+├── README.md                      # Tài liệu tổng quan dự án
+├── VIBECODE_PROMPT_TEMPLATE.md    # Khung mẫu chỉ dẫn dành cho AI
+├── docs/                          # Hệ thống tài liệu chi tiết
 │   ├── 01-chuan-bi-va-cai-dat.md
 │   ├── 02-cau-truc-cinderbox.md
 │   ├── 03-bi-kip-vibecoding.md
 │   └── 04-cac-loi-thuong-gap.md
 ├── scripts/
-│   ├── setup-proot.sh             # Cấu hình Ubuntu & cài .NET 10.0
-│   └── stardew-mod.sh             # Bộ công cụ dòng lệnh (doctor, new, build, deploy)
+│   ├── ui.sh                      # Thư viện giao diện dòng lệnh TUI
+│   ├── setup-proot.sh             # Cấu hình bên trong container Ubuntu
+│   └── stardew-mod.sh             # Bộ công cụ dòng lệnh quản lý mod
 └── templates/
-    └── starter-mod/               # Template mod mẫu C# SMAPI 1.6 chuẩn
+    └── starter-mod/               # Dự án mẫu SMAPI 1.6 net10.0
         ├── StarterMod.csproj
         ├── manifest.json
         ├── ModEntry.cs
@@ -114,7 +110,6 @@ stardew-proot-vibecoding/
 
 ---
 
-## 🤝 Lời Cảm Ơn & Giấy Phép
+## 7. Giấy phép
 
-- Được phát triển bởi **Phoebe** & cộng đồng yêu thích Stardew Valley Modding trên Android.
-- Giấy phép mã nguồn mở: **MIT License**. Bạn tự do sử dụng, chỉnh sửa và chia sẻ cho cộng đồng!
+Dự án được phân phối dưới giấy phép MIT License.

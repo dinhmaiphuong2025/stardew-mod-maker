@@ -1,45 +1,43 @@
-# Bước 2: Hiểu Về Cinderbox & Cấu Trúc Thư Mục Game
+# Hướng Dẫn 02: Cấu Trúc Thư Mục Cinderbox
 
-Để mod hoạt động được, bạn cần hiểu sơ lược về cách game Stardew Valley chạy trên Cinderbox Android. Bạn không cần học lập trình sâu, chỉ cần nhớ các vị trí thư mục chính sau.
-
----
-
-## 1. Cinderbox Là Gì?
-
-**Cinderbox** là một giải pháp môi trường cho phép chạy trực tiếp phiên bản Stardew Valley PC (1.6+) và SMAPI trên các thiết bị Android với hiệu năng cao.
-
-Khi bạn cài Cinderbox trên điện thoại, toàn bộ dữ liệu game sẽ nằm ngay trong bộ nhớ trong của máy:
-```
-Bộ nhớ máy (/sdcard/) ──> StardewValley/
-```
+Để mod hoạt động chính xác, bạn cần nắm rõ sơ đồ tổ chức thư mục của Stardew Valley chạy qua Cinderbox trên Android.
 
 ---
 
-## 2. Bản Đồ Thư Mục Cần Nhớ
+## 1. Giới thiệu Cinderbox
 
-Dưới đây là các thư mục quan trọng nhất mà bạn hoặc AI sẽ tương tác:
+Cinderbox là môi trường thực thi cho phép chạy trực tiếp bản Stardew Valley PC (1.6+) và SMAPI trên thiết bị Android.
 
-| Đường dẫn trên Android | Ý nghĩa | Bạn cần làm gì ở đây? |
+Dữ liệu game được lưu tại bộ nhớ trong của thiết bị:
+```
+/sdcard/StardewValley/
+```
+
+---
+
+## 2. Sơ đồ các thư mục quan trọng
+
+| Đường dẫn trên Android | Ý nghĩa | Chức năng đối với việc làm mod |
 | :--- | :--- | :--- |
-| `/sdcard/StardewValley/desktop/GameFiles/` | Chứa file gốc của game PC (`Stardew Valley.dll`, `xTile.dll`,...) | Môi trường build mod sẽ đọc thư viện từ đây. Bạn không cần chỉnh sửa gì. |
-| `/sdcard/StardewValley/smapi-internal/` | Chứa nhân SMAPI của Cinderbox (`StardewModdingAPI.dll`) | Chứa bộ điều khiển mod. |
-| `/sdcard/StardewValley/desktop/Mods/` | **Thư mục cài đặt Mod** | Mỗi mod là một thư mục con tại đây. Lệnh `stardew-mod deploy` sẽ tự động copy mod của bạn vào đây. |
-| `/sdcard/StardewValley/desktop/ErrorLogs/` | Thư mục ghi lỗi SMAPI | Nếu vào game bị văng hoặc mod không chạy, xem file `SMAPI-crash.txt` tại đây. |
+| `/sdcard/StardewValley/desktop/GameFiles/` | Chứa file gốc của game PC (`Stardew Valley.dll`, `xTile.dll`,...) | Môi trường build đọc các thư viện tham chiếu từ đây. Không chỉnh sửa nội dung bên trong. |
+| `/sdcard/StardewValley/smapi-internal/` | Chứa nhân điều khiển SMAPI (`StardewModdingAPI.dll`) | Cung cấp API điều khiển cho mod. |
+| `/sdcard/StardewValley/desktop/Mods/` | Thư mục chứa các bản mod | Mỗi bản mod nằm trong một thư mục con tại đây. Lệnh `stardew-mod deploy` sẽ tự động chuyển file vào đây. |
+| `/sdcard/StardewValley/desktop/ErrorLogs/` | Thư mục ghi nhận nhật ký lỗi SMAPI | Chứa file `SMAPI-crash.txt` dùng để tra cứu khi game bị dừng đột ngột hoặc mod không nạp được. |
 
 ---
 
-## 3. Lệnh Kiểm Tra Tự Động: `stardew-mod doctor`
+## 3. Lệnh kiểm tra hệ thống: `stardew-mod doctor`
 
-Bạn không cần phải tự đi tìm từng file bằng tay. Trong môi trường dòng lệnh (sau khi gõ `stardew-code`), bạn chỉ cần chạy:
+Bạn không cần kiểm tra thủ công từng file. Khi đang ở trong môi trường `stardew-code`, bạn chỉ cần chạy:
 
 ```bash
 stardew-mod doctor
 ```
 
-Hệ thống sẽ tự động quét:
-- [x] Đã kết nối được `/sdcard` chưa?
-- [x] Đã tìm thấy `Stardew Valley.dll` chưa?
-- [x] Đã có `StardewModdingAPI.dll` chưa?
-- [x] Thư mục `Mods` đã sẵn sàng chưa?
+Công cụ sẽ tự động xác minh:
+- Trạng thái kết nối thư mục `/sdcard`.
+- Sự hiện diện của `Stardew Valley.dll`.
+- Sự hiện diện của `StardewModdingAPI.dll`.
+- Trạng thái sẵn sàng của thư mục `Mods/`.
 
-Nếu có bất kỳ dấu hiệu cảnh báo nào màu vàng hoặc đỏ, công cụ sẽ ghi rõ nguyên nhân và cách khắc phục ngay trên màn hình.
+Mọi vấn đề phát hiện sẽ được hiển thị kèm chỉ dẫn xử lý tương ứng.
