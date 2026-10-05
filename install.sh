@@ -125,7 +125,7 @@ if [ -z "$SD_USER" ]; then
     SD_USER=$(proot-distro login ubuntu -- cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
 fi
 if [ -n "$SD_USER" ]; then
-    exec proot-distro login ubuntu --user "$SD_USER" --workdir "/home/$SD_USER/stardew-workspace"
+    exec proot-distro login ubuntu --user "$SD_USER"
 fi
 exec proot-distro login ubuntu
 EOF

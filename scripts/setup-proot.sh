@@ -19,7 +19,7 @@ banner "CẤU HÌNH PROOT UBUNTU" "Thiết lập môi trường C# & .NET 10 SDK
 print_info "Cập nhật kho gói Ubuntu và cài đặt các công cụ nền tảng..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y >/dev/null 2>&1
-apt-get install -y curl wget git jq zip unzip nano sudo python3 ca-certificates libicu-dev >/dev/null 2>&1
+apt-get install -y curl wget git jq zip unzip nano sudo python3 ca-certificates libicu-dev nodejs npm >/dev/null 2>&1
 print_success "Các gói công cụ hệ thống đã sẵn sàng."
 
 # 2. Cài đặt .NET 10.0 SDK vào thư mục dùng chung /opt/dotnet

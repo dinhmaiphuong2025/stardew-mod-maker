@@ -94,14 +94,15 @@ fi
 # Cài đặt OpenCode AI CLI nếu người dùng muốn
 echo
 if confirm "  Cài đặt OpenCode AI CLI (Miễn phí, hỗ trợ code mod bằng AI)?"; then
-    spin_task "Đang tải và cài đặt OpenCode CLI" bash -c "curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash" || true
+    print_info "Đang tải và cài đặt OpenCode CLI..."
+    curl -fsSL https://opencode.ai/install | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
     if ! command -v opencode >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-        spin_task "Cài đặt OpenCode qua npm fallback" npm install -g opencode-ai || true
+        npm install -g opencode-ai 2>/dev/null || true
     fi
     if command -v opencode >/dev/null 2>&1; then
         print_success "OpenCode CLI đã sẵn sàng."
     else
-        print_warning "Chưa thể cài OpenCode tự động. Bạn có thể cài sau qua: curl -fsSL https://opencode.ai/install | bash"
+        print_info "OpenCode CLI có thể cài bổ sung sau bằng lệnh: npm install -g opencode-ai"
     fi
 fi
 
