@@ -13,8 +13,8 @@ if [ -f "/usr/local/bin/ui.sh" ]; then
     source "/usr/local/bin/ui.sh"
 elif [ -f "$SCRIPT_DIR/ui.sh" ]; then
     source "$SCRIPT_DIR/ui.sh"
-elif [ -f "/root/stardew-workspace/scripts/ui.sh" ]; then
-    source "/root/stardew-workspace/scripts/ui.sh"
+elif [ -f "$HOME/stardew-workspace/scripts/ui.sh" ]; then
+    source "$HOME/stardew-workspace/scripts/ui.sh"
 else
     RESET='\033[0m'   BOLD='\033[1m'    GRAY='\033[90m'
     RED='\033[1;31m'  GREEN='\033[1;32m' YELLOW='\033[1;33m'
@@ -61,10 +61,11 @@ else
     }
 fi
 
-DOTNET_CMD="/root/.dotnet/dotnet"
+DOTNET_CMD="/opt/dotnet/dotnet"
+[ ! -f "$DOTNET_CMD" ] && [ -f "/root/.dotnet/dotnet" ] && DOTNET_CMD="/root/.dotnet/dotnet"
 [ ! -f "$DOTNET_CMD" ] && DOTNET_CMD="dotnet"
 
-WORKSPACE="/root/stardew-workspace"
+WORKSPACE="${STARDEW_WORKSPACE:-$HOME/stardew-workspace}"
 GAME_DIR="/sdcard/StardewValley"
 GAME_FILES="$GAME_DIR/desktop/GameFiles"
 SMAPI_DIR="$GAME_DIR/smapi-internal"

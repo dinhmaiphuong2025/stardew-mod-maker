@@ -32,8 +32,12 @@ else
         for ((i=0; i<len+2; i++)); do border="${border}─"; done
         printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$1" "$border"
     }
-    spinner_animate() { sleep 0.5; }
-    print_progress_bar() { printf "\r  %s %3d%%" "$1" "$(( $2 * 100 / $3 ))"; }
+    confirm() {
+        local resp
+        printf "%s (y/N): " "$1"
+        read -r resp
+        case "$resp" in [yY]|[yY][eE][sS]) return 0 ;; *) return 1 ;; esac
+    }
 fi
 
 clear_screen
@@ -90,14 +94,25 @@ cp -r "$SCRIPT_DIR/"* "$UBUNTU_ROOT/root/stardew-env/"
 
 proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
 
-# 7. Tao lenh tat tren Termux
+# 7. Tao lenh tat tren Termux (ho tro chuyen user tu dong)
 cat << 'EOF' > "$PREFIX/bin/stardew-code"
 #!/data/data/com.termux/files/usr/bin/bash
-proot-distro login ubuntu --workdir /root/stardew-workspace
+USER_FILE="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/stardew-default-user"
+if [ -f "$USER_FILE" ]; then
+    SD_USER=$(cat "$USER_FILE" 2>/dev/null)
+    if [ -n "$SD_USER" ]; then
+        exec proot-distro login ubuntu --user "$SD_USER" --workdir "/home/$SD_USER/stardew-workspace"
+    fi
+fi
+exec proot-distro login ubuntu
 EOF
 chmod +x "$PREFIX/bin/stardew-code"
 
 echo
 print_line
-print_box "Cai dat hoan tat! Go 'stardew-code' de vao workspace."
+print_box "Cai dat thanh cong! Lenh truy cap nhanh: stardew-code"
 echo
+
+if confirm "Ban co muon khoi dong vao moi truong de thiet lap tai khoan ngay bay gio?"; then
+    exec "$PREFIX/bin/stardew-code"
+fi

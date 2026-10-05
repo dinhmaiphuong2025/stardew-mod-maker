@@ -38,66 +38,71 @@ apt-get update -y >/dev/null 2>&1
 apt-get install -y curl wget git jq zip unzip nano sudo python3 ca-certificates libicu-dev >/dev/null 2>&1
 print_success "Cac goi he thong da san sang."
 
-# 2. Cài đặt .NET 10.0 SDK
+# 2. Cài đặt .NET 10.0 SDK vào thư mục dùng chung /opt/dotnet
 print_info "Dang cai dat .NET 10.0 SDK (Microsoft Official aarch64)..."
-mkdir -p /root/.dotnet
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0 --install-dir /root/.dotnet >/dev/null 2>&1
+mkdir -p /opt/dotnet
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0 --install-dir /opt/dotnet >/dev/null 2>&1
 
-# Cấu hình biến môi trường
-if ! grep -q "DOTNET_ROOT" /root/.bashrc 2>/dev/null; then
-    cat << 'EOF' >> /root/.bashrc
+# Liên kết toàn cục
+ln -sf /opt/dotnet/dotnet /usr/local/bin/dotnet
 
-# .NET SDK Configuration
-export DOTNET_ROOT=/root/.dotnet
+# Cấu hình biến môi trường hệ thống cho tất cả người dùng
+cat << 'EOF' > /etc/profile.d/dotnet.sh
+export DOTNET_ROOT=/opt/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 EOF
-fi
 
-export DOTNET_ROOT=/root/.dotnet
+export DOTNET_ROOT=/opt/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-if /root/.dotnet/dotnet --version >/dev/null 2>&1; then
-    DOTNET_VER=$(/root/.dotnet/dotnet --version)
+if /opt/dotnet/dotnet --version >/dev/null 2>&1; then
+    DOTNET_VER=$(/opt/dotnet/dotnet --version)
     print_success ".NET SDK hoat dong tot (Phien ban $DOTNET_VER)."
 else
     print_error "Khong the khoi dong .NET SDK. Vui long kiem tra lai ket noi mang."
 fi
 
-# 3. Thiết lập thư mục workspace & CLI
+# 3. Cài đặt các kịch bản và công cụ hệ thống
 WORKSPACE="/root/stardew-workspace"
-mkdir -p "$WORKSPACE"
-mkdir -p "$WORKSPACE/lib"
-mkdir -p "$WORKSPACE/mods"
-mkdir -p "$WORKSPACE/scripts"
+mkdir -p "$WORKSPACE/lib" "$WORKSPACE/mods" "$WORKSPACE/scripts"
 
-# Lưu ui.sh vào /usr/local/bin và workspace
 if [ -f "$SCRIPT_DIR/ui.sh" ]; then
     cp "$SCRIPT_DIR/ui.sh" /usr/local/bin/ui.sh
-    cp "$SCRIPT_DIR/ui.sh" "$WORKSPACE/scripts/ui.sh"
     chmod +x /usr/local/bin/ui.sh
 fi
 
-# Sao chép template và stardew-mod CLI
-if [ -d "/root/stardew-env" ]; then
-    cp -r /root/stardew-env/templates "$WORKSPACE/"
-    cp -r /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$WORKSPACE/"
-    cp /root/stardew-env/scripts/stardew-mod.sh /usr/local/bin/stardew-mod
+if [ -f "$SCRIPT_DIR/stardew-mod.sh" ]; then
+    cp "$SCRIPT_DIR/stardew-mod.sh" /usr/local/bin/stardew-mod
     chmod +x /usr/local/bin/stardew-mod
 fi
 
-# 4. Banner chào mừng trong .bashrc
+if [ -f "$SCRIPT_DIR/init-user.sh" ]; then
+    cp "$SCRIPT_DIR/init-user.sh" /usr/local/bin/init-user.sh
+    chmod +x /usr/local/bin/init-user.sh
+fi
+
+if [ -d "/root/stardew-env" ]; then
+    cp -r /root/stardew-env/templates "$WORKSPACE/"
+    cp -r /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$WORKSPACE/"
+fi
+
+# 4. Cấu hình kiểm tra tạo user khi đăng nhập root lần đầu
 cat << 'EOF' >> /root/.bashrc
 
-if [ -f /usr/local/bin/ui.sh ]; then
-    source /usr/local/bin/ui.sh
-    clear_screen
-    banner "STARDEW MOD VIBECODING" "Khong gian sang tao Mod Cinderbox Android"
-    print_info "Go 'stardew-mod' de mo Menu dieu khien."
-    print_line
+# Kiem tra va khoi tao user sudo lan dau tien
+if [ ! -f /etc/stardew-user-created ] && [ -f /usr/local/bin/init-user.sh ]; then
+    /usr/local/bin/init-user.sh
 fi
-cd /root/stardew-workspace
+
+# Tu dong chuyen sang tai khoan nguoi dung mac dinh neu co
+if [ -f /etc/stardew-default-user ]; then
+    SD_USER=$(cat /etc/stardew-default-user)
+    if [ "$USER" = "root" ] && [ -n "$SD_USER" ] && id "$SD_USER" >/dev/null 2>&1; then
+        exec su - "$SD_USER"
+    fi
+fi
 EOF
 
 print_success "Cau hinh moi truong PRoot hoan tat."
