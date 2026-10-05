@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- Cấu hình tham chiếu thư viện Stardew Valley & SMAPI trên Android Cinderbox -->
+  <ItemGroup>
+    <Reference Include="Stardew Valley">
+      <HintPath>/sdcard/StardewValley/desktop/GameFiles/Stardew Valley.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="StardewValley.GameData">
+      <HintPath>/sdcard/StardewValley/desktop/GameFiles/StardewValley.GameData.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="xTile">
+      <HintPath>/sdcard/StardewValley/desktop/GameFiles/xTile.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="StardewModdingAPI">
+      <HintPath Condition="Exists('/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll')">/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll</HintPath>
+      <HintPath Condition="!Exists('/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll')">/sdcard/StardewValley/desktop/GameFiles/StardewModdingAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MonoGame.Framework">
+      <HintPath Condition="Exists('/root/stardew-workspace/lib/MonoGame.Framework.dll')">/root/stardew-workspace/lib/MonoGame.Framework.dll</HintPath>
+      <HintPath Condition="Exists('/sdcard/StardewValley/desktop/GameFiles/MonoGame.Framework.dll')">/sdcard/StardewValley/desktop/GameFiles/MonoGame.Framework.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

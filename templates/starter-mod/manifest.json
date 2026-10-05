@@ -1,0 +1,9 @@
+{
+  "Name": "StarterMod",
+  "Author": "VibeCoder",
+  "Version": "1.0.0",
+  "Description": "Mod khởi đầu mẫu cho Stardew Valley trên Android Cinderbox.",
+  "UniqueID": "VibeCoder.StarterMod",
+  "EntryDll": "StarterMod.dll",
+  "MinimumApiVersion": "4.0.0"
+}
