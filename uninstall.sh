@@ -70,12 +70,12 @@ fi
 
 # Bước 1: Xóa các binary lệnh thực thi trên Termux
 print_step_bar 1 4 "Gỡ bỏ các lệnh thực thi trên Termux"
-rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code"
-print_success "Đã gỡ bỏ lệnh 'ubuntu', 'Ubuntu' và 'stardew-code'."
+rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code" "$PREFIX/etc/stardew-default-user"
+print_success "Đã gỡ bỏ lệnh 'ubuntu', 'Ubuntu', 'stardew-code' và cấu hình người dùng."
 
 # Bước 2: Gỡ bỏ container PRoot Ubuntu
 print_step_bar 2 4 "Gỡ bỏ hệ điều hành PRoot Ubuntu"
-if command -v proot-distro >/dev/null 2>&1 && proot-distro list | grep -q "ubuntu (installed)"; then
+if command -v proot-distro >/dev/null 2>&1 && proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
     spin_task "Đang gỡ bỏ container PRoot Ubuntu" proot-distro remove ubuntu
 else
     print_info "PRoot Ubuntu chưa từng được cài đặt hoặc đã được gỡ trước đó."

@@ -53,7 +53,7 @@ spin_task "Cài đặt proot-distro, git, curl, nodejs, jq, tar" pkg install -y 
 
 # Bước 3: Cài đặt PRoot Ubuntu
 print_step_bar 3 6 "Cài đặt hệ điều hành PRoot Ubuntu aarch64"
-if proot-distro list | grep -q "ubuntu (installed)"; then
+if proot-distro list 2>/dev/null | grep -q "ubuntu.*installed"; then
     print_success "PRoot Ubuntu đã tồn tại sẵn trên thiết bị."
 else
     spin_task "Tải về và giải nén PRoot Ubuntu aarch64" proot-distro install ubuntu
@@ -70,11 +70,9 @@ if ! grep -q "/sdcard:/sdcard" "$OVERRIDE_FILE" 2>/dev/null; then
 fi
 print_success "Liên kết lưu trữ /sdcard:/sdcard đã sẵn sàng."
 
-# Bước 5: Cấu hình môi trường bên trong Ubuntu
+# Bước 5: Cấu hình môi trường bên trong Ubuntu (Sử dụng tar pipe để tương thích mọi phiên bản)
 print_step_bar 5 6 "Thiết lập .NET 10.0 SDK và công cụ hệ thống"
-UBUNTU_ROOT="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu"
-mkdir -p "$UBUNTU_ROOT/root/stardew-env"
-cp -r "$SCRIPT_DIR/"* "$UBUNTU_ROOT/root/stardew-env/"
+spin_task "Đồng bộ mã nguồn vào container" bash -c "tar -C '$SCRIPT_DIR' -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -'"
 
 spin_task "Cài đặt .NET 10 SDK và đồng bộ thư viện" proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh
 
@@ -82,16 +80,26 @@ spin_task "Cài đặt .NET 10 SDK và đồng bộ thư viện" proot-distro lo
 print_step_bar 6 6 "Khởi tạo tài khoản sudo và không gian làm việc"
 proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh
 
+# Lưu lại tên tài khoản mặc định trên Termux
+SD_USER=$(proot-distro login ubuntu -- cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
+if [ -n "$SD_USER" ]; then
+    echo "$SD_USER" > "$PREFIX/etc/stardew-default-user"
+fi
+
 # Tạo binary lệnh 'ubuntu' trên Termux (chỉ cần gõ 'ubuntu' là vào proot)
 mkdir -p "$PREFIX/bin"
 cat << 'EOF' > "$PREFIX/bin/ubuntu"
 #!/data/data/com.termux/files/usr/bin/bash
-USER_FILE="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/stardew-default-user"
+USER_FILE="$PREFIX/etc/stardew-default-user"
+SD_USER=""
 if [ -f "$USER_FILE" ]; then
     SD_USER=$(cat "$USER_FILE" 2>/dev/null | tr -d '[:space:]')
-    if [ -n "$SD_USER" ]; then
-        exec proot-distro login ubuntu --user "$SD_USER" --workdir "/home/$SD_USER/stardew-workspace"
-    fi
+fi
+if [ -z "$SD_USER" ]; then
+    SD_USER=$(proot-distro login ubuntu -- cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
+fi
+if [ -n "$SD_USER" ]; then
+    exec proot-distro login ubuntu --user "$SD_USER" --workdir "/home/$SD_USER/stardew-workspace"
 fi
 exec proot-distro login ubuntu
 EOF
