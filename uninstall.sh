@@ -22,8 +22,8 @@ else
     print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
     print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
     print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
-    print_warning() { printf "${YELLOW}⚠ %s${RESET}\n" "$1"; }
-    print_info() { printf "${BLUE}ℹ %s${RESET}\n" "$1"; }
+    print_warning() { printf "${YELLOW}⠶ %s${RESET}\n" "$1"; }
+    print_info() { printf "${CYAN}⠿ %s${RESET}\n" "$1"; }
     banner() {
         printf "      ${BOLD}${WHITE}%s${RESET}\n" "$1"
         [ -n "$2" ] && printf "      ${GRAY}%s${RESET}\n" "$2"
@@ -44,19 +44,19 @@ else
         fi
         case "$resp" in [yY]|[yY][eE][sS]) return 0 ;; *) return 1 ;; esac
     }
-    spin_task() {
+    CURRENT_STEP=0
+    TOTAL_STEPS=1
+    init_progress() { TOTAL_STEPS="$1"; CURRENT_STEP=0; }
+    step_task() {
         local label="$1"; shift
-        printf "  %s... " "$label"
+        CURRENT_STEP=$((CURRENT_STEP + 1))
+        local pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+        printf "\r  [..] %3d%% %s\033[K" "$pct" "$label"
         if "$@" </dev/null >/dev/null 2>&1; then
-            printf "${GREEN}✓ Hoàn tất.${RESET}\n"
-        else
-            printf "${RED}✗ Thất bại.${RESET}\n"
+            printf "\r  ${GREEN}✓${RESET}  %3d%% %s\033[K" "$pct" "$label"
         fi
     }
-    print_step_bar() {
-        printf "\n  [%d/%d] %s\n" "$1" "$2" "$3"
-        print_line
-    }
+    finish_progress() { printf "\n"; }
 fi
 
 FORCE=0
@@ -70,7 +70,7 @@ clear_screen
 banner "GỠ CÀI ĐẶT MÔI TRƯỜNG" "Dọn sạch PRoot Ubuntu & công cụ Stardew VibeCoding"
 
 print_warning "Hành động này sẽ gỡ bỏ container Ubuntu, tài khoản và các lệnh tiện ích trên Termux."
-print_info "Lưu ý: Thư mục game gốc và mod tại /sdcard/StardewValley sẽ ĐƯỢC GIỮ NGUYÊN AN TOÀN."
+print_info "Thư mục game gốc và mod tại /sdcard/StardewValley sẽ ĐƯỢC GIỮ NGUYÊN AN TOÀN."
 echo
 
 if [ "$FORCE" -eq 0 ]; then
@@ -83,36 +83,30 @@ else
     print_info "Chế độ tự động (-y): Bỏ qua bước xác nhận."
 fi
 
+# Khởi tạo thanh tiến trình động duy nhất
+init_progress 4
+echo
+
 # Bước 1: Xóa các binary lệnh thực thi trên Termux
-print_step_bar 1 4 "Gỡ bỏ các lệnh thực thi trên Termux"
-rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code" "$PREFIX/etc/stardew-default-user"
-print_success "Đã gỡ bỏ lệnh 'ubuntu', 'Ubuntu', 'stardew-code' và cấu hình người dùng."
+step_task "Gỡ bỏ các lệnh thực thi trên Termux" rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code" "$PREFIX/etc/stardew-default-user"
 
 # Bước 2: Gỡ bỏ container PRoot Ubuntu
-print_step_bar 2 4 "Gỡ bỏ hệ điều hành PRoot Ubuntu"
-if command -v proot-distro >/dev/null 2>&1; then
-    print_info "Đang gỡ bỏ container PRoot Ubuntu..."
-    proot-distro remove ubuntu 2>/dev/null || proot-distro reset ubuntu 2>/dev/null || true
-    print_success "Đã dọn sạch container PRoot Ubuntu."
-fi
+remove_container() {
+    if command -v proot-distro >/dev/null 2>&1; then
+        proot-distro remove ubuntu 2>/dev/null || proot-distro reset ubuntu 2>/dev/null || true
+    fi
+}
+step_task "Gỡ bỏ container PRoot Ubuntu" remove_container
 
 # Bước 3: Dọn dẹp file cấu hình override mount
-print_step_bar 3 4 "Dọn dẹp cấu hình liên kết bộ nhớ"
-if [ -f "$PREFIX/etc/proot-distro/ubuntu.override.conf" ]; then
-    rm -f "$PREFIX/etc/proot-distro/ubuntu.override.conf"
-    print_success "Đã xóa file cấu hình liên kết bộ nhớ ubuntu.override.conf."
-else
-    print_info "Không có cấu hình override nào cần xóa."
-fi
+step_task "Dọn dẹp cấu hình liên kết bộ nhớ" rm -f "$PREFIX/etc/proot-distro/ubuntu.override.conf"
 
 # Bước 4: Xóa thư mục mã nguồn tạm
-print_step_bar 4 4 "Dọn dẹp thư mục mã nguồn tạm"
-rm -rf "$REPO_DIR"
-print_success "Đã xóa thư mục mã nguồn tạm tại $REPO_DIR."
+step_task "Dọn dẹp thư mục mã nguồn tạm" rm -rf "$REPO_DIR"
 
+finish_progress
 echo
-print_line
-print_box "Hệ thống đã được dọn sạch hoàn toàn! Sẵn sàng để kiểm thử lại."
+print_box "Hệ thống đã được dọn sạch hoàn toàn! Sẵn sàng kiểm thử lại."
 echo
 print_info "Lệnh cài đặt lại bằng 1 dòng:"
 echo "  curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash"
