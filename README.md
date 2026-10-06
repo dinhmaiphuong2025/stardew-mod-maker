@@ -97,10 +97,28 @@ Bạn không bắt buộc phải nhớ các lệnh này vì AI đã tự làm gi
 
 ---
 
-## 5. Gỡ Cài Đặt Sạch Sẽ
+---
 
-Nếu muốn dọn dẹp toàn bộ môi trường PRoot (không làm mất file game hay dữ liệu save):
+## HƯỚNG DẪN GỠ CÀI ĐẶT (UNINSTALL & RESET)
+
+Nếu bạn muốn dọn sạch toàn bộ môi trường để kiểm thử lại từ đầu, hoặc muốn giải phóng dung lượng bộ nhớ khi không còn nhu cầu sử dụng:
+
+### 1. Lệnh gỡ cài đặt tự động (1 dòng duy nhất)
+
+Mở **Termux** và dán lệnh sau:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/uninstall.sh | bash
 ```
+
+*(Nếu muốn chạy tự động bỏ qua bước hỏi xác nhận: thêm cờ `-y` vào cuối).*
+
+### 2. Kịch bản gỡ cài đặt sẽ làm những gì?
+- **Gỡ bỏ hoàn toàn container PRoot Ubuntu** và toàn bộ công cụ lập trình bên trong (.NET SDK, OpenCode, thư viện tạm).
+- **Xóa các lệnh tắt trên Termux** (`ubuntu`, `stardew-code`) để đưa Termux về trạng thái sạch sẽ ban đầu.
+- **Dọn sạch các cấu hình mount** liên kết bộ nhớ.
+- Hiển thị thanh tiến trình động duy nhất (`[██████████] 100%`) trực quan và báo kết quả rõ ràng.
+
+### 3. Cam kết an toàn dữ liệu
+- **Bảo lưu an toàn 100%**: Thư mục game gốc, các file save và toàn bộ mod bạn đã cài đặt tại `/sdcard/StardewValley` **hoàn toàn KHÔNG bị ảnh hưởng hay xóa mất**.
+- Bạn có thể chạy lại lệnh cài đặt bất cứ lúc nào mà không phải lo mất tiến trình chơi game!
