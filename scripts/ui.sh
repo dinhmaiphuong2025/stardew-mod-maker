@@ -20,9 +20,13 @@ CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 GRAY='\033[90m'
 
-# Xóa màn hình
+# Xóa màn hình chuẩn hệ thống (bao gồm xóa scrollback buffer tránh bị reflow khi zoom)
 clear_screen() {
-    printf "\033[2J\033[H"
+    if command -v clear >/dev/null 2>&1; then
+        clear
+    else
+        printf "\033[H\033[2J\033[3J"
+    fi
 }
 
 # Lấy độ rộng màn hình thực tế (tự co giãn khi người dùng zoom chữ trong Termux - thuần Bash không phụ thuộc awk)
@@ -44,13 +48,13 @@ get_term_cols() {
     echo "$c"
 }
 
-# Gạch ngang tự động căn chỉnh đúng độ rộng màn hình khi zoom
+# Gạch ngang tự động căn chỉnh đúng độ rộng màn hình khi zoom (không bao giờ chạm mép gây lỗi wrap)
 print_line() {
     local cols
     cols=$(get_term_cols)
-    local width=$(( cols - 2 ))
-    [ "$width" -gt 60 ] && width=60
-    [ "$width" -lt 25 ] && width=25
+    local width=$(( cols - 4 ))
+    [ "$width" -gt 46 ] && width=46
+    [ "$width" -lt 20 ] && width=20
     local line=""
     for ((l=0; l<width; l++)); do line="${line}─"; done
     printf "${GRAY}%s${RESET}\n" "$line"

@@ -45,7 +45,13 @@ else
     RESET='\033[0m' BOLD='\033[1m' GRAY='\033[90m'
     RED='\033[1;31m' GREEN='\033[1;32m' YELLOW='\033[1;33m'
     CYAN='\033[1;36m' WHITE='\033[1;37m'
-    clear_screen() { printf "\033[2J\033[H"; }
+    clear_screen() {
+        if command -v clear >/dev/null 2>&1; then
+            clear
+        else
+            printf "\033[H\033[2J\033[3J"
+        fi
+    }
     get_term_cols() {
         local c="${COLUMNS:-}"
         if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
@@ -62,9 +68,9 @@ else
     print_line() {
         local cols
         cols=$(get_term_cols)
-        local width=$(( cols - 2 ))
-        [ "$width" -gt 60 ] && width=60
-        [ "$width" -lt 25 ] && width=25
+        local width=$(( cols - 4 ))
+        [ "$width" -gt 46 ] && width=46
+        [ "$width" -lt 20 ] && width=20
         local line=""
         for ((l=0; l<width; l++)); do line="${line}─"; done
         printf "${GRAY}%s${RESET}\n" "$line"
