@@ -6,7 +6,10 @@
 
 set -e
 
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
 export PROOT_NO_SECCOMP=1
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 REPO_DIR="$HOME/.stardew-proot-vibecoding"
 
@@ -47,7 +50,11 @@ else
         print_line
     }
     print_box() {
-        local text="$1" len=${#text} border=""
+        local text="$1"
+        local len
+        len=$(LC_ALL=C.UTF-8 printf "%s" "$text" | wc -m 2>/dev/null || echo "${#text}")
+        len=$(echo "$len" | tr -d '[:space:]')
+        local border=""
         for ((i=0; i<len+2; i++)); do border="${border}─"; done
         printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$text" "$border"
     }
@@ -65,33 +72,43 @@ else
     init_progress() { TOTAL_STEPS="$1"; CURRENT_STEP=0; }
     step_task() {
         local label="$1"; shift
-        CURRENT_STEP=$((CURRENT_STEP + 1))
         local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
         local n_chars=${#spin_chars[@]} i=0 width=16
-        local percent=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-        local filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-        local empty=$(( width - filled )) bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
-        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+        local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+        local start_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
+        local start_empty=$(( width - start_filled ))
+        local run_bar=""
+        for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}█"; done
+        for ((b=0; b<start_empty; b++)); do run_bar="${run_bar}░"; done
+
         printf "\033[?25l"
         "$@" </dev/null >/dev/null 2>&1 &
         local pid=$!
         while kill -0 "$pid" 2>/dev/null; do
             local idx=$(( i % n_chars ))
-            printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "${spin_chars[$idx]}" "$bar" "$percent" "$label"
+            printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label"
             i=$(( i + 1 )); sleep 0.08
         done
         wait "$pid"; local exit_code=$?
         printf "\033[?25h"
+
+        CURRENT_STEP=$((CURRENT_STEP + 1))
+        local end_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+        local end_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
+        local end_empty=$(( width - end_filled ))
+        local end_bar=""
+        for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}█"; done
+        for ((b=0; b<end_empty; b++)); do end_bar="${end_bar}░"; done
+
         if [ "$exit_code" -eq 0 ]; then
-            printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" "$bar" "$percent" "$label"
+            printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "$end_bar" "$end_pct" "$label"
             return 0
         else
-            printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" "$bar" "$percent" "$label"
+            printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" "$end_bar" "$end_pct" "$label"
             return 0
         fi
     }
-    finish_progress() { print_line; }
+    finish_progress() { printf "\n"; print_line; }
 fi
 
 # Hàm kiểm tra container ubuntu thực sự khả dụng (có shell /bin/sh hợp lệ)
@@ -199,7 +216,7 @@ cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" 2>/dev/null || true
 cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/stardew-code" 2>/dev/null || true
 
 echo
-print_box "Cài đặt hoàn tất! Gõ 'ubuntu' để vào môi trường làm việc."
+print_box "Cài đặt thành công! Gõ 'ubuntu' để bắt đầu."
 echo
 
 if confirm "Khởi động vào Ubuntu ngay bây giờ?"; then

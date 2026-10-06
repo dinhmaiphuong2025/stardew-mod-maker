@@ -4,6 +4,9 @@
 # Phong cách OpenCode & DankMaterialShell - Ký tự Braille & Tiếng Việt đầy đủ dấu
 # ==============================================================================
 
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 # Màu sắc
 RESET='\033[0m'
 BOLD='\033[1m'
@@ -78,10 +81,12 @@ print_menu() {
     print_line
 }
 
-# Khung bo góc quanh text
+# Khung bo góc quanh text (chuẩn hóa độ dài ký tự UTF-8 không bị lệch viền)
 print_box() {
     local text="$1"
-    local len=${#text}
+    local len
+    len=$(LC_ALL=C.UTF-8 printf "%s" "$text" | wc -m 2>/dev/null || echo "${#text}")
+    len=$(echo "$len" | tr -d '[:space:]')
     local border=""
     for ((i=0; i<len+2; i++)); do
         border="${border}─"
@@ -105,19 +110,19 @@ init_progress() {
 step_task() {
     local label="$1"
     shift
-    CURRENT_STEP=$((CURRENT_STEP + 1))
 
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
     local i=0
     local width=16
 
-    local percent=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-    local filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-    local empty=$(( width - filled ))
-    local bar=""
-    for ((b=0; b<filled; b++)); do bar="${bar}█"; done
-    for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+    # Tiến trình trước khi bắt đầu bước này (ví dụ bước 5/5 sẽ hiển thị 80% khi đang chạy, không hiển thị 100% quá sớm)
+    local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+    local start_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
+    local start_empty=$(( width - start_filled ))
+    local run_bar=""
+    for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}█"; done
+    for ((b=0; b<start_empty; b++)); do run_bar="${run_bar}░"; done
 
     printf "\033[?25l"
     "$@" </dev/null >/dev/null 2>&1 &
@@ -126,7 +131,7 @@ step_task() {
     while kill -0 "$pid" 2>/dev/null; do
         local idx=$(( i % n_chars ))
         printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$percent" "$label"
+            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -135,13 +140,21 @@ step_task() {
     local exit_code=$?
     printf "\033[?25h"
 
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    local end_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+    local end_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
+    local end_empty=$(( width - end_filled ))
+    local end_bar=""
+    for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}█"; done
+    for ((b=0; b<end_empty; b++)); do end_bar="${end_bar}░"; done
+
     if [ "$exit_code" -eq 0 ]; then
         printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "$bar" "$percent" "$label"
+            "$end_bar" "$end_pct" "$label"
         return 0
     else
         printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
-            "$bar" "$percent" "$label" "$exit_code"
+            "$end_bar" "$end_pct" "$label" "$exit_code"
         return "$exit_code"
     fi
 }

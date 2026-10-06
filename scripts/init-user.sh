@@ -6,6 +6,9 @@
 
 set -e
 
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -f "/usr/local/bin/ui.sh" ]; then
     source "/usr/local/bin/ui.sh"
