@@ -27,9 +27,9 @@ print_line() {
     printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"
 }
 
-# Dấu nhắc lệnh
+# Dấu nhắc lệnh (in ra stderr để không làm bẩn giá trị trả về của hàm)
 print_prompt() {
-    printf "${GREEN}❯ ${RESET}"
+    printf "${GREEN}❯ ${RESET}" >&2
 }
 
 # Thông báo trạng thái (chuẩn TUI Braille, không dùng ! hoặc emoji)
@@ -92,8 +92,7 @@ print_box() {
 }
 
 # ------------------------------------------------------------------------------
-# HỆ THỐNG THANH TIẾN TRÌNH ĐỘNG DUY NHẤT (Single Animated Progress Bar)
-# Cập nhật mượt mà tại chỗ bằng \r, kèm hiệu ứng xoay Braille
+# THANH TIẾN TRÌNH ĐỘNG DUY NHẤT (Single Animated Progress Bar)
 # ------------------------------------------------------------------------------
 CURRENT_STEP=0
 TOTAL_STEPS=1
@@ -103,7 +102,6 @@ init_progress() {
     CURRENT_STEP=0
 }
 
-# Thực thi một tác vụ và cập nhật tiến trình trên cùng 1 thanh duy nhất
 step_task() {
     local label="$1"
     shift
@@ -153,34 +151,73 @@ finish_progress() {
     print_line
 }
 
-# Chờ phím Enter (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
+# Spinner đơn cho các tác vụ như biên dịch mod
+spin_task() {
+    local label="$1"
+    shift
+    local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+    local n_chars=${#spin_chars[@]}
+    local i=0
+
+    printf "\033[?25l"
+    "$@" </dev/null >/dev/null 2>&1 &
+    local pid=$!
+
+    while kill -0 "$pid" 2>/dev/null; do
+        local idx=$(( i % n_chars ))
+        printf "\r  ${CYAN}%s${RESET}  ${WHITE}%s...${RESET}\033[K" "${spin_chars[$idx]}" "$label"
+        i=$(( i + 1 ))
+        sleep 0.08
+    done
+
+    wait "$pid"
+    local exit_code=$?
+    printf "\033[?25h"
+
+    if [ "$exit_code" -eq 0 ]; then
+        printf "\r  ${GREEN}✓${RESET}  ${WHITE}%s hoàn tất.${RESET}\033[K\n" "$label"
+        return 0
+    else
+        printf "\r  ${RED}✗${RESET}  ${WHITE}%s thất bại (mã lỗi %d).${RESET}\033[K\n" "$label" "$exit_code"
+        return "$exit_code"
+    fi
+}
+
+# Chờ phím Enter
 wait_for_enter() {
-    printf "${GRAY}Nhấn phím Enter để tiếp tục...${RESET}"
-    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    printf "${GRAY}Nhấn phím Enter để tiếp tục...${RESET}" >&2
+    if [ -t 0 ]; then
+        read -r _ || true
+    elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
         read -r _ < /dev/tty 2>/dev/null || read -r _ 2>/dev/null || true
     else
         read -r _ 2>/dev/null || true
     fi
 }
 
-# Đọc lựa chọn của người dùng (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
+# Đọc lựa chọn của người dùng (trả về giá trị sạch trên stdout)
 get_choice() {
     local choice=""
     print_prompt
-    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
-        read -r choice < /dev/tty 2>/dev/null || read -r choice 2>/dev/null || choice="0"
+    if [ -t 0 ]; then
+        read -r choice || choice="0"
+    elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        read -r choice < /dev/tty 2>/dev/null || choice="0"
     else
         read -r choice 2>/dev/null || choice="0"
     fi
+    choice=$(echo "$choice" | tr -d '[:space:]')
     echo "$choice"
 }
 
-# Xác nhận Có / Không (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
+# Xác nhận Có / Không
 confirm() {
     local msg="$1"
     local resp=""
-    printf "%s (y/N): " "$msg"
-    if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    printf "%s (y/N): " "$msg" >&2
+    if [ -t 0 ]; then
+        read -r resp || resp="n"
+    elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
         read -r resp < /dev/tty 2>/dev/null || read -r resp 2>/dev/null || resp="n"
     else
         read -r resp 2>/dev/null || resp="n"

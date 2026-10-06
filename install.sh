@@ -36,7 +36,7 @@ else
     CYAN='\033[1;36m' WHITE='\033[1;37m'
     clear_screen() { printf "\033[2J\033[H"; }
     print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
-    print_prompt() { printf "${GREEN}❯ ${RESET}"; }
+    print_prompt() { printf "${GREEN}❯ ${RESET}" >&2; }
     print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
     print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
     print_warning() { printf "${YELLOW}⠶ %s${RESET}\n" "$1"; }
