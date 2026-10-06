@@ -128,25 +128,25 @@ if [ -z "$PREFIX" ] || [ ! -d "$PREFIX" ]; then
     exit 1
 fi
 
-# 2. Khởi tạo thanh tiến trình động duy nhất
-init_progress 5
-echo
+STATUS_FILE="/tmp/.stardew_install_status"
+rm -f "$STATUS_FILE"
 
-# Bước 1: Quyền truy cập bộ nhớ
-check_storage() {
+# Toàn bộ quy trình cài đặt thực hiện ngầm trong 1 luồng
+do_install() {
+    # 1. Kiểm tra quyền bộ nhớ
+    echo "10:Kiểm tra bộ nhớ thiết bị" > "$STATUS_FILE"
     if [ ! -d "$HOME/storage/shared" ]; then
         termux-setup-storage >/dev/null 2>&1 || true
-        sleep 2
+        sleep 1
     fi
-    [ -d "$HOME/storage/shared" ] || [ -d "/sdcard" ]
-}
-step_task "Kiểm tra quyền truy cập bộ nhớ /sdcard" check_storage
 
-# Bước 2: Cài đặt gói công cụ Termux
-step_task "Cài đặt các gói công cụ nền tảng Termux" bash -c "pkg update -y >/dev/null 2>&1 && pkg install -y proot-distro git curl nodejs jq tar >/dev/null 2>&1"
+    # 2. Cài đặt các gói công cụ Termux
+    echo "25:Cài đặt gói công cụ Termux" > "$STATUS_FILE"
+    pkg update -y >/dev/null 2>&1 || true
+    pkg install -y proot-distro git curl nodejs jq tar >/dev/null 2>&1 || true
 
-# Bước 3: Cài đặt PRoot Ubuntu (tự động dọn dẹp nếu container bị lỗi trước đó)
-setup_ubuntu_distro() {
+    # 3. Cài đặt PRoot Ubuntu
+    echo "45:Thiết lập PRoot Ubuntu" > "$STATUS_FILE"
     if ! is_ubuntu_installed; then
         proot-distro remove ubuntu >/dev/null 2>&1 || true
         rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
@@ -154,29 +154,92 @@ setup_ubuntu_distro() {
                "$HOME/.local/share/proot-distro/containers/ubuntu" 2>/dev/null || true
         proot-distro install ubuntu >/dev/null 2>&1 || proot-distro install ubuntu:24.04 >/dev/null 2>&1 || true
     fi
-    is_ubuntu_installed
-}
-step_task "Thiết lập hệ điều hành PRoot Ubuntu" setup_ubuntu_distro
 
-# Bước 4: Cấu hình liên kết /sdcard
-setup_mounts() {
+    # 4. Cấu hình liên kết /sdcard
+    echo "70:Kết nối thư mục game /sdcard" > "$STATUS_FILE"
     local conf_dir="$PREFIX/etc/proot-distro"
     mkdir -p "$conf_dir"
     local override="$conf_dir/ubuntu.override.conf"
     if ! grep -q "/sdcard:/sdcard" "$override" 2>/dev/null; then
         echo "bind_directories+=('/sdcard:/sdcard')" >> "$override"
     fi
-}
-step_task "Cấu hình tự động kết nối thư mục game /sdcard" setup_mounts
 
-# Bước 5: Cấu hình môi trường bên trong container (.NET SDK, công cụ)
-setup_container_env() {
+    # 5. Cấu hình môi trường bên trong Ubuntu (.NET SDK, công cụ)
+    echo "85:Cấu hình .NET SDK & công cụ" > "$STATUS_FILE"
     tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >/dev/null 2>&1 || true
     proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >/dev/null 2>&1 || true
+    echo "100:Hoàn tất cài đặt môi trường" > "$STATUS_FILE"
 }
-step_task "Cấu hình .NET 10.0 SDK và công cụ bên trong Ubuntu" setup_container_env
 
-finish_progress
+# Thanh tiến trình động duy nhất hiển thị trên 1 dòng
+run_install_progress() {
+    local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+    local n_chars=${#spin_chars[@]}
+    local width=16
+    local i=0
+    local cur_pct=5
+    local cur_label="Đang chuẩn bị môi trường..."
+
+    printf "\033[?25l"
+    do_install </dev/null >/dev/null 2>&1 &
+    local pid=$!
+
+    while kill -0 "$pid" 2>/dev/null; do
+        if [ -f "$STATUS_FILE" ]; then
+            local status_line
+            status_line=$(cat "$STATUS_FILE" 2>/dev/null || true)
+            if [ -n "$status_line" ]; then
+                local target_pct="${status_line%%:*}"
+                local label="${status_line#*:}"
+                [ -n "$label" ] && cur_label="$label"
+                if [ -n "$target_pct" ] && [ "$target_pct" -ge 0 ] 2>/dev/null; then
+                    if [ "$cur_pct" -lt "$target_pct" ]; then
+                        cur_pct=$(( cur_pct + 1 ))
+                    fi
+                fi
+            fi
+        fi
+
+        if [ "$cur_pct" -lt 95 ] && [ $(( i % 15 )) -eq 0 ]; then
+            cur_pct=$(( cur_pct + 1 ))
+        fi
+
+        local filled=$(( cur_pct * width / 100 ))
+        local empty=$(( width - filled ))
+        local bar=""
+        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
+        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+
+        local idx=$(( i % n_chars ))
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-32s${RESET}\033[K" \
+            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$cur_label"
+        i=$(( i + 1 ))
+        sleep 0.08
+    done
+
+    wait "$pid"
+    local exit_code=$?
+    rm -f "$STATUS_FILE"
+    printf "\033[?25h"
+
+    local full_bar=""
+    for ((b=0; b<width; b++)); do full_bar="${full_bar}█"; done
+
+    if [ "$exit_code" -eq 0 ]; then
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}%-32s${RESET}\033[K\n" \
+            "$full_bar" "Cài đặt môi trường hoàn tất"
+        return 0
+    else
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}Cài đặt thất bại (mã lỗi %d)${RESET}\033[K\n" \
+            "$bar" "$cur_pct" "$exit_code"
+        return "$exit_code"
+    fi
+}
+
+echo
+run_install_progress
+echo
+print_line
 echo
 
 # Khởi tạo tài khoản người dùng sudo & workspace
