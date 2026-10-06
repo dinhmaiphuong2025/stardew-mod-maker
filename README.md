@@ -4,7 +4,26 @@ Làm mod C# SMAPI cho Stardew Valley trên điện thoại Android bằng AI (Th
 
 ---
 
-## 1. Cài Đặt (1 Lệnh Duy Nhất)
+## 1. Chuẩn Bị & Link Tải Ứng Dụng
+
+Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên điện thoại:
+
+1. **Ứng dụng Termux**:
+   - [Bản Termux Custom tối ưu giao diện](https://github.com/dinhmaiphuong2025/termux-app/releases) (Khuyên dùng)
+   - Hoặc [Termux chính thức](https://github.com/termux/termux-app/releases)
+
+2. **Trình chạy Cinderbox (Chạy Stardew Valley PC trên Android)**:
+   - Tải file APK tại [GitHub Cinderbox Releases](https://github.com/Zingaboy/Cinderbox/releases)
+
+3. **Dữ liệu Game Stardew Valley**:
+   - **Có tài khoản Steam**: Đăng nhập Steam trực tiếp bên trong Cinderbox để tải game chính chủ.
+   - **Chưa có tài khoản Steam**: Tải file game cài sẵn từ nhóm Telegram cộng đồng:
+     - [Link tải file game Stardew Valley](https://t.me/c/3796677936/14/13555)
+     - [Nhóm Telegram Cộng đồng Stardew Valley VN](https://t.me/+aJTLlA0Lqzk2MThl) *(hướng dẫn cài mod, game, Việt hóa...)*
+
+---
+
+## 2. Cài Đặt (1 Lệnh Duy Nhất)
 
 Mở ứng dụng **Termux** và dán dòng lệnh sau:
 
@@ -17,7 +36,7 @@ curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibe
 
 ---
 
-## 2. Làm Mod Bằng AI (Thuần VibeCoding)
+## 3. Làm Mod Bằng AI (Thuần VibeCoding)
 
 Mỗi khi muốn tạo mod mới, bạn mở Termux và gõ:
 
@@ -51,7 +70,7 @@ Khi AI báo xong, bạn chỉ cần mở game **Stardew Valley** trên điện t
 
 ---
 
-## 3. Các Lệnh Tiện Ích (Tùy Chọn)
+## 4. Các Lệnh Tiện Ích (Tùy Chọn)
 
 Bạn không bắt buộc phải nhớ các lệnh này vì AI đã tự làm giúp bạn. Chỉ dùng khi bạn muốn tự kiểm tra:
 
@@ -63,7 +82,7 @@ Bạn không bắt buộc phải nhớ các lệnh này vì AI đã tự làm gi
 
 ---
 
-## 4. Gỡ Cài Đặt Sạch Sẽ
+## 5. Gỡ Cài Đặt Sạch Sẽ
 
 Nếu muốn dọn dẹp toàn bộ môi trường PRoot (không làm mất file game hay dữ liệu save):
 
