@@ -202,7 +202,7 @@ wait_for_enter() {
     if [ -t 0 ]; then
         read -r _ || true
     elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
-        read -r _ < /dev/tty 2>/dev/null || read -r _ 2>/dev/null || true
+        ( read -r _ < /dev/tty ) 2>/dev/null || read -r _ 2>/dev/null || true
     else
         read -r _ 2>/dev/null || true
     fi
@@ -215,7 +215,8 @@ get_choice() {
     if [ -t 0 ]; then
         read -r choice || choice="0"
     elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
-        read -r choice < /dev/tty 2>/dev/null || choice="0"
+        choice=$( ( read -r val < /dev/tty && echo "$val" ) 2>/dev/null ) || choice=""
+        [ -z "$choice" ] && read -r choice 2>/dev/null || true
     else
         read -r choice 2>/dev/null || choice="0"
     fi
@@ -231,7 +232,8 @@ confirm() {
     if [ -t 0 ]; then
         read -r resp || resp="n"
     elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
-        read -r resp < /dev/tty 2>/dev/null || read -r resp 2>/dev/null || resp="n"
+        resp=$( ( read -r val < /dev/tty && echo "$val" ) 2>/dev/null ) || resp=""
+        [ -z "$resp" ] && read -r resp 2>/dev/null || true
     else
         read -r resp 2>/dev/null || resp="n"
     fi
