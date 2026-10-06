@@ -15,7 +15,7 @@ Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên �
    - [Termux trên Google Play Store](https://play.google.com/store/apps/details?id=com.termux)
 
 2. **Trình chạy Cinderbox (Chạy Stardew Valley PC trên Android)**:
-   - Tải file APK tại [GitHub Cinderbox Releases](https://github.com/Zingaboy/Cinderbox/releases)
+   - Tải file APK tại [GitHub Cinderbox v0.8.1 Releases](https://github.com/Ekyso/Cinderbox/releases/tag/0.8.1)
 
 3. **Dữ liệu Game Stardew Valley**:
    - **Có tài khoản Steam**: Đăng nhập Steam trực tiếp bên trong Cinderbox để tải game chính chủ.
