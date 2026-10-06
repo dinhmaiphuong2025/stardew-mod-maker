@@ -8,9 +8,11 @@ Làm mod C# SMAPI cho Stardew Valley trên điện thoại Android bằng AI (Th
 
 Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên điện thoại:
 
-1. **Ứng dụng Termux**:
-   - [Bản Termux Custom tối ưu giao diện](https://github.com/dinhmaiphuong2025/termux-app/releases) (Khuyên dùng)
-   - Hoặc [Termux chính thức](https://github.com/termux/termux-app/releases)
+1. **Ứng dụng Termux** (tùy chọn nguồn tải theo nhu cầu của bạn):
+   - [Bản Termux Custom](https://github.com/dinhmaiphuong2025/termux-app/releases)
+   - [Termux trên GitHub Releases](https://github.com/termux/termux-app/releases)
+   - [Termux trên F-Droid](https://f-droid.org/packages/com.termux/)
+   - [Termux trên Google Play Store](https://play.google.com/store/apps/details?id=com.termux)
 
 2. **Trình chạy Cinderbox (Chạy Stardew Valley PC trên Android)**:
    - Tải file APK tại [GitHub Cinderbox Releases](https://github.com/Zingaboy/Cinderbox/releases)
