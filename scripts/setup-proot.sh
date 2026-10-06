@@ -80,21 +80,4 @@ if [ -d "/root/stardew-env" ]; then
     cp -f /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$TEMPLATE_STORE/" 2>/dev/null || true
 fi
 
-# 4. Cấu hình kiểm tra tạo user khi đăng nhập root lần đầu
-cat << 'EOF' >> /root/.bashrc
-
-# Kiểm tra và khởi tạo user sudo lần đầu tiên
-if [ ! -f /etc/stardew-user-created ] && [ -f /usr/local/bin/init-user.sh ]; then
-    /usr/local/bin/init-user.sh
-fi
-
-# Tự động chuyển sang tài khoản người dùng mặc định nếu có
-if [ -f /etc/stardew-default-user ]; then
-    SD_USER=$(cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
-    if [ "$USER" = "root" ] && [ -n "$SD_USER" ] && id "$SD_USER" >/dev/null 2>&1; then
-        exec su - "$SD_USER"
-    fi
-fi
-EOF
-
 exit 0

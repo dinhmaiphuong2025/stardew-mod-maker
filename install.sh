@@ -162,11 +162,14 @@ step_task "Cấu hình .NET 10.0 SDK và công cụ bên trong Ubuntu" setup_con
 finish_progress
 echo
 
-# Khởi tạo tài khoản người dùng sudo & workspace (chạy trực tiếp ở chế độ tương tác)
+# Khởi tạo tài khoản người dùng sudo & workspace
+# Chạy trực tiếp với TTY chuẩn
 if [ -f "$SCRIPT_DIR/scripts/init-user.sh" ]; then
-    proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh || true
-else
-    proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh || true
+    if [ -c /dev/tty ]; then
+        proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh < /dev/tty || true
+    else
+        proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh || true
+    fi
 fi
 
 # Lưu lại tên tài khoản mặc định trên Termux
@@ -175,23 +178,19 @@ if [ -n "$SD_USER" ]; then
     echo "$SD_USER" > "$PREFIX/etc/stardew-default-user"
 fi
 
-# Tạo binary lệnh 'ubuntu' trên Termux (lọc cảnh báo sanitize binding)
+# Tạo binary lệnh 'ubuntu' trên Termux (nhẹ nhàng, chuẩn xác, không dùng process substitution)
 mkdir -p "$PREFIX/bin"
 cat << 'EOF' > "$PREFIX/bin/ubuntu"
 #!/data/data/com.termux/files/usr/bin/bash
-export PROOT_NO_SECCOMP=1
 USER_FILE="$PREFIX/etc/stardew-default-user"
 SD_USER=""
 if [ -f "$USER_FILE" ]; then
     SD_USER=$(cat "$USER_FILE" 2>/dev/null | tr -d '[:space:]')
 fi
-if [ -z "$SD_USER" ]; then
-    SD_USER=$(proot-distro login ubuntu -- cat /etc/stardew-default-user 2>/dev/null | tr -d '[:space:]')
-fi
 if [ -n "$SD_USER" ]; then
-    exec proot-distro login ubuntu --user "$SD_USER" 2> >(grep -v "can't sanitize binding" >&2)
+    exec proot-distro login ubuntu --user "$SD_USER"
 fi
-exec proot-distro login ubuntu 2> >(grep -v "can't sanitize binding" >&2)
+exec proot-distro login ubuntu
 EOF
 chmod +x "$PREFIX/bin/ubuntu"
 
@@ -204,5 +203,9 @@ print_box "Cài đặt hoàn tất! Gõ 'ubuntu' để vào môi trường làm 
 echo
 
 if confirm "Khởi động vào Ubuntu ngay bây giờ?"; then
-    exec "$PREFIX/bin/ubuntu"
+    if [ -c /dev/tty ]; then
+        exec "$PREFIX/bin/ubuntu" < /dev/tty
+    else
+        exec "$PREFIX/bin/ubuntu"
+    fi
 fi
