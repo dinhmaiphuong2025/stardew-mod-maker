@@ -21,9 +21,15 @@ WHITE='\033[1;37m'
 
 clear_screen() { printf "\033[2J\033[H"; }
 get_term_cols() {
-    local c=""
-    command -v tput >/dev/null 2>&1 && c=$(tput cols 2>/dev/null || true)
-    [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=$(stty size 2>/dev/null | awk '{print $2}' || echo "$COLUMNS")
+    local c="${COLUMNS:-}"
+    if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
+        local sz
+        sz=$(stty size 2>/dev/null || true)
+        c="${sz##* }"
+    fi
+    if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
+        command -v tput >/dev/null 2>&1 && c=$(tput cols 2>/dev/null || true)
+    fi
     [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=50
     echo "$c"
 }

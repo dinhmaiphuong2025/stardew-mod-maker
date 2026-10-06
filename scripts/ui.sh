@@ -25,14 +25,18 @@ clear_screen() {
     printf "\033[2J\033[H"
 }
 
-# Lấy độ rộng màn hình thực tế (tự co giãn khi người dùng zoom chữ trong Termux)
+# Lấy độ rộng màn hình thực tế (tự co giãn khi người dùng zoom chữ trong Termux - thuần Bash không phụ thuộc awk)
 get_term_cols() {
-    local c=""
-    if command -v tput >/dev/null 2>&1; then
-        c=$(tput cols 2>/dev/null || true)
+    local c="${COLUMNS:-}"
+    if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
+        local sz
+        sz=$(stty size 2>/dev/null || true)
+        c="${sz##* }"
     fi
     if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
-        c=$(stty size 2>/dev/null | awk '{print $2}' || echo "$COLUMNS")
+        if command -v tput >/dev/null 2>&1; then
+            c=$(tput cols 2>/dev/null || true)
+        fi
     fi
     if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
         c=50
