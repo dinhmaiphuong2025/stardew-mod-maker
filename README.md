@@ -46,19 +46,32 @@ Mỗi khi muốn tạo mod mới, bạn mở Termux và gõ:
 ubuntu
 ```
 
-Khởi động trợ lý AI (hoàn toàn miễn phí):
+---
+
+### Bước 1: Cài đặt AI Coding Agent
+
+Gõ lệnh sau để mở bảng chọn Agent:
 
 ```bash
-opencode
+stardew-mod agent
 ```
 
-*(Nếu chưa cài agent, gõ `stardew-mod agent` và chọn `1` để cài OpenCode CLI v2 có sẵn model cloud free).*
+Hệ thống sẽ hiển thị menu để bạn chọn:
+- Nhấn `1`: **OpenCode CLI v2** *(Miễn phí — tích hợp sẵn model Cloud free Big Pickle, Muse Spark)*
+- Nhấn `2`: **Antigravity CLI** *(Miễn phí có quota hàng ngày qua tài khoản Google)*
+- Nhấn `3`: **Claude Code** *(Trả phí qua gói Claude Pro hoặc Anthropic API Key)*
+- Nhấn `4`: **OpenAI Codex CLI** *(Trả phí qua OpenAI API Key)*
+- Nhấn `5`: **Hermes Agent CLI** *(Miễn phí — mã nguồn mở, hỗ trợ BYOK và local models)*
+
+*(Mẹo: Bạn cũng có thể cài nhanh trực tiếp bằng lệnh `stardew-mod agent opencode` hoặc `stardew-mod agent antigravity`).*
+
+Sau khi cài xong, bạn chỉ cần nhấn **Enter**, màn hình sẽ tự động xoá sạch để bạn gõ lệnh khởi động Agent (ví dụ: `opencode` hoặc `agy`).
 
 ---
 
-### Mẫu câu lệnh (Prompt) ra lệnh cho AI
+### Bước 2: Ra lệnh cho AI tạo mod (Prompt mẫu)
 
-Trong cửa sổ trò chuyện của AI, bạn chỉ cần mô tả ý tưởng bằng tiếng Việt:
+Mở Agent vừa cài (ví dụ: `opencode`) và mô tả ý tưởng bằng tiếng Việt:
 
 > **"Tạo cho tôi mod HaloGlowMod: Thêm hiệu ứng vòng tròn ánh sáng trắng phát quang (glow) quanh nhân vật theo phong cách thần thoại. Hãy tự tạo mod bằng stardew-mod, viết toàn bộ code C#, tự build sửa lỗi và deploy thẳng vào game cho tôi."**
 
