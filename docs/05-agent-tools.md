@@ -20,6 +20,7 @@ Khi người dùng mô tả tính năng muốn tạo:
 | Lệnh | Ý nghĩa | Cách Agent sử dụng |
 |---|---|---|
 | `stardew-mod doctor --json` | Kiểm tra môi trường | Lấy dữ liệu JSON về trạng thái game & .NET |
+| `stardew-mod agent [TênAgent]` | Cài đặt AI Coding Agent | Cài đặt OpenCode, Antigravity, Claude, Codex, Hermes |
 | `stardew-mod new <TênMod>` | Tạo mod mới | Tự động sinh thư mục dự án và file mẫu |
 | `stardew-mod build [ThưMục]` | Biên dịch dự án | Trả về log chi tiết (CSxxxx, số dòng) |
 | `stardew-mod deploy [ThưMục]` | Cài đặt vào game | Đóng gói và copy trực tiếp vào `/sdcard/StardewValley/desktop/Mods/` |

@@ -105,32 +105,18 @@ elif [ -f "/root/stardew-env/docs/05-agent-tools.md" ]; then
     cp /root/stardew-env/docs/05-agent-tools.md "$USER_WORKSPACE/AGENT_GUIDE.md"
 fi
 
-# Cài đặt OpenCode AI CLI nếu người dùng muốn
-echo
-if confirm "  Cài đặt OpenCode AI CLI (Miễn phí, hỗ trợ code mod bằng AI)?"; then
-    print_info "Đang tải và cài đặt OpenCode CLI..."
-    curl -fsSL https://opencode.ai/install | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
-    if ! command -v opencode >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-        npm install -g opencode-ai 2>/dev/null || true
-    fi
-    if command -v opencode >/dev/null 2>&1; then
-        print_success "OpenCode CLI đã sẵn sàng."
-    else
-        print_info "OpenCode CLI có thể cài bổ sung sau bằng lệnh: npm install -g opencode-ai"
-    fi
-fi
-
-# Thêm banner khởi động vào .bashrc của user
+# Thêm banner khởi động vào .bashrc của user (gợi ý cài đặt Agent thay vì menu stardew-mod)
 cat << 'EOF' >> "$USER_HOME/.bashrc"
 
 if [ -f /usr/local/bin/ui.sh ]; then
     source /usr/local/bin/ui.sh
     clear_screen
     banner "STARDEW MOD VIBECODING" "Không gian sáng tạo Mod Cinderbox Android"
-    print_info "Gõ 'stardew-mod' để mở Menu điều khiển."
-    if command -v opencode >/dev/null 2>&1; then
-        print_info "Gõ 'opencode' để bắt đầu VibeCoding bằng AI."
-    fi
+    print_info "Cài đặt AI Coding Agent mong muốn để bắt đầu:"
+    echo "  • OpenCode CLI (lệnh 'opencode'):     stardew-mod agent opencode"
+    echo "  • Antigravity CLI (lệnh 'agy'):       stardew-mod agent antigravity"
+    echo
+    print_info "Hoặc gõ 'stardew-mod agent' để chọn Claude Code, Codex, Hermes... kèm mô tả chi tiết."
     print_line
 fi
 cd ~/stardew-workspace

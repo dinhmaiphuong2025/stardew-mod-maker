@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # stardew-mod: Công cụ dòng lệnh & Agent CLI hỗ trợ phát triển mod Stardew Valley
-# Tối ưu hóa cho AI Agents (OpenCode, Claude, Hermes) & Người dùng VibeCoding
+# Tối ưu hóa cho AI Agents (OpenCode, Claude, Hermes, Antigravity, Codex) & VibeCoding
 # ==============================================================================
 
 set -e
@@ -267,6 +267,215 @@ cmd_list() {
 }
 
 # ------------------------------------------------------------------------------
+# 7. AGENT: Cài đặt và quản lý AI Coding Agent (OpenCode, Antigravity, Claude, Codex, Hermes)
+# ------------------------------------------------------------------------------
+ensure_node_npm() {
+    if ! command -v npm >/dev/null 2>&1; then
+        print_info "Đang cài đặt Node.js và NPM..."
+        sudo apt-get update -y >/dev/null 2>&1 || true
+        sudo apt-get install -y nodejs npm >/dev/null 2>&1 || true
+    fi
+}
+
+ensure_python_pip() {
+    if ! command -v pip3 >/dev/null 2>&1 && ! command -v pip >/dev/null 2>&1; then
+        print_info "Đang cài đặt Python3 & PIP..."
+        sudo apt-get update -y >/dev/null 2>&1 || true
+        sudo apt-get install -y python3 python3-pip python3-venv >/dev/null 2>&1 || true
+    fi
+}
+
+install_opencode() {
+    print_header "CÀI ĐẶT OPENCODE CLI"
+    echo "  Mô tả: AI Coding Agent mã nguồn mở, hỗ trợ nhiều mô hình (OpenAI, Claude,"
+    echo "         DeepSeek, Ollama), cực nhẹ và tối ưu hóa tốt cho môi trường terminal/mobile."
+    print_line
+    if command -v opencode >/dev/null 2>&1; then
+        print_success "OpenCode CLI đã có sẵn trên hệ thống. Gõ 'opencode' để chạy."
+        return 0
+    fi
+    print_info "Đang tải và cài đặt OpenCode..."
+    curl -fsSL https://opencode.ai/install | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
+    if ! command -v opencode >/dev/null 2>&1; then
+        ensure_node_npm
+        npm install -g opencode-ai 2>/dev/null || sudo npm install -g opencode-ai 2>/dev/null || true
+    fi
+    if command -v opencode >/dev/null 2>&1; then
+        [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+        print_success "Cài đặt thành công! Khởi động bằng lệnh: opencode"
+    else
+        print_error "Cài đặt OpenCode thất bại. Vui lòng kiểm tra lại kết nối mạng."
+    fi
+}
+
+install_antigravity() {
+    print_header "CÀI ĐẶT ANTIGRAVITY CLI (agy)"
+    echo "  Mô tả: Autonomous AI Coding Agent từ Google. Tự động đọc hiểu toàn bộ"
+    echo "         codebase, giải quyết issue, tái cấu trúc mã và review lỗi logic C#."
+    echo "  Lệnh khởi động: agy"
+    print_line
+    if command -v agy >/dev/null 2>&1; then
+        print_success "Antigravity CLI (agy) đã có sẵn trên hệ thống. Gõ 'agy' để chạy."
+        return 0
+    fi
+    print_info "Đang tải và cài đặt Antigravity qua script chính thức..."
+    curl -fsSL https://antigravity.google/cli/install.sh | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/google/antigravity/main/install.sh | bash 2>/dev/null || true
+    if ! command -v agy >/dev/null 2>&1; then
+        ensure_node_npm
+        npm install -g @google/antigravity 2>/dev/null || sudo npm install -g @google/antigravity 2>/dev/null || true
+    fi
+    if [ -f "$HOME/.bashrc" ]; then
+        source "$HOME/.bashrc" 2>/dev/null || true
+    fi
+    if command -v agy >/dev/null 2>&1; then
+        print_success "Cài đặt thành công! Khởi động bằng lệnh: agy"
+    else
+        print_error "Cài đặt Antigravity CLI thất bại. Vui lòng kiểm tra lại kết nối mạng."
+    fi
+}
+
+install_claude() {
+    print_header "CÀI ĐẶT CLAUDE CODE CLI"
+    echo "  Mô tả: Trợ lý lập trình AI chính thức từ Anthropic. Khả năng tư duy logic và"
+    echo "         suy luận sâu, quản lý ngữ cảnh dự án lớn và tự động sửa lỗi build C#."
+    print_line
+    if command -v claude >/dev/null 2>&1; then
+        print_success "Claude Code CLI đã có sẵn trên hệ thống. Gõ 'claude' để chạy."
+        return 0
+    fi
+    ensure_node_npm
+    print_info "Đang cài đặt Claude Code qua NPM..."
+    npm install -g @anthropic-ai/claude-code 2>/dev/null || sudo npm install -g @anthropic-ai/claude-code 2>/dev/null || true
+    if command -v claude >/dev/null 2>&1; then
+        [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+        print_success "Cài đặt thành công! Khởi động bằng lệnh: claude"
+    else
+        print_error "Cài đặt Claude Code thất bại."
+    fi
+}
+
+install_codex() {
+    print_header "CÀI ĐẶT CODEX / AIDER CLI"
+    echo "  Mô tả: Công cụ Pair-Programming hàng đầu trên terminal, tích hợp mô hình OpenAI,"
+    echo "         tự động tạo git commit sau mỗi lần chỉnh sửa và hỗ trợ đa ngôn ngữ mạnh mẽ."
+    print_line
+    if command -v aider >/dev/null 2>&1 || command -v codex >/dev/null 2>&1; then
+        print_success "Codex / Aider CLI đã có sẵn trên hệ thống."
+        return 0
+    fi
+    ensure_python_pip
+    print_info "Đang cài đặt Aider CLI qua PIP..."
+    pip3 install --upgrade aider-chat 2>/dev/null || pip install --upgrade aider-chat 2>/dev/null || true
+    if command -v aider >/dev/null 2>&1; then
+        [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+        print_success "Cài đặt thành công! Khởi động bằng lệnh: aider"
+    else
+        ensure_node_npm
+        npm install -g @openai/codex 2>/dev/null || true
+        if command -v codex >/dev/null 2>&1; then
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            print_success "Cài đặt thành công! Khởi động bằng lệnh: codex"
+        else
+            print_error "Cài đặt Codex / Aider thất bại."
+        fi
+    fi
+}
+
+install_hermes() {
+    print_header "CÀI ĐẶT HERMES AGENT CLI"
+    echo "  Mô tả: Trợ lý AI tự trị đa chức năng từ Nous Research. Tích hợp sẵn bộ công cụ,"
+    echo "         giao tiếp terminal, bộ nhớ dài hạn, kỹ năng mở rộng và điều phối subagents."
+    print_line
+    if command -v hermes >/dev/null 2>&1; then
+        print_success "Hermes Agent CLI đã có sẵn trên hệ thống. Gõ 'hermes' để chạy."
+        return 0
+    fi
+    print_info "Đang cài đặt Hermes Agent..."
+    curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/install.sh | bash 2>/dev/null || true
+    if ! command -v hermes >/dev/null 2>&1; then
+        ensure_python_pip
+        pip3 install --upgrade hermes-agent 2>/dev/null || pip install --upgrade hermes-agent 2>/dev/null || true
+    fi
+    if command -v hermes >/dev/null 2>&1; then
+        [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+        print_success "Cài đặt thành công! Khởi động bằng lệnh: hermes"
+    else
+        print_error "Cài đặt Hermes Agent thất bại."
+    fi
+}
+
+cmd_agent() {
+    local target="$1"
+    case "$target" in
+        opencode)
+            install_opencode
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            ;;
+        antigravity)
+            install_antigravity
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            ;;
+        claude|claudecode)
+            install_claude
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            ;;
+        codex|aider)
+            install_codex
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            ;;
+        hermes)
+            install_hermes
+            [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true
+            ;;
+        "")
+            while true; do
+                clear_screen
+                banner "CÀI ĐẶT AI CODING AGENT" "Chọn Agent hỗ trợ VibeCoding Mod Stardew Valley"
+                echo "  ${CYAN}[1] OpenCode CLI${RESET}"
+                echo "      Agent mã nguồn mở, đa mô hình (OpenAI, DeepSeek, Claude, Ollama), nhẹ & tối ưu mobile."
+                echo "      ${GRAY}Lệnh khởi động:${RESET} opencode"
+                echo
+                echo "  ${CYAN}[2] Antigravity CLI (Google)${RESET}"
+                echo "      Autonomous Coding Agent từ Google, đọc hiểu codebase, giải quyết issue & refactor."
+                echo "      ${GRAY}Lệnh khởi động:${RESET} agy"
+                echo
+                echo "  ${CYAN}[3] Claude Code (Anthropic)${RESET}"
+                echo "      Trợ lý AI chính thức từ Anthropic, tư duy logic sâu, đọc hiểu toàn bộ project."
+                echo "      ${GRAY}Lệnh khởi động:${RESET} claude"
+                echo
+                echo "  ${CYAN}[4] OpenAI Codex CLI${RESET}"
+                echo "      Autonomous Coding Agent từ OpenAI, tự động git commit, chạy trong git repo."
+                echo "      ${GRAY}Lệnh khởi động:${RESET} codex"
+                echo
+                echo "  ${CYAN}[5] Hermes Agent CLI (Nous Research)${RESET}"
+                echo "      Trợ lý tự trị từ Nous Research, hỗ trợ tool-calling, terminal execution & đa agent."
+                echo "      ${GRAY}Lệnh khởi động:${RESET} hermes"
+                echo
+                echo "  ${GRAY}[0] Quay lại${RESET}"
+                print_line
+
+                local choice
+                choice=$(get_choice)
+                case "$choice" in
+                    1) echo; install_opencode; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    2) echo; install_antigravity; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    3) echo; install_claude; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    4) echo; install_codex; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    5) echo; install_hermes; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    0|q|Q) break ;;
+                    *) print_warning "Lựa chọn không hợp lệ."; sleep 1 ;;
+                esac
+            done
+            ;;
+        *)
+            print_error "Agent không hợp lệ: $target"
+            echo "Các agent hỗ trợ: opencode, antigravity, claude, codex, hermes"
+            return 1
+            ;;
+    esac
+}
+
+# ------------------------------------------------------------------------------
 # MENU TƯƠNG TÁC DÀNH CHO CON NGƯỜI (Nếu chạy trực tiếp không có đối số)
 # ------------------------------------------------------------------------------
 interactive_menu() {
@@ -275,6 +484,7 @@ interactive_menu() {
         banner "STARDEW MOD VIBECODING" "Công cụ phát triển Mod Cinderbox Android"
         local menu_items=(
             "Kiểm tra môi trường (Doctor)"
+            "Cài đặt AI Coding Agent (OpenCode, Antigravity, Claude...)"
             "Tạo dự án mod mới (New)"
             "Biên dịch mod hiện tại (Build)"
             "Triển khai vào game (Deploy)"
@@ -293,30 +503,33 @@ interactive_menu() {
                 wait_for_enter
                 ;;
             2)
+                cmd_agent
+                ;;
+            3)
                 echo
                 cmd_new
                 echo
                 wait_for_enter
                 ;;
-            3)
+            4)
                 echo
                 cmd_build
                 echo
                 wait_for_enter
                 ;;
-            4)
+            5)
                 echo
                 cmd_deploy
                 echo
                 wait_for_enter
                 ;;
-            5)
+            6)
                 echo
                 cmd_logs
                 echo
                 wait_for_enter
                 ;;
-            6)
+            7)
                 echo
                 cmd_list
                 echo
@@ -340,6 +553,9 @@ case "$1" in
     doctor)
         cmd_doctor "${@:2}"
         ;;
+    agent)
+        cmd_agent "$2"
+        ;;
     new)
         cmd_new "$2"
         ;;
@@ -358,6 +574,7 @@ case "$1" in
     help|--help|-h)
         print_header "STARDEW-MOD CLI (Agent & Human Friendly)"
         echo "  stardew-mod doctor [--json]    Kiểm tra .NET SDK, game files & SMAPI"
+        echo "  stardew-mod agent [TênAgent]   Cài đặt AI Agent (opencode, antigravity, claude, codex, hermes)"
         echo "  stardew-mod new <TênMod>        Khởi tạo dự án mod mới không cần hỏi lại"
         echo "  stardew-mod build [ĐườngDẫn]   Biên dịch dự án mod ra bản Release"
         echo "  stardew-mod deploy [ĐườngDẫn]  Đóng gói và copy trực tiếp vào game Mods/"
