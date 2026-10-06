@@ -47,7 +47,7 @@ echo
 
 # 3. Hỏi tắt hỏi mật khẩu sudo
 NOPASSWD=0
-if confirm "  Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng cho Termux)"; then
+if confirm_default_yes "  Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng cho Termux)"; then
     NOPASSWD=1
 fi
 

@@ -219,7 +219,7 @@ echo
 print_box "Cài đặt thành công! Gõ 'ubuntu' để bắt đầu."
 echo
 
-if confirm "Khởi động vào Ubuntu ngay bây giờ?"; then
+if confirm_default_yes "Khởi động vào Ubuntu ngay bây giờ?"; then
     if [ -c /dev/tty ]; then
         exec "$PREFIX/bin/ubuntu" < /dev/tty
     else

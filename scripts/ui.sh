@@ -224,7 +224,7 @@ get_choice() {
     echo "$choice"
 }
 
-# Xác nhận Có / Không
+# Xác nhận Có / Không (Mặc định Không: y/N)
 confirm() {
     local msg="$1"
     local resp=""
@@ -240,5 +240,24 @@ confirm() {
     case "$resp" in
         [yY]|[yY][eE][sS]) return 0 ;;
         *) return 1 ;;
+    esac
+}
+
+# Xác nhận Có / Không (Mặc định Có: Y/n - Tiện lợi khi chỉ nhấn Enter)
+confirm_default_yes() {
+    local msg="$1"
+    local resp=""
+    printf "%s (Y/n): " "$msg" >&2
+    if [ -t 0 ]; then
+        read -r resp || resp="y"
+    elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
+        resp=$( ( read -r val < /dev/tty && echo "$val" ) 2>/dev/null ) || resp=""
+    else
+        read -r resp 2>/dev/null || resp="y"
+    fi
+    [ -z "$resp" ] && resp="y"
+    case "$resp" in
+        [nN]|[nN][oO]) return 1 ;;
+        *) return 0 ;;
     esac
 }
