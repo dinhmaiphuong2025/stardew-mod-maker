@@ -1,151 +1,88 @@
 # Stardew Valley Cinderbox Modding Kit (PRoot Android)
 
-Bộ công cụ thiết lập môi trường PRoot Distro tự động dành cho việc xây dựng và VibeCoding mod Stardew Valley chạy trên Cinderbox Android. Thiết kế đơn giản hóa tối đa cho người chưa từng lập trình.
+Tự làm mod C# SMAPI cho Stardew Valley trên điện thoại Android bằng AI (VibeCoding) — không cần PC, không cần Root, không cần biết lập trình.
 
 ---
 
-## 1. Giới thiệu
+## 1. Cài Đặt (1 Lệnh Duy Nhất)
 
-Bộ công cụ này giúp người dùng Android tự tạo mod C# SMAPI cho Stardew Valley 1.6 chạy trên Cinderbox mà không cần máy tính PC, không cần quyền Root và không cần kiến thức lập trình chuyên sâu.
-
-Đặc biệt, hệ thống tối ưu cho phương pháp **VibeCoding** với sự hỗ trợ của trợ lý AI **OpenCode CLI** (hoàn toàn miễn phí, tự động sửa code và kiểm tra build ngay trong terminal) hoặc các mô hình web như ChatGPT, Claude, Gemini.
-
-### Đặc điểm chính:
-- Cài đặt 1 lệnh duy nhất: Chỉ cần chạy 1 dòng lệnh `curl ... | bash` trên Termux là hoàn tất toàn bộ.
-- Giao diện TUI hiện đại: Tích hợp thanh tiến trình động (`[████░░] 60%`) và hiệu ứng loading spinner Braille (`⠋ ⠙ ⠹...`) phong cách OpenCode / DankMaterialShell với tiếng Việt đầy đủ dấu.
-- Khởi động cực nhanh: Sau khi cài xong, chỉ cần gõ lệnh `ubuntu` trong Termux là vào thẳng không gian làm việc.
-- Không gian làm việc chuẩn Sudo User: Tự động tạo người dùng sudo riêng và đặt workspace tại `~/stardew-workspace` (`/home/<user>/stardew-workspace`), tránh hoàn toàn các lỗi xung đột file hoặc quyền sở hữu root.
-- Tích hợp OpenCode CLI: Hỗ trợ cài đặt trợ lý AI miễn phí để ra lệnh tạo mod trực tiếp bằng tiếng Việt ngay trong dòng lệnh.
-- Kịch bản gỡ cài đặt sạch sẽ: Đi kèm script `uninstall.sh` giúp xóa sạch môi trường để kiểm thử lại nhiều lần mà không ảnh hưởng đến dữ liệu game.
-- Không cần Root: Chạy hoàn toàn trong không gian người dùng thông qua PRoot Distro (Ubuntu aarch64).
-- Liên kết bộ nhớ trực tiếp: Tự động mount thư mục `/sdcard` của Android vào container, cho phép xem và sửa file bằng các ứng dụng quản lý tệp quen thuộc (MT Manager, ZArchiver, Acode).
-- Tương thích .NET 10.0: Cài đặt .NET 10.0 SDK chính thức từ Microsoft, giải quyết triệt để lỗi bionic libc và lỗi xung đột assembly CS1705 với SMAPI Cinderbox.
-- Công cụ stardew-mod: Quản lý kiểm tra lỗi, tạo mod, biên dịch và triển khai vào game qua giao diện dòng lệnh đơn giản.
-- Khung mẫu prompt chuẩn: Đi kèm template chỉ dẫn dành cho AI để tránh lỗi phiên bản và hỗ trợ đúng cơ chế cảm ứng di động.
-
----
-
-## 2. Hướng dẫn cài đặt (1 Lệnh Duy Nhất)
-
-Mở ứng dụng Termux và chạy dòng lệnh sau:
+Mở ứng dụng **Termux** và chạy lệnh:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash
 ```
 
-*(Hoặc dùng cú pháp subshell: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh)"`)*
-
-Trong quá trình chạy:
-1. Khi có hộp thoại Android yêu cầu quyền bộ nhớ: Chọn "Cho phép" (Allow).
-2. Khi hệ thống hỏi thiết lập người dùng: Nhập tên tài khoản của bạn (ví dụ: `stardew`) và chọn có muốn cài đặt OpenCode AI CLI hay không.
+- Nhập tên người dùng khi được hỏi (ví dụ: `stardew`).
+- Cấp quyền bộ nhớ khi Android hiển thị hộp thoại.
 
 ---
 
-## 3. Cách sử dụng hàng ngày
+## 2. Quy Trình Tạo Mod Cùng AI
 
-Sau khi cài đặt xong, mỗi khi muốn bắt đầu làm việc, bạn mở Termux và chỉ cần gõ:
+Mỗi khi muốn làm mod, bạn mở Termux và gõ:
 
 ```bash
 ubuntu
 ```
 
-Lệnh này sẽ tự động đưa bạn vào môi trường Ubuntu với tư cách tài khoản người dùng của bạn tại thư mục `~/stardew-workspace`.
+### Bước 1: Cài đặt AI Coding Agent
+Chọn trợ lý AI hỗ trợ viết code:
+```bash
+stardew-mod agent
+```
+*(Gợi ý: chọn `1` để cài **OpenCode CLI v2** — có sẵn các model Cloud miễn phí như Big Pickle, Muse Spark).*
 
-*(Bạn cũng có thể dùng lệnh `stardew-code` với tác vụ tương đương).*
+### Bước 2: Tạo dự án mod
+```bash
+stardew-mod new MyFirstMod
+cd mods/MyFirstMod
+```
 
-### Các lệnh quản lý trong Ubuntu:
+### Bước 3: Ra lệnh cho AI (VibeCoding)
+Khởi động AI Agent bạn đã cài:
+```bash
+opencode
+```
+Gõ ý tưởng của bạn bằng tiếng Việt, ví dụ:
+> *"Tạo hiệu ứng vòng tròn ánh sáng trắng phát quang (glow) quanh nhân vật theo phong cách thần thoại. Khi viết xong hãy chạy lệnh stardew-mod build để kiểm tra lỗi biên dịch."*
 
-| Lệnh | Chức năng |
-| :--- | :--- |
-| `stardew-mod` | Mở menu tương tác trực quan để chọn thao tác |
-| `stardew-mod doctor` | Kiểm tra kết nối thư mục game Cinderbox và các file thư viện SMAPI |
-| `stardew-mod new <TênMod>` | Tạo một dự án mod mới từ khung mẫu chuẩn |
-| `stardew-mod build` | Biên dịch mã nguồn C# thành file thư viện `.dll` |
-| `stardew-mod deploy` | Tự động chép file mod đã biên dịch vào thư mục `Mods/` của game |
-| `opencode` | Mở trợ lý AI OpenCode để VibeCoding trực tiếp |
+### Bước 4: Đưa mod vào game
+Sau khi AI hoàn thành, thoát AI và chạy:
+```bash
+stardew-mod deploy
+```
+Mở game Stardew Valley (Cinderbox) để trải nghiệm mod vừa tạo!
 
 ---
 
-## 4. Gỡ cài đặt / Dọn sạch để kiểm thử lại
+## 3. Các Lệnh Tiện Ích
 
-Nếu bạn cần kiểm thử lại quá trình cài đặt hoặc muốn dọn dẹp môi trường PRoot, chỉ cần chạy lệnh:
+| Lệnh | Chức năng |
+|---|---|
+| `stardew-mod` | Mở menu quản lý tương tác trực quan |
+| `stardew-mod doctor` | Kiểm tra kết nối game và thư viện SMAPI |
+| `stardew-mod build` | Biên dịch mã nguồn C# |
+| `stardew-mod deploy` | Đưa mod trực tiếp vào thư mục game |
+| `stardew-mod logs` | Xem log SMAPI để tìm lỗi khi game có sự cố |
+| `stardew-mod update` | Cập nhật bộ công cụ lên phiên bản mới nhất |
+
+---
+
+## 4. Gỡ Cài Đặt
+
+Khi muốn dọn sạch môi trường PRoot để cài lại từ đầu (không ảnh hưởng dữ liệu game):
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/uninstall.sh | bash
 ```
 
-Kịch bản sẽ tự động:
-- Gỡ bỏ các lệnh `ubuntu` và `stardew-code` trên Termux.
-- Gỡ sạch container PRoot Ubuntu và cấu hình mount.
-- Xóa thư mục mã nguồn tạm.
-- **Bảo lưu an toàn**: Toàn bộ dữ liệu game và mod trong `/sdcard/StardewValley` sẽ không bị ảnh hưởng.
-
 ---
 
-## 5. Quy trình VibeCoding tạo mod cùng AI
+## 5. Tài Liệu Chi Tiết
 
-### Cách 1: Dùng OpenCode CLI (Tự động & Miễn phí - Khuyên dùng)
-1. Tạo mod mới:
-   ```bash
-   stardew-mod new SieuNongDan
-   cd mods/SieuNongDan
-   ```
-2. Khởi động AI:
-   ```bash
-   opencode
-   ```
-3. Nhập yêu cầu bằng tiếng Việt:
-   > "Đọc file ../../VIBECODE_PROMPT_TEMPLATE.md và giúp tôi thêm tính năng tăng 20% tốc độ chạy khi ở ngoài trời vào ModEntry.cs, sau đó chạy stardew-mod build để kiểm tra."
-4. Triển khai vào game:
-   ```bash
-   stardew-mod deploy
-   ```
-
-### Cách 2: Dùng Web AI (ChatGPT, Claude, Gemini)
-1. Tạo mod mới bằng `stardew-mod new <TênMod>`.
-2. Sao chép nội dung `VIBECODE_PROMPT_TEMPLATE.md` kèm ý tưởng gửi cho Web AI.
-3. Dán code AI tạo vào `ModEntry.cs` và chạy `stardew-mod build` rồi `stardew-mod deploy`.
-
----
-
-## 6. Tài liệu hướng dẫn chuyên sâu
-
-- `docs/01-chuan-bi-va-cai-dat.md`: Hướng dẫn cài Termux, lệnh 1-Click và gỡ cài đặt.
-- `docs/02-cau-truc-cinderbox.md`: Bản đồ thư mục game và vị trí các file hệ thống.
-- `docs/03-bi-kip-vibecoding.md`: Kỹ thuật mô tả yêu cầu cho AI và cách khắc phục lỗi code.
-- `docs/04-cac-loi-thuong-gap.md`: Danh mục các lỗi phổ biến (CS1705, thiếu DLL, bàn phím ảo, cảm ứng).
-
----
-
-## 7. Cấu trúc thư mục
-
-```
-stardew-proot-vibecoding/
-├── install.sh                     # Kịch bản cài đặt tự động 1-Click
-├── uninstall.sh                   # Kịch bản gỡ cài đặt & dọn dẹp sạch sẽ
-├── README.md                      # Tài liệu tổng quan dự án
-├── VIBECODE_PROMPT_TEMPLATE.md    # Khung mẫu chỉ dẫn dành cho AI
-├── docs/                          # Hệ thống tài liệu chi tiết
-│   ├── 01-chuan-bi-va-cai-dat.md
-│   ├── 02-cau-truc-cinderbox.md
-│   ├── 03-bi-kip-vibecoding.md
-│   └── 04-cac-loi-thuong-gap.md
-├── scripts/
-│   ├── ui.sh                      # Thư viện TUI (Step bar, Braille spinner, Box)
-│   ├── setup-proot.sh             # Cấu hình bên trong container Ubuntu
-│   ├── init-user.sh               # Khởi tạo user sudo và cài OpenCode
-│   └── stardew-mod.sh             # Bộ công cụ dòng lệnh quản lý mod
-└── templates/
-    └── starter-mod/               # Dự án mẫu SMAPI 1.6 net10.0
-        ├── StarterMod.csproj
-        ├── manifest.json
-        ├── ModEntry.cs
-        ├── deploy.sh
-        └── .gitignore
-```
-
----
-
-## 8. Giấy phép
-
-Dự án được phân phối dưới giấy phép MIT License.
+Tất cả tài liệu kỹ thuật nâng cao được đặt tại thư mục `docs/`:
+- `docs/01-chuan-bi-va-cai-dat.md`: Cài đặt Termux và chuẩn bị môi trường.
+- `docs/02-cau-truc-cinderbox.md`: Bản đồ thư mục Cinderbox trên Android.
+- `docs/03-bi-kip-vibecoding.md`: Mẹo đặt prompt và ra lệnh cho AI hiệu quả.
+- `docs/04-cac-loi-thuong-gap.md`: Cách xử lý các lỗi build và crash thường gặp.
+- `docs/05-agent-tools.md`: Danh mục lệnh và bảng phân loại chi tiết các Agent.
