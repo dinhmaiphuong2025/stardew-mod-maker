@@ -450,27 +450,22 @@ cmd_agent() {
             while true; do
                 clear_screen
                 banner "CÀI ĐẶT AI CODING AGENT" "Chọn Agent hỗ trợ VibeCoding Mod Stardew Valley"
-                echo "  ${CYAN}[1] OpenCode CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source]${RESET}"
-                echo "      Đa mô hình (DeepSeek, OpenAI, Claude, Ollama), cực nhẹ & tối ưu mobile."
-                echo "      ${GRAY}Lệnh khởi động:${RESET} opencode"
-                echo
-                echo "  ${CYAN}[2] Antigravity CLI${RESET} ${GREEN}[MIỄN PHÍ CÓ HẠN MỨC / Google Tier]${RESET}"
-                echo "      Autonomous Coding Agent từ Google, tự động đọc codebase & sửa lỗi C#."
-                echo "      ${GRAY}Lệnh khởi động:${RESET} agy"
-                echo
-                echo "  ${CYAN}[3] Claude Code${RESET} ${YELLOW}[TRẢ PHÍ / Claude Pro hoặc API Key]${RESET}"
-                echo "      Trợ lý AI chính thức từ Anthropic, tư duy suy luận sâu, quản lý project lớn."
-                echo "      ${GRAY}Lệnh khởi động:${RESET} claude"
-                echo
-                echo "  ${CYAN}[4] OpenAI Codex CLI${RESET} ${YELLOW}[TRẢ PHÍ / OpenAI API Key]${RESET}"
-                echo "      Autonomous Coding Agent từ OpenAI, tự động tạo git commit trong git repo."
-                echo "      ${GRAY}Lệnh khởi động:${RESET} codex"
-                echo
-                echo "  ${CYAN}[5] Hermes Agent CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source & BYOK]${RESET}"
-                echo "      Trợ lý tự trị từ Nous Research, hỗ trợ tool-calling, terminal & đa agent."
-                echo "      ${GRAY}Lệnh khởi động:${RESET} hermes"
-                echo
-                echo "  ${GRAY}[0] Quay lại${RESET}"
+                printf "  ${CYAN}[1] OpenCode CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source]${RESET}\n"
+                printf "      Đa mô hình (DeepSeek, OpenAI, Claude, Ollama), cực nhẹ & tối ưu mobile.\n"
+                printf "      ${GRAY}Lệnh khởi động:${RESET} opencode\n\n"
+                printf "  ${CYAN}[2] Antigravity CLI${RESET} ${GREEN}[MIỄN PHÍ CÓ HẠN MỨC / Google Tier]${RESET}\n"
+                printf "      Autonomous Coding Agent từ Google, tự động đọc codebase & sửa lỗi C#.\n"
+                printf "      ${GRAY}Lệnh khởi động:${RESET} agy\n\n"
+                printf "  ${CYAN}[3] Claude Code${RESET} ${YELLOW}[TRẢ PHÍ / Claude Pro hoặc API Key]${RESET}\n"
+                printf "      Trợ lý AI chính thức từ Anthropic, tư duy suy luận sâu, quản lý project lớn.\n"
+                printf "      ${GRAY}Lệnh khởi động:${RESET} claude\n\n"
+                printf "  ${CYAN}[4] OpenAI Codex CLI${RESET} ${YELLOW}[TRẢ PHÍ / OpenAI API Key]${RESET}\n"
+                printf "      Autonomous Coding Agent từ OpenAI, tự động tạo git commit trong git repo.\n"
+                printf "      ${GRAY}Lệnh khởi động:${RESET} codex\n\n"
+                printf "  ${CYAN}[5] Hermes Agent CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source & BYOK]${RESET}\n"
+                printf "      Trợ lý tự trị từ Nous Research, hỗ trợ tool-calling, terminal & đa agent.\n"
+                printf "      ${GRAY}Lệnh khởi động:${RESET} hermes\n\n"
+                printf "  ${GRAY}[0] Quay lại${RESET}\n"
                 print_line
 
                 local choice
