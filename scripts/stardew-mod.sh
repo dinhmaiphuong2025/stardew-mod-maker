@@ -296,19 +296,31 @@ install_opencode() {
     export PATH="$HOME/.opencode/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
     if [ -f "$HOME/.opencode/bin/opencode" ]; then
         sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
+        [ -f "$HOME/.opencode/bin/opencode2" ] && ( sudo ln -sf "$HOME/.opencode/bin/opencode2" /usr/local/bin/opencode2 2>/dev/null || true )
     fi
     if command -v opencode >/dev/null 2>&1; then
-        print_success "OpenCode CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: opencode"
-        return 0
+        local cur_ver
+        cur_ver=$(opencode --version 2>/dev/null || echo "")
+        case "$cur_ver" in
+            2.*|v2.*)
+                print_success "OpenCode CLI v2 ($cur_ver) đã có sẵn. Khởi động: opencode"
+                return 0
+                ;;
+            *)
+                print_info "Phát hiện OpenCode cũ ($cur_ver). Đang nâng cấp lên v2..."
+                rm -f "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
+                ;;
+        esac
     fi
-    print_info "Đang tải và cài đặt OpenCode..."
-    curl -fsSL https://opencode.ai/install | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
+    print_info "Đang tải và cài đặt OpenCode v2..."
+    curl -fsSL https://opencode.ai/v2/install | bash 2>/dev/null || curl -fsSL https://opencode.ai/install | bash 2>/dev/null || true
     if [ -f "$HOME/.opencode/bin/opencode" ]; then
         sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
+        [ -f "$HOME/.opencode/bin/opencode2" ] && ( sudo ln -sf "$HOME/.opencode/bin/opencode2" /usr/local/bin/opencode2 2>/dev/null || true )
     fi
     if ! command -v opencode >/dev/null 2>&1; then
         ensure_node_npm
-        npm install -g opencode-ai 2>/dev/null || sudo npm install -g opencode-ai 2>/dev/null || true
+        npm install -g @opencode/cli 2>/dev/null || sudo npm install -g @opencode/cli 2>/dev/null || npm install -g opencode-ai 2>/dev/null || true
     fi
     if [ -f "$HOME/.bashrc" ]; then
         source "$HOME/.bashrc" 2>/dev/null || true
