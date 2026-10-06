@@ -93,7 +93,7 @@ step_task() {
     printf "\033[?25h"
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" \
             "$bar" "$percent" "$label"
         return 0
     else
@@ -104,7 +104,6 @@ step_task() {
 }
 
 finish_progress() {
-    printf "\n"
     print_line
 }
 
@@ -147,8 +146,12 @@ step_task "Gỡ bỏ các lệnh thực thi trên Termux" clean_bins
 # Bước 2: Gỡ bỏ container PRoot Ubuntu
 clean_container() {
     if command -v proot-distro >/dev/null 2>&1; then
-        proot-distro remove ubuntu >/dev/null 2>&1 || proot-distro reset ubuntu >/dev/null 2>&1 || true
+        proot-distro remove ubuntu >/dev/null 2>&1 || true
+        proot-distro reset ubuntu >/dev/null 2>&1 || true
     fi
+    rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
+           "$PREFIX/var/lib/proot-distro/containers/ubuntu" \
+           "$HOME/.local/share/proot-distro/containers/ubuntu" 2>/dev/null || true
 }
 step_task "Gỡ bỏ container PRoot Ubuntu" clean_container
 

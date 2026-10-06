@@ -94,15 +94,9 @@ else
     finish_progress() { print_line; }
 fi
 
-# Hàm kiểm tra container ubuntu tồn tại
+# Hàm kiểm tra container ubuntu thực sự khả dụng (có shell /bin/sh hợp lệ)
 is_ubuntu_installed() {
-    if proot-distro login ubuntu -- true 2>/dev/null; then
-        return 0
-    fi
-    if proot-distro list -q 2>/dev/null | grep -qx "ubuntu"; then
-        return 0
-    fi
-    if proot-distro list 2>/dev/null | grep -E "(^|[[:space:]])ubuntu($|[[:space:]]|\()"; then
+    if proot-distro login ubuntu -- /bin/sh -c "exit 0" >/dev/null 2>&1; then
         return 0
     fi
     return 1
@@ -134,10 +128,14 @@ step_task "Kiểm tra quyền truy cập bộ nhớ /sdcard" check_storage
 # Bước 2: Cài đặt gói công cụ Termux
 step_task "Cài đặt các gói công cụ nền tảng Termux" bash -c "pkg update -y >/dev/null 2>&1 && pkg install -y proot-distro git curl nodejs jq tar >/dev/null 2>&1"
 
-# Bước 3: Cài đặt PRoot Ubuntu
+# Bước 3: Cài đặt PRoot Ubuntu (tự động dọn dẹp nếu container bị lỗi trước đó)
 setup_ubuntu_distro() {
     if ! is_ubuntu_installed; then
-        proot-distro install ubuntu >/dev/null 2>&1 || true
+        proot-distro remove ubuntu >/dev/null 2>&1 || true
+        rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
+               "$PREFIX/var/lib/proot-distro/containers/ubuntu" \
+               "$HOME/.local/share/proot-distro/containers/ubuntu" 2>/dev/null || true
+        proot-distro install ubuntu >/dev/null 2>&1 || proot-distro install ubuntu:24.04 >/dev/null 2>&1 || true
     fi
     is_ubuntu_installed
 }
