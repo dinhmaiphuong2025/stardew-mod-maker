@@ -477,11 +477,11 @@ cmd_agent() {
                 local choice
                 choice=$(get_choice)
                 case "$choice" in
-                    1) echo; install_opencode; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
-                    2) echo; install_antigravity; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
-                    3) echo; install_claude; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
-                    4) echo; install_codex; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
-                    5) echo; install_hermes; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter ;;
+                    1) echo; install_opencode; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter; clear_screen; exit 0 ;;
+                    2) echo; install_antigravity; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter; clear_screen; exit 0 ;;
+                    3) echo; install_claude; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter; clear_screen; exit 0 ;;
+                    4) echo; install_codex; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter; clear_screen; exit 0 ;;
+                    5) echo; install_hermes; [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc" 2>/dev/null || true; echo; wait_for_enter; clear_screen; exit 0 ;;
                     0|q|Q) break ;;
                     *) print_warning "Lựa chọn không hợp lệ."; sleep 1 ;;
                 esac
