@@ -16,8 +16,8 @@ REPO_DIR="$HOME/.stardew-mod-maker"
 # Tự động nạp mã nguồn khi chạy trực tiếp qua: curl ... | bash
 if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     printf "Đang chuẩn bị gói cài đặt từ GitHub...\n"
-    pkg update -y >/dev/null 2>&1 || true
-    pkg install -y git curl jq tar >/dev/null 2>&1
+    DEBIAN_FRONTEND=noninteractive pkg update -y -o Dpkg::Options::="--force-confold" >/dev/null 2>&1 || true
+    DEBIAN_FRONTEND=noninteractive pkg install -y -o Dpkg::Options::="--force-confold" openssl curl git jq tar >/dev/null 2>&1 || true
     rm -rf "$REPO_DIR"
     git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-mod-maker.git "$REPO_DIR" >/dev/null 2>&1
 
@@ -142,8 +142,8 @@ do_install() {
 
     # 2. Cài đặt các gói công cụ Termux
     echo "25:Cài đặt gói công cụ Termux" > "$STATUS_FILE"
-    pkg update -y >/dev/null 2>&1 || true
-    pkg install -y proot-distro git curl nodejs jq tar >/dev/null 2>&1 || true
+    DEBIAN_FRONTEND=noninteractive pkg update -y -o Dpkg::Options::="--force-confold" >/dev/null 2>&1 || true
+    DEBIAN_FRONTEND=noninteractive pkg install -y -o Dpkg::Options::="--force-confold" proot-distro git curl nodejs jq tar openssl >/dev/null 2>&1 || true
 
     # 3. Cài đặt PRoot Ubuntu
     echo "45:Thiết lập PRoot Ubuntu" > "$STATUS_FILE"
