@@ -21,10 +21,10 @@ Sau khi cài đặt xong, mở ứng dụng Termux.
 Trên màn hình Termux, dán và chạy duy nhất dòng lệnh sau:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
 ```
 
-*(Hoặc: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh)"`)*
+*(Hoặc: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh)"`)*
 
 Hệ thống sẽ hiển thị giao diện dòng lệnh hiện đại với thanh tiến trình theo từng bước (`[████░░] 60%`) cùng hiệu ứng loading spinner Braille sinh động và tiếng Việt đầy đủ dấu.
 
@@ -60,7 +60,7 @@ Lệnh này sẽ đưa bạn thẳng vào thư mục làm việc `~/stardew-work
 Trong trường hợp bạn muốn xóa sạch mọi thứ để chạy thử lại kịch bản cài đặt, chỉ cần chạy lệnh sau trên Termux:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/uninstall.sh | bash
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/uninstall.sh | bash
 ```
 
 Kịch bản sẽ dọn sạch container và cấu hình mà không làm mất file game hay các bản mod trong `/sdcard/StardewValley`.

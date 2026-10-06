@@ -30,7 +30,7 @@ Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên �
 Mở ứng dụng **Termux** và dán dòng lệnh sau:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
 ```
 
 - Nhập tên người dùng khi được hỏi (ví dụ: `stardew`).
@@ -102,5 +102,5 @@ Bạn không bắt buộc phải nhớ các lệnh này vì AI đã tự làm gi
 Nếu muốn dọn dẹp toàn bộ môi trường PRoot (không làm mất file game hay dữ liệu save):
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/uninstall.sh | bash
+curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/uninstall.sh | bash
 ```

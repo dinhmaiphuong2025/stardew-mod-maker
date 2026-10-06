@@ -498,7 +498,7 @@ cmd_agent() {
 cmd_update() {
     print_header "CẬP NHẬT STARDEW-MOD"
     print_info "Đang tải bản cập nhật mới nhất từ GitHub..."
-    local base_url="https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main"
+    local base_url="https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main"
     local updated=0
     if curl -sSL "$base_url/scripts/stardew-mod.sh" -o /tmp/stardew-mod.sh 2>/dev/null; then
         sudo cp -f /tmp/stardew-mod.sh /usr/local/bin/stardew-mod 2>/dev/null || cp -f /tmp/stardew-mod.sh /usr/local/bin/stardew-mod 2>/dev/null || true

@@ -11,7 +11,7 @@ export LANG=C.UTF-8
 export PROOT_NO_SECCOMP=1
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
-REPO_DIR="$HOME/.stardew-proot-vibecoding"
+REPO_DIR="$HOME/.stardew-mod-maker"
 
 # Tự động nạp mã nguồn khi chạy trực tiếp qua: curl ... | bash
 if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
@@ -19,7 +19,7 @@ if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     pkg update -y >/dev/null 2>&1 || true
     pkg install -y git curl jq tar >/dev/null 2>&1
     rm -rf "$REPO_DIR"
-    git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-proot-vibecoding.git "$REPO_DIR" >/dev/null 2>&1
+    git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-mod-maker.git "$REPO_DIR" >/dev/null 2>&1
 
     if [ -c /dev/tty ] && [ -r /dev/tty ]; then
         exec bash "$REPO_DIR/install.sh" "$@" < /dev/tty

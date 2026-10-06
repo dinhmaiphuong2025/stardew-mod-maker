@@ -116,7 +116,7 @@ for arg in "$@"; do
     esac
 done
 
-REPO_DIR="$HOME/.stardew-proot-vibecoding"
+REPO_DIR="$HOME/.stardew-mod-maker"
 
 clear_screen
 banner "GỠ CÀI ĐẶT MÔI TRƯỜNG" "Dọn sạch PRoot Ubuntu & công cụ Stardew VibeCoding"
@@ -166,5 +166,5 @@ echo
 print_box "Đã dọn sạch hệ thống! Sẵn sàng cài đặt lại."
 echo
 print_info "Lệnh cài đặt lại bằng 1 dòng:"
-echo "  curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main/install.sh | bash"
+echo "  curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
 echo
