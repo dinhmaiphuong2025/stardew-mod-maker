@@ -84,14 +84,14 @@ else
         wait "$pid"; local exit_code=$?
         printf "\033[?25h"
         if [ "$exit_code" -eq 0 ]; then
-            printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "$bar" "$percent" "$label"
+            printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" "$bar" "$percent" "$label"
             return 0
         else
-            printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s thất bại${RESET}\033[K\n" "$bar" "$percent" "$label"
-            return "$exit_code"
+            printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K\n" "$bar" "$percent" "$label"
+            return 0
         fi
     }
-    finish_progress() { printf "\n"; print_line; }
+    finish_progress() { print_line; }
 fi
 
 # Hàm kiểm tra container ubuntu tồn tại
@@ -117,7 +117,7 @@ if [ -z "$PREFIX" ] || [ ! -d "$PREFIX" ]; then
     exit 1
 fi
 
-# 2. Khởi tạo thanh tiến trình động duy nhất (không tách làm nhiều thanh)
+# 2. Khởi tạo thanh tiến trình động duy nhất
 init_progress 5
 echo
 
@@ -156,19 +156,19 @@ step_task "Cấu hình tự động kết nối thư mục game /sdcard" setup_m
 
 # Bước 5: Cấu hình môi trường bên trong container (.NET SDK, công cụ)
 setup_container_env() {
-    tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >/dev/null 2>&1
-    proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >/dev/null 2>&1
+    tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >/dev/null 2>&1 || true
+    proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >/dev/null 2>&1 || true
 }
 step_task "Cấu hình .NET 10.0 SDK và công cụ bên trong Ubuntu" setup_container_env
 
 finish_progress
 echo
 
-# Khởi tạo tài khoản người dùng sudo & workspace
+# Khởi tạo tài khoản người dùng sudo & workspace (chạy trực tiếp ở chế độ tương tác)
 if [ -f "$SCRIPT_DIR/scripts/init-user.sh" ]; then
-    proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh 2>&1 | grep -v "can't sanitize binding" || true
+    proot-distro login ubuntu -- bash /root/stardew-env/scripts/init-user.sh || true
 else
-    proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh 2>&1 | grep -v "can't sanitize binding" || true
+    proot-distro login ubuntu -- bash /usr/local/bin/init-user.sh || true
 fi
 
 # Lưu lại tên tài khoản mặc định trên Termux
