@@ -91,6 +91,12 @@ elif [ -f "/root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md" ]; then
     cp /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$USER_WORKSPACE/"
 fi
 
+if [ -f "$TEMPLATE_SRC/docs/05-agent-tools.md" ]; then
+    cp "$TEMPLATE_SRC/docs/05-agent-tools.md" "$USER_WORKSPACE/AGENT_GUIDE.md"
+elif [ -f "/root/stardew-env/docs/05-agent-tools.md" ]; then
+    cp /root/stardew-env/docs/05-agent-tools.md "$USER_WORKSPACE/AGENT_GUIDE.md"
+fi
+
 # Cài đặt OpenCode AI CLI nếu người dùng muốn
 echo
 if confirm "  Cài đặt OpenCode AI CLI (Miễn phí, hỗ trợ code mod bằng AI)?"; then

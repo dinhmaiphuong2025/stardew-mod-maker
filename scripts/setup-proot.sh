@@ -77,6 +77,7 @@ fi
 
 if [ -d "/root/stardew-env" ]; then
     cp -rf /root/stardew-env/templates "$TEMPLATE_STORE/" 2>/dev/null || true
+    cp -rf /root/stardew-env/docs "$TEMPLATE_STORE/" 2>/dev/null || true
     cp -f /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$TEMPLATE_STORE/" 2>/dev/null || true
 fi
 
