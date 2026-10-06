@@ -9,6 +9,14 @@ set -e
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 export PROOT_NO_SECCOMP=1
+export DEBIAN_FRONTEND=noninteractive
+
+# Khóa cứng cấu hình dpkg & apt để không bao giờ dừng hỏi ghi đè (openssl.cnf, etc.)
+if [ -n "$PREFIX" ] && [ -d "$PREFIX" ]; then
+    mkdir -p "$PREFIX/etc/dpkg/dpkg.cfg.d" "$PREFIX/etc/apt/apt.conf.d" 2>/dev/null || true
+    printf "force-confdef\nforce-confold\n" > "$PREFIX/etc/dpkg/dpkg.cfg.d/99force-conf" 2>/dev/null || true
+    printf 'Dpkg::Options { "--force-confdef"; "--force-confold"; };\n' > "$PREFIX/etc/apt/apt.conf.d/99force-conf" 2>/dev/null || true
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 REPO_DIR="$HOME/.stardew-mod-maker"
@@ -16,8 +24,8 @@ REPO_DIR="$HOME/.stardew-mod-maker"
 # Tự động nạp mã nguồn khi chạy trực tiếp qua: curl ... | bash
 if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     printf "Đang chuẩn bị gói cài đặt từ GitHub...\n"
-    DEBIAN_FRONTEND=noninteractive pkg update -y -o Dpkg::Options::="--force-confold" >/dev/null 2>&1 || true
-    DEBIAN_FRONTEND=noninteractive pkg install -y -o Dpkg::Options::="--force-confold" openssl curl git jq tar >/dev/null 2>&1 || true
+    yes '' 2>/dev/null | pkg update -y >/dev/null 2>&1 || true
+    yes '' 2>/dev/null | pkg install -y openssl curl git jq tar >/dev/null 2>&1 || true
     rm -rf "$REPO_DIR"
     git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-mod-maker.git "$REPO_DIR" >/dev/null 2>&1
 
@@ -142,8 +150,8 @@ do_install() {
 
     # 2. Cài đặt các gói công cụ Termux
     echo "25:Cài đặt gói công cụ Termux" > "$STATUS_FILE"
-    DEBIAN_FRONTEND=noninteractive pkg update -y -o Dpkg::Options::="--force-confold" >/dev/null 2>&1 || true
-    DEBIAN_FRONTEND=noninteractive pkg install -y -o Dpkg::Options::="--force-confold" proot-distro git curl nodejs jq tar openssl >/dev/null 2>&1 || true
+    yes '' 2>/dev/null | pkg update -y >/dev/null 2>&1 || true
+    yes '' 2>/dev/null | pkg install -y proot-distro git curl nodejs jq tar openssl >/dev/null 2>&1 || true
 
     # 3. Cài đặt PRoot Ubuntu
     echo "45:Thiết lập PRoot Ubuntu" > "$STATUS_FILE"

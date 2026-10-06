@@ -166,5 +166,5 @@ echo
 print_box "Đã dọn sạch hệ thống! Sẵn sàng cài đặt lại."
 echo
 print_info "Lệnh cài đặt lại bằng 1 dòng:"
-echo "  apt update -y && apt install -y openssl curl && curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
+echo "  yes '' 2>/dev/null | pkg install -y openssl curl && curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
 echo
