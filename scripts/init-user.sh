@@ -78,6 +78,11 @@ mkdir -p "$USER_WORKSPACE"
 mkdir -p "$USER_WORKSPACE/mods"
 mkdir -p "$USER_WORKSPACE/lib"
 
+# Ánh xạ bộ nhớ thiết bị Android (/sdcard) trực tiếp vào thư mục người dùng
+ln -sfn /sdcard "$USER_HOME/sdcard" 2>/dev/null || true
+ln -sfn /sdcard/StardewValley "$USER_WORKSPACE/game" 2>/dev/null || true
+ln -sfn /sdcard/StardewValley/desktop/Mods "$USER_WORKSPACE/installed-mods" 2>/dev/null || true
+
 TEMPLATE_SRC="/usr/local/share/stardew-template"
 if [ -d "$TEMPLATE_SRC/templates" ]; then
     cp -r "$TEMPLATE_SRC/templates" "$USER_WORKSPACE/"

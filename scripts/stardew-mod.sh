@@ -27,6 +27,15 @@ GAME_FILES="$GAME_DIR/desktop/GameFiles"
 SMAPI_DIR="$GAME_DIR/smapi-internal"
 MODS_DIR="$GAME_DIR/desktop/Mods"
 
+# Tự động ánh xạ bộ nhớ Android vào home & workspace nếu chưa có
+if [ -d "/sdcard" ]; then
+    [ ! -e "$HOME/sdcard" ] && ln -sfn /sdcard "$HOME/sdcard" 2>/dev/null || true
+    if [ -d "$WORKSPACE" ]; then
+        [ ! -e "$WORKSPACE/game" ] && [ -d "$GAME_DIR" ] && ln -sfn "$GAME_DIR" "$WORKSPACE/game" 2>/dev/null || true
+        [ ! -e "$WORKSPACE/installed-mods" ] && [ -d "$MODS_DIR" ] && ln -sfn "$MODS_DIR" "$WORKSPACE/installed-mods" 2>/dev/null || true
+    fi
+fi
+
 # ------------------------------------------------------------------------------
 # 1. DOCTOR: Kiểm tra môi trường hệ thống & game files
 # ------------------------------------------------------------------------------

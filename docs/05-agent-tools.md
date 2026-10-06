@@ -48,7 +48,17 @@ stardew-mod deploy
 
 ---
 
-## 4. NGUYÊN TẮC KỸ THUẬT CINDERBOX ANDROID
+## 4. CẤU TRÚC THƯ MỤC ÁNH XẠ (WORKSPACE MAP)
+
+Hệ thống đã tự động liên kết các thư mục quan trọng ngay trong thư mục người dùng:
+- `~/sdcard`: Ánh xạ trực tiếp toàn bộ bộ nhớ máy Android.
+- `~/stardew-workspace/game`: Ánh xạ đến `/sdcard/StardewValley/` (thư mục game gốc).
+- `~/stardew-workspace/installed-mods`: Ánh xạ đến `/sdcard/StardewValley/desktop/Mods/` (nơi game đọc mod).
+- `~/stardew-workspace/mods/`: Nơi chứa mã nguồn các bản mod bạn và Agent đang phát triển.
+
+---
+
+## 5. NGUYÊN TẮC KỸ THUẬT CINDERBOX ANDROID
 1. TargetFramework bắt buộc: `<TargetFramework>net10.0</TargetFramework>`
 2. Không dùng `TextBox` (bàn phím ảo Android không mở). Dùng `TitleTextInputMenu`.
 3. Kiểm tra nút bấm: kết hợp cả `e.Button.IsUseToolButton()` và `e.Button == SButton.MouseLeft`.
