@@ -99,6 +99,12 @@ elif [ -f "/root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md" ]; then
     cp /root/stardew-env/VIBECODE_PROMPT_TEMPLATE.md "$USER_WORKSPACE/"
 fi
 
+if [ -f "$TEMPLATE_SRC/AGENTS.md" ]; then
+    cp "$TEMPLATE_SRC/AGENTS.md" "$USER_WORKSPACE/AGENTS.md"
+elif [ -f "/root/stardew-env/AGENTS.md" ]; then
+    cp /root/stardew-env/AGENTS.md "$USER_WORKSPACE/AGENTS.md"
+fi
+
 if [ -f "$TEMPLATE_SRC/docs/05-agent-tools.md" ]; then
     cp "$TEMPLATE_SRC/docs/05-agent-tools.md" "$USER_WORKSPACE/AGENT_GUIDE.md"
 elif [ -f "/root/stardew-env/docs/05-agent-tools.md" ]; then
