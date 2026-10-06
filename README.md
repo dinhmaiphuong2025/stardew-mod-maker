@@ -30,7 +30,7 @@ Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên �
 Mở ứng dụng **Termux** và dán dòng lệnh sau:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
+pkg install -y curl && curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
 ```
 
 - Nhập tên người dùng khi được hỏi (ví dụ: `stardew`).

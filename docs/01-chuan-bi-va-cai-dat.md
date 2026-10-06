@@ -21,7 +21,7 @@ Sau khi cài đặt xong, mở ứng dụng Termux.
 Trên màn hình Termux, dán và chạy duy nhất dòng lệnh sau:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
+pkg install -y curl && curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
 ```
 
 *(Hoặc: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh)"`)*
