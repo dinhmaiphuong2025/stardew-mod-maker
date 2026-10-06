@@ -494,6 +494,29 @@ cmd_agent() {
     esac
 }
 
+cmd_update() {
+    print_header "CẬP NHẬT STARDEW-MOD"
+    print_info "Đang tải bản cập nhật mới nhất từ GitHub..."
+    local base_url="https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-proot-vibecoding/main"
+    local updated=0
+    if curl -sSL "$base_url/scripts/stardew-mod.sh" -o /tmp/stardew-mod.sh 2>/dev/null; then
+        sudo cp -f /tmp/stardew-mod.sh /usr/local/bin/stardew-mod 2>/dev/null || cp -f /tmp/stardew-mod.sh /usr/local/bin/stardew-mod 2>/dev/null || true
+        sudo chmod +x /usr/local/bin/stardew-mod 2>/dev/null || chmod +x /usr/local/bin/stardew-mod 2>/dev/null || true
+        rm -f /tmp/stardew-mod.sh
+        updated=1
+    fi
+    if curl -sSL "$base_url/scripts/ui.sh" -o /tmp/ui.sh 2>/dev/null; then
+        sudo cp -f /tmp/ui.sh /usr/local/bin/ui.sh 2>/dev/null || cp -f /tmp/ui.sh /usr/local/bin/ui.sh 2>/dev/null || true
+        sudo chmod +x /usr/local/bin/ui.sh 2>/dev/null || chmod +x /usr/local/bin/ui.sh 2>/dev/null || true
+        rm -f /tmp/ui.sh
+    fi
+    if [ "$updated" -eq 1 ]; then
+        print_success "Cập nhật stardew-mod và ui.sh thành công!"
+    else
+        print_error "Cập nhật thất bại. Vui lòng kiểm tra lại kết nối mạng."
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # MENU TƯƠNG TÁC DÀNH CHO CON NGƯỜI (Nếu chạy trực tiếp không có đối số)
 # ------------------------------------------------------------------------------
@@ -509,6 +532,7 @@ interactive_menu() {
             "Triển khai vào game (Deploy)"
             "Xem log game & SMAPI (Logs)"
             "Danh sách các mod (List)"
+            "Cập nhật stardew-mod (Update)"
         )
         print_menu "${menu_items[@]}"
 
@@ -554,6 +578,12 @@ interactive_menu() {
                 echo
                 wait_for_enter
                 ;;
+            8)
+                echo
+                cmd_update
+                echo
+                wait_for_enter
+                ;;
             0|q|Q)
                 echo
                 print_info "Tạm biệt!"
@@ -590,6 +620,9 @@ case "$1" in
     list|ls)
         cmd_list
         ;;
+    update)
+        cmd_update
+        ;;
     help|--help|-h)
         print_header "STARDEW-MOD CLI (Agent & Human Friendly)"
         echo "  stardew-mod doctor [--json]    Kiểm tra .NET SDK, game files & SMAPI"
@@ -599,6 +632,7 @@ case "$1" in
         echo "  stardew-mod deploy [ĐườngDẫn]  Đóng gói và copy trực tiếp vào game Mods/"
         echo "  stardew-mod logs [SốDòng]       Đọc log SMAPI để phân tích lỗi crash"
         echo "  stardew-mod list               Xem danh sách các mod trong workspace & game"
+        echo "  stardew-mod update             Tải và cập nhật stardew-mod mới nhất từ GitHub"
         print_line
         ;;
     "")
