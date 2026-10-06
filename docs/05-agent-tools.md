@@ -20,12 +20,22 @@ Khi người dùng mô tả tính năng muốn tạo:
 | Lệnh | Ý nghĩa | Cách Agent sử dụng |
 |---|---|---|
 | `stardew-mod doctor --json` | Kiểm tra môi trường | Lấy dữ liệu JSON về trạng thái game & .NET |
-| `stardew-mod agent [TênAgent]` | Cài đặt AI Coding Agent | Cài đặt OpenCode, Antigravity, Claude, Codex, Hermes |
+| `stardew-mod agent [TênAgent]` | Cài đặt AI Coding Agent | Cài đặt OpenCode, Antigravity (agy), Claude, Codex, Hermes |
 | `stardew-mod new <TênMod>` | Tạo mod mới | Tự động sinh thư mục dự án và file mẫu |
 | `stardew-mod build [ThưMục]` | Biên dịch dự án | Trả về log chi tiết (CSxxxx, số dòng) |
 | `stardew-mod deploy [ThưMục]` | Cài đặt vào game | Đóng gói và copy trực tiếp vào `/sdcard/StardewValley/desktop/Mods/` |
 | `stardew-mod logs [N]` | Đọc log SMAPI | Xem log game để gỡ lỗi crash |
 | `stardew-mod list` | Liệt kê các mod | Xem danh sách mod hiện có |
+
+### Bảng Phân Loại AI Coding Agent (Free vs Paid)
+
+| Agent CLI | Lệnh Chạy | Phân Loại Chi Phí | Chi Tiết Sử Dụng |
+|---|---|---|---|
+| **OpenCode CLI** | `opencode` | **Miễn phí** (Open-Source) | Dùng được local Ollama miễn phí hoặc tự cấp API Key cá nhân giá rẻ (DeepSeek, OpenRouter) |
+| **Antigravity CLI** | `agy` | **Miễn phí có hạn mức** (Google Tier) | Đăng nhập tài khoản Google, có quota miễn phí hàng ngày |
+| **Claude Code** | `claude` | **Trả phí** (Subscription / API) | Yêu cầu gói Claude Pro ($20/tháng) hoặc Anthropic API Key tính theo token |
+| **OpenAI Codex CLI** | `codex` | **Trả phí** (Paid API) | Yêu cầu OpenAI API Key tính theo lượng token dùng |
+| **Hermes Agent CLI** | `hermes` | **Miễn phí** (Open-Source & BYOK) | 100% mã nguồn mở tự do, hỗ trợ 20+ provider và local models |
 
 ---
 
