@@ -24,8 +24,8 @@ REPO_DIR="$HOME/.stardew-mod-maker"
 # Tự động nạp mã nguồn khi chạy trực tiếp qua: curl ... | bash
 if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     printf "Đang chuẩn bị gói cài đặt từ GitHub...\n"
-    yes '' 2>/dev/null | pkg update -y >/dev/null 2>&1 || true
-    yes '' 2>/dev/null | pkg install -y openssl curl git jq tar >/dev/null 2>&1 || true
+    apt-get update -y >/dev/null 2>&1 || true
+    apt-get install -y --no-install-recommends openssl curl git jq tar >/dev/null 2>&1 || true
     rm -rf "$REPO_DIR"
     git clone --depth 1 https://github.com/dinhmaiphuong2025/stardew-mod-maker.git "$REPO_DIR" >/dev/null 2>&1
 
@@ -152,11 +152,15 @@ if [ -z "$PREFIX" ] || [ ! -d "$PREFIX" ]; then
     exit 1
 fi
 
-STATUS_FILE="/tmp/.stardew_install_status"
-rm -f "$STATUS_FILE"
+TMP_DIR="${TMPDIR:-$PREFIX/tmp}"
+mkdir -p "$TMP_DIR"
+STATUS_FILE="$TMP_DIR/.stardew_install_status"
+INSTALL_LOG="$TMP_DIR/stardew_install.log"
+rm -f "$STATUS_FILE" "$INSTALL_LOG"
 
 # Toàn bộ quy trình cài đặt thực hiện ngầm trong 1 luồng
 do_install() {
+    set +e
     # 1. Kiểm tra quyền bộ nhớ
     echo "10:Kiểm tra bộ nhớ thiết bị" > "$STATUS_FILE"
     if [ ! -d "$HOME/storage/shared" ]; then
@@ -166,17 +170,17 @@ do_install() {
 
     # 2. Cài đặt các gói công cụ Termux
     echo "25:Cài đặt gói công cụ Termux" > "$STATUS_FILE"
-    yes '' 2>/dev/null | pkg update -y >/dev/null 2>&1 || true
-    yes '' 2>/dev/null | pkg install -y proot-distro git curl nodejs jq tar openssl >/dev/null 2>&1 || true
+    apt-get update -y >> "$INSTALL_LOG" 2>&1 || true
+    apt-get install -y --no-install-recommends proot-distro git curl nodejs jq tar openssl >> "$INSTALL_LOG" 2>&1 || true
 
     # 3. Cài đặt PRoot Ubuntu
     echo "45:Thiết lập PRoot Ubuntu" > "$STATUS_FILE"
     if ! is_ubuntu_installed; then
-        proot-distro remove ubuntu >/dev/null 2>&1 || true
+        proot-distro remove ubuntu >> "$INSTALL_LOG" 2>&1 || true
         rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
                "$PREFIX/var/lib/proot-distro/containers/ubuntu" \
                "$HOME/.local/share/proot-distro/containers/ubuntu" 2>/dev/null || true
-        proot-distro install ubuntu >/dev/null 2>&1 || proot-distro install ubuntu:24.04 >/dev/null 2>&1 || true
+        proot-distro install ubuntu >> "$INSTALL_LOG" 2>&1 || proot-distro install ubuntu:24.04 >> "$INSTALL_LOG" 2>&1 || true
     fi
 
     # 4. Cấu hình liên kết /sdcard
@@ -190,9 +194,10 @@ do_install() {
 
     # 5. Cấu hình môi trường bên trong Ubuntu (.NET SDK, công cụ)
     echo "85:Cấu hình .NET SDK & công cụ" > "$STATUS_FILE"
-    tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >/dev/null 2>&1 || true
-    proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >/dev/null 2>&1 || true
+    tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >> "$INSTALL_LOG" 2>&1 || true
+    proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >> "$INSTALL_LOG" 2>&1 || true
     echo "100:Hoàn tất cài đặt môi trường" > "$STATUS_FILE"
+    return 0
 }
 
 # Thanh tiến trình động duy nhất tự căn chỉnh theo độ rộng màn hình Termux (khi zoom)
@@ -273,6 +278,12 @@ run_install_progress() {
     else
         printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
             "$bar" "$cur_pct" "$exit_code"
+        if [ -f "$INSTALL_LOG" ]; then
+            echo
+            print_warning "Chi tiết lỗi:"
+            tail -n 15 "$INSTALL_LOG"
+            echo
+        fi
         return "$exit_code"
     fi
 }
