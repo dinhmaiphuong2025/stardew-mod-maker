@@ -46,15 +46,31 @@ else
     RED='\033[1;31m' GREEN='\033[1;32m' YELLOW='\033[1;33m'
     CYAN='\033[1;36m' WHITE='\033[1;37m'
     clear_screen() { printf "\033[2J\033[H"; }
-    print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
+    get_term_cols() {
+        local c=""
+        command -v tput >/dev/null 2>&1 && c=$(tput cols 2>/dev/null || true)
+        [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=$(stty size 2>/dev/null | awk '{print $2}' || echo "$COLUMNS")
+        [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=50
+        echo "$c"
+    }
+    print_line() {
+        local cols
+        cols=$(get_term_cols)
+        local width=$(( cols - 2 ))
+        [ "$width" -gt 60 ] && width=60
+        [ "$width" -lt 25 ] && width=25
+        local line=""
+        for ((l=0; l<width; l++)); do line="${line}─"; done
+        printf "${GRAY}%s${RESET}\n" "$line"
+    }
     print_prompt() { printf "${GREEN}❯ ${RESET}" >&2; }
     print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
     print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
     print_warning() { printf "${YELLOW}⠶ %s${RESET}\n" "$1"; }
     print_info() { printf "${CYAN}⠿ %s${RESET}\n" "$1"; }
     banner() {
-        printf "      ${BOLD}${WHITE}%s${RESET}\n" "$1"
-        [ -n "$2" ] && printf "      ${GRAY}%s${RESET}\n" "$2"
+        printf "  ${BOLD}${WHITE}%s${RESET}\n" "$1"
+        [ -n "$2" ] && printf "  ${GRAY}%s${RESET}\n" "$2"
         print_line
     }
     print_box() {
@@ -179,11 +195,10 @@ do_install() {
     echo "100:Hoàn tất cài đặt môi trường" > "$STATUS_FILE"
 }
 
-# Thanh tiến trình động duy nhất hiển thị trên 1 dòng
+# Thanh tiến trình động duy nhất tự căn chỉnh theo độ rộng màn hình Termux (khi zoom)
 run_install_progress() {
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
-    local width=16
     local i=0
     local cur_pct=5
     local cur_label="Đang chuẩn bị môi trường..."
@@ -193,6 +208,18 @@ run_install_progress() {
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
+        local cols
+        cols=$(get_term_cols)
+
+        # Tính độ rộng thanh tiến trình phù hợp khi zoom to
+        local bar_w=12
+        [ "$cols" -lt 48 ] && bar_w=8
+        [ "$cols" -ge 65 ] && bar_w=16
+
+        # Tính độ dài nhãn để không bao giờ bị tràn dòng (wrap line)
+        local max_label_w=$(( cols - bar_w - 18 ))
+        [ "$max_label_w" -lt 12 ] && max_label_w=12
+
         if [ -f "$STATUS_FILE" ]; then
             local status_line
             status_line=$(cat "$STATUS_FILE" 2>/dev/null || true)
@@ -212,15 +239,16 @@ run_install_progress() {
             cur_pct=$(( cur_pct + 1 ))
         fi
 
-        local filled=$(( cur_pct * width / 100 ))
-        local empty=$(( width - filled ))
+        local filled=$(( cur_pct * bar_w / 100 ))
+        local empty=$(( bar_w - filled ))
         local bar=""
         for ((b=0; b<filled; b++)); do bar="${bar}█"; done
         for ((b=0; b<empty; b++)); do bar="${bar}░"; done
 
+        local display_label="${cur_label:0:$max_label_w}"
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-32s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$cur_label"
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}\033[K" \
+            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$max_label_w" "$display_label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -230,15 +258,20 @@ run_install_progress() {
     rm -f "$STATUS_FILE"
     printf "\033[?25h"
 
+    local cols
+    cols=$(get_term_cols)
+    local bar_w=12
+    [ "$cols" -lt 48 ] && bar_w=8
+    [ "$cols" -ge 65 ] && bar_w=16
     local full_bar=""
-    for ((b=0; b<width; b++)); do full_bar="${full_bar}█"; done
+    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}█"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}%-32s${RESET}\033[K\n" \
-            "$full_bar" "Cài đặt môi trường hoàn tất"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
+            "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}Cài đặt thất bại (mã lỗi %d)${RESET}\033[K\n" \
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
             "$bar" "$cur_pct" "$exit_code"
         return "$exit_code"
     fi

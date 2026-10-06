@@ -20,7 +20,23 @@ CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
 clear_screen() { printf "\033[2J\033[H"; }
-print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
+get_term_cols() {
+    local c=""
+    command -v tput >/dev/null 2>&1 && c=$(tput cols 2>/dev/null || true)
+    [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=$(stty size 2>/dev/null | awk '{print $2}' || echo "$COLUMNS")
+    [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null && c=50
+    echo "$c"
+}
+print_line() {
+    local cols
+    cols=$(get_term_cols)
+    local width=$(( cols - 2 ))
+    [ "$width" -gt 60 ] && width=60
+    [ "$width" -lt 25 ] && width=25
+    local line=""
+    for ((l=0; l<width; l++)); do line="${line}─"; done
+    printf "${GRAY}%s${RESET}\n" "$line"
+}
 print_prompt() { printf "${GREEN}❯ ${RESET}" >&2; }
 print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
 print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
@@ -29,8 +45,8 @@ print_info() { printf "${CYAN}⠿ %s${RESET}\n" "$1"; }
 
 banner() {
     local title="$1" subtitle="$2"
-    printf "      ${BOLD}${WHITE}%s${RESET}\n" "$title"
-    [ -n "$subtitle" ] && printf "      ${GRAY}%s${RESET}\n" "$subtitle"
+    printf "  ${BOLD}${WHITE}%s${RESET}\n" "$title"
+    [ -n "$subtitle" ] && printf "  ${GRAY}%s${RESET}\n" "$subtitle"
     print_line
 }
 
@@ -68,7 +84,6 @@ run_single_progress() {
     shift
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
-    local width=16
     local i=0
     local pct=10
 
@@ -77,18 +92,27 @@ run_single_progress() {
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
+        local cols
+        cols=$(get_term_cols)
+        local bar_w=12
+        [ "$cols" -lt 48 ] && bar_w=8
+        [ "$cols" -ge 65 ] && bar_w=16
+        local max_label_w=$(( cols - bar_w - 18 ))
+        [ "$max_label_w" -lt 12 ] && max_label_w=12
+
         local idx=$(( i % n_chars ))
         if [ "$pct" -lt 90 ] && [ $(( i % 4 )) -eq 0 ]; then
             pct=$(( pct + 5 ))
         fi
-        local filled=$(( pct * width / 100 ))
-        local empty=$(( width - filled ))
+        local filled=$(( pct * bar_w / 100 ))
+        local empty=$(( bar_w - filled ))
         local bar=""
         for ((b=0; b<filled; b++)); do bar="${bar}█"; done
         for ((b=0; b<empty; b++)); do bar="${bar}░"; done
 
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$pct" "$label"
+        local display_label="${label:0:$max_label_w}"
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}\033[K" \
+            "${spin_chars[$idx]}" "$bar" "$pct" "$max_label_w" "$display_label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -97,14 +121,19 @@ run_single_progress() {
     local exit_code=$?
     printf "\033[?25h"
 
+    local cols
+    cols=$(get_term_cols)
+    local bar_w=12
+    [ "$cols" -lt 48 ] && bar_w=8
+    [ "$cols" -ge 65 ] && bar_w=16
     local full_bar=""
-    for ((b=0; b<width; b++)); do full_bar="${full_bar}█"; done
+    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}█"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Gỡ bỏ môi trường hoàn tất${RESET}\033[K\n" "$full_bar"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Gỡ bỏ hoàn tất${RESET}\033[K\n" "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} Gỡ bỏ thất bại (mã lỗi %d)\033[K\n" "$exit_code"
+        printf "\r  ${RED}✗${RESET} Gỡ bỏ thất bại (mã %d)\033[K\n" "$exit_code"
         return "$exit_code"
     fi
 }
@@ -166,5 +195,5 @@ echo
 print_box "Đã dọn sạch hệ thống! Sẵn sàng cài đặt lại."
 echo
 print_info "Lệnh cài đặt lại bằng 1 dòng:"
-echo "  yes '' 2>/dev/null | pkg install -y openssl curl && curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
+echo "  curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
 echo

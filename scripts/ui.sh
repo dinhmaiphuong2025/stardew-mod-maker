@@ -25,9 +25,31 @@ clear_screen() {
     printf "\033[2J\033[H"
 }
 
-# Gạch ngang màu xám dài 61 ký tự
+# Lấy độ rộng màn hình thực tế (tự co giãn khi người dùng zoom chữ trong Termux)
+get_term_cols() {
+    local c=""
+    if command -v tput >/dev/null 2>&1; then
+        c=$(tput cols 2>/dev/null || true)
+    fi
+    if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
+        c=$(stty size 2>/dev/null | awk '{print $2}' || echo "$COLUMNS")
+    fi
+    if [ -z "$c" ] || [ "$c" -le 0 ] 2>/dev/null; then
+        c=50
+    fi
+    echo "$c"
+}
+
+# Gạch ngang tự động căn chỉnh đúng độ rộng màn hình khi zoom
 print_line() {
-    printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"
+    local cols
+    cols=$(get_term_cols)
+    local width=$(( cols - 2 ))
+    [ "$width" -gt 60 ] && width=60
+    [ "$width" -lt 25 ] && width=25
+    local line=""
+    for ((l=0; l<width; l++)); do line="${line}─"; done
+    printf "${GRAY}%s${RESET}\n" "$line"
 }
 
 # Dấu nhắc lệnh (in ra stderr để không làm bẩn giá trị trả về của hàm)
@@ -56,9 +78,9 @@ print_info() {
 banner() {
     local title="$1"
     local subtitle="$2"
-    printf "      ${BOLD}${WHITE}%s${RESET}\n" "$title"
+    printf "  ${BOLD}${WHITE}%s${RESET}\n" "$title"
     if [ -n "$subtitle" ]; then
-        printf "      ${GRAY}%s${RESET}\n" "$subtitle"
+        printf "  ${GRAY}%s${RESET}\n" "$subtitle"
     fi
     print_line
 }
