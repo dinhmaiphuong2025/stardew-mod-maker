@@ -61,32 +61,16 @@ confirm() {
 }
 
 # ------------------------------------------------------------------------------
-# THANH TIẾN TRÌNH ĐỘNG DUY NHẤT (Single Animated Progress Bar)
+# THANH TIẾN TRÌNH ĐỘNG DUY NHẤT (Single Unified Progress Bar)
 # ------------------------------------------------------------------------------
-CURRENT_STEP=0
-TOTAL_STEPS=1
-
-init_progress() {
-    TOTAL_STEPS="$1"
-    CURRENT_STEP=0
-}
-
-step_task() {
+run_single_progress() {
     local label="$1"
     shift
-
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
-    local i=0
     local width=16
-
-    # Tiến trình trước khi bắt đầu bước này
-    local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-    local start_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-    local start_empty=$(( width - start_filled ))
-    local run_bar=""
-    for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}█"; done
-    for ((b=0; b<start_empty; b++)); do run_bar="${run_bar}░"; done
+    local i=0
+    local pct=10
 
     printf "\033[?25l"
     "$@" </dev/null >/dev/null 2>&1 &
@@ -94,8 +78,17 @@ step_task() {
 
     while kill -0 "$pid" 2>/dev/null; do
         local idx=$(( i % n_chars ))
+        if [ "$pct" -lt 90 ] && [ $(( i % 4 )) -eq 0 ]; then
+            pct=$(( pct + 5 ))
+        fi
+        local filled=$(( pct * width / 100 ))
+        local empty=$(( width - filled ))
+        local bar=""
+        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
+        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+
         printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label"
+            "${spin_chars[$idx]}" "$bar" "$pct" "$label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -104,28 +97,16 @@ step_task() {
     local exit_code=$?
     printf "\033[?25h"
 
-    CURRENT_STEP=$((CURRENT_STEP + 1))
-    local end_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-    local end_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-    local end_empty=$(( width - end_filled ))
-    local end_bar=""
-    for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}█"; done
-    for ((b=0; b<end_empty; b++)); do end_bar="${end_bar}░"; done
+    local full_bar=""
+    for ((b=0; b<width; b++)); do full_bar="${full_bar}█"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "$end_bar" "$end_pct" "$label"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Gỡ bỏ môi trường hoàn tất${RESET}\033[K\n" "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
-            "$end_bar" "$end_pct" "$label" "$exit_code"
+        printf "\r  ${RED}✗${RESET} Gỡ bỏ thất bại (mã lỗi %d)\033[K\n" "$exit_code"
         return "$exit_code"
     fi
-}
-
-finish_progress() {
-    printf "\n"
-    print_line
 }
 
 FORCE=0
@@ -154,18 +135,14 @@ else
     print_info "Chế độ tự động (-y): Bỏ qua bước xác nhận."
 fi
 
-# Khởi tạo thanh tiến trình động duy nhất
-init_progress 4
 echo
 
-# Bước 1: Xóa các binary lệnh thực thi trên Termux
-clean_bins() {
-    rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code" "$PREFIX/etc/stardew-default-user"
-}
-step_task "Gỡ bỏ các lệnh thực thi trên Termux" clean_bins
+# Hàm thực thi dọn dẹp toàn bộ hệ thống
+do_uninstall() {
+    # 1. Gỡ bỏ các binary lệnh thực thi trên Termux
+    rm -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" "$PREFIX/bin/stardew-code" "$PREFIX/etc/stardew-default-user" 2>/dev/null || true
 
-# Bước 2: Gỡ bỏ container PRoot Ubuntu
-clean_container() {
+    # 2. Gỡ bỏ container PRoot Ubuntu
     if command -v proot-distro >/dev/null 2>&1; then
         proot-distro remove ubuntu >/dev/null 2>&1 || true
         proot-distro reset ubuntu >/dev/null 2>&1 || true
@@ -173,22 +150,18 @@ clean_container() {
     rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
            "$PREFIX/var/lib/proot-distro/containers/ubuntu" \
            "$HOME/.local/share/proot-distro/containers/ubuntu" 2>/dev/null || true
-}
-step_task "Gỡ bỏ container PRoot Ubuntu" clean_container
 
-# Bước 3: Dọn dẹp cấu hình liên kết bộ nhớ
-clean_conf() {
-    rm -f "$PREFIX/etc/proot-distro/ubuntu.override.conf"
-}
-step_task "Dọn dẹp cấu hình liên kết bộ nhớ" clean_conf
+    # 3. Dọn dẹp cấu hình liên kết bộ nhớ
+    rm -f "$PREFIX/etc/proot-distro/ubuntu.override.conf" 2>/dev/null || true
 
-# Bước 4: Xóa thư mục mã nguồn tạm
-clean_repo() {
-    rm -rf "$REPO_DIR"
+    # 4. Xóa thư mục mã nguồn tạm
+    rm -rf "$REPO_DIR" 2>/dev/null || true
 }
-step_task "Dọn dẹp thư mục mã nguồn tạm" clean_repo
 
-finish_progress
+# Chạy đúng 1 thanh tiến trình duy nhất
+run_single_progress "Đang dọn dẹp và gỡ bỏ toàn bộ môi trường..." do_uninstall
+
+print_line
 echo
 print_box "Đã dọn sạch hệ thống! Sẵn sàng cài đặt lại."
 echo
