@@ -25,8 +25,74 @@ if [ ! -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
     fi
 fi
 
-# Tải thư viện UI style
-source "$SCRIPT_DIR/scripts/ui.sh"
+# Tải thư viện UI style hoặc dùng hàm tích hợp sẵn
+if [ -f "$SCRIPT_DIR/scripts/ui.sh" ]; then
+    source "$SCRIPT_DIR/scripts/ui.sh"
+elif [ -f "$REPO_DIR/scripts/ui.sh" ]; then
+    source "$REPO_DIR/scripts/ui.sh"
+else
+    RESET='\033[0m' BOLD='\033[1m' GRAY='\033[90m'
+    RED='\033[1;31m' GREEN='\033[1;32m' YELLOW='\033[1;33m'
+    CYAN='\033[1;36m' WHITE='\033[1;37m'
+    clear_screen() { printf "\033[2J\033[H"; }
+    print_line() { printf "${GRAY}─────────────────────────────────────────────────────────────${RESET}\n"; }
+    print_prompt() { printf "${GREEN}❯ ${RESET}"; }
+    print_success() { printf "${GREEN}✓ %s${RESET}\n" "$1"; }
+    print_error() { printf "${RED}✗ %s${RESET}\n" "$1"; }
+    print_warning() { printf "${YELLOW}⠶ %s${RESET}\n" "$1"; }
+    print_info() { printf "${CYAN}⠿ %s${RESET}\n" "$1"; }
+    banner() {
+        printf "      ${BOLD}${WHITE}%s${RESET}\n" "$1"
+        [ -n "$2" ] && printf "      ${GRAY}%s${RESET}\n" "$2"
+        print_line
+    }
+    print_box() {
+        local text="$1" len=${#text} border=""
+        for ((i=0; i<len+2; i++)); do border="${border}─"; done
+        printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$text" "$border"
+    }
+    confirm() {
+        local msg="$1" resp=""
+        printf "%s (y/N): " "$msg"
+        if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+            read -r resp < /dev/tty 2>/dev/null || read -r resp 2>/dev/null || resp="n"
+        else
+            read -r resp 2>/dev/null || resp="n"
+        fi
+        case "$resp" in [yY]|[yY][eE][sS]) return 0 ;; *) return 1 ;; esac
+    }
+    CURRENT_STEP=0; TOTAL_STEPS=1
+    init_progress() { TOTAL_STEPS="$1"; CURRENT_STEP=0; }
+    step_task() {
+        local label="$1"; shift
+        CURRENT_STEP=$((CURRENT_STEP + 1))
+        local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+        local n_chars=${#spin_chars[@]} i=0 width=16
+        local percent=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
+        local filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
+        local empty=$(( width - filled )) bar=""
+        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
+        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+        printf "\033[?25l"
+        "$@" </dev/null >/dev/null 2>&1 &
+        local pid=$!
+        while kill -0 "$pid" 2>/dev/null; do
+            local idx=$(( i % n_chars ))
+            printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "${spin_chars[$idx]}" "$bar" "$percent" "$label"
+            i=$(( i + 1 )); sleep 0.08
+        done
+        wait "$pid"; local exit_code=$?
+        printf "\033[?25h"
+        if [ "$exit_code" -eq 0 ]; then
+            printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" "$bar" "$percent" "$label"
+            return 0
+        else
+            printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s thất bại${RESET}\033[K\n" "$bar" "$percent" "$label"
+            return "$exit_code"
+        fi
+    }
+    finish_progress() { printf "\n"; print_line; }
+fi
 
 # Hàm kiểm tra container ubuntu tồn tại
 is_ubuntu_installed() {
