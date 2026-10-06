@@ -113,8 +113,8 @@ if [ -f /usr/local/bin/ui.sh ]; then
     clear_screen
     banner "STARDEW MOD VIBECODING" "Không gian sáng tạo Mod Cinderbox Android"
     print_info "Cài đặt AI Coding Agent mong muốn để bắt đầu:"
-    echo "  • OpenCode CLI [Miễn phí, lệnh 'opencode']:      stardew-mod agent opencode"
-    echo "  • Antigravity CLI [Google Tier, lệnh 'agy']:     stardew-mod agent antigravity"
+    echo "  • OpenCode CLI v2 [Cloud Free (Big Pickle, Muse Spark), lệnh 'opencode']: stardew-mod agent opencode"
+    echo "  • Antigravity CLI [Google Tier, lệnh 'agy']:                               stardew-mod agent antigravity"
     echo
     print_info "Hoặc gõ 'stardew-mod agent' để chọn Claude, Codex, Hermes... kèm chi tiết Free/Paid."
     print_line

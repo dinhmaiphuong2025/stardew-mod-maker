@@ -6,6 +6,8 @@
 
 set -e
 
+export PATH="$HOME/.opencode/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Tải thư viện UI style
@@ -286,19 +288,24 @@ ensure_python_pip() {
 }
 
 install_opencode() {
-    print_header "CÀI ĐẶT OPENCODE CLI"
-    echo "  Chi phí:  [MIỄN PHÍ - Open Source]"
-    echo "            Không cần thuê bao tháng. Dùng được mô hình local (Ollama) miễn phí"
-    echo "            hoặc tự kết nối API key cá nhân (DeepSeek, OpenRouter, OpenAI)."
-    echo "  Mô tả:    AI Coding Agent mã nguồn mở, cực nhẹ và tối ưu cho terminal/mobile."
+    print_header "CÀI ĐẶT OPENCODE CLI v2"
+    echo "  Chi phí:   Miễn phí (Tích hợp sẵn model free: Big Pickle, Muse Spark; hỗ trợ BYOK)"
+    echo "  Mô tả:     AI Coding Agent v2 mã nguồn mở cho terminal"
     echo "  Khởi động: opencode"
     print_line
+    export PATH="$HOME/.opencode/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+    if [ -f "$HOME/.opencode/bin/opencode" ]; then
+        sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
+    fi
     if command -v opencode >/dev/null 2>&1; then
-        print_success "OpenCode CLI đã có sẵn trên hệ thống. Gõ 'opencode' để chạy."
+        print_success "OpenCode CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: opencode"
         return 0
     fi
     print_info "Đang tải và cài đặt OpenCode..."
     curl -fsSL https://opencode.ai/install | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash 2>/dev/null || true
+    if [ -f "$HOME/.opencode/bin/opencode" ]; then
+        sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
+    fi
     if ! command -v opencode >/dev/null 2>&1; then
         ensure_node_npm
         npm install -g opencode-ai 2>/dev/null || sudo npm install -g opencode-ai 2>/dev/null || true
@@ -306,7 +313,9 @@ install_opencode() {
     if [ -f "$HOME/.bashrc" ]; then
         source "$HOME/.bashrc" 2>/dev/null || true
     fi
-    if command -v opencode >/dev/null 2>&1; then
+    export PATH="$HOME/.opencode/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+    if command -v opencode >/dev/null 2>&1 || [ -f "$HOME/.opencode/bin/opencode" ]; then
+        [ -f "$HOME/.opencode/bin/opencode" ] && sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
         print_success "Cài đặt thành công! Khởi động bằng lệnh: opencode"
     else
         print_error "Cài đặt OpenCode thất bại. Vui lòng kiểm tra lại kết nối mạng."
@@ -314,20 +323,24 @@ install_opencode() {
 }
 
 install_antigravity() {
-    print_header "CÀI ĐẶT ANTIGRAVITY CLI (agy)"
-    echo "  Chi phí:  [MIỄN PHÍ CÓ HẠN MỨC - Google Free Tier]"
-    echo "            Đăng nhập bằng tài khoản Google. Có sẵn hạn ngạch miễn phí hàng ngày,"
-    echo "            chỉ tính phí khi sử dụng tài nguyên nâng cao trên Google Cloud."
-    echo "  Mô tả:    Autonomous AI Coding Agent từ Google. Tự động đọc hiểu toàn bộ"
-    echo "            codebase, giải quyết issue, tái cấu trúc mã và review lỗi logic C#."
+    print_header "CÀI ĐẶT ANTIGRAVITY CLI"
+    echo "  Chi phí:   Miễn phí có hạn mức (Đăng nhập Google Account, Google Cloud Free Tier)"
+    echo "  Mô tả:     Autonomous Coding Agent từ Google"
     echo "  Khởi động: agy"
     print_line
+    export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+    if [ -f "$HOME/.local/bin/agy" ]; then
+        sudo ln -sf "$HOME/.local/bin/agy" /usr/local/bin/agy 2>/dev/null || true
+    fi
     if command -v agy >/dev/null 2>&1; then
-        print_success "Antigravity CLI (agy) đã có sẵn trên hệ thống. Gõ 'agy' để chạy."
+        print_success "Antigravity CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: agy"
         return 0
     fi
     print_info "Đang tải và cài đặt Antigravity qua script chính thức..."
     curl -fsSL https://antigravity.google/cli/install.sh | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/google/antigravity/main/install.sh | bash 2>/dev/null || true
+    if [ -f "$HOME/.local/bin/agy" ]; then
+        sudo ln -sf "$HOME/.local/bin/agy" /usr/local/bin/agy 2>/dev/null || true
+    fi
     if ! command -v agy >/dev/null 2>&1; then
         ensure_node_npm
         npm install -g @google/antigravity 2>/dev/null || sudo npm install -g @google/antigravity 2>/dev/null || true
@@ -335,7 +348,9 @@ install_antigravity() {
     if [ -f "$HOME/.bashrc" ]; then
         source "$HOME/.bashrc" 2>/dev/null || true
     fi
-    if command -v agy >/dev/null 2>&1; then
+    export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+    if command -v agy >/dev/null 2>&1 || [ -f "$HOME/.local/bin/agy" ]; then
+        [ -f "$HOME/.local/bin/agy" ] && sudo ln -sf "$HOME/.local/bin/agy" /usr/local/bin/agy 2>/dev/null || true
         print_success "Cài đặt thành công! Khởi động bằng lệnh: agy"
     else
         print_error "Cài đặt Antigravity CLI thất bại. Vui lòng kiểm tra lại kết nối mạng."
@@ -344,15 +359,12 @@ install_antigravity() {
 
 install_claude() {
     print_header "CÀI ĐẶT CLAUDE CODE CLI"
-    echo "  Chi phí:  [TRẢ PHÍ - Subscription / Paid API]"
-    echo "            Yêu cầu tài khoản trả phí Claude Pro ($20/tháng), Claude Max"
-    echo "            hoặc nạp tiền dùng theo lượt token qua Anthropic API Key."
-    echo "  Mô tả:    Trợ lý lập trình AI chính thức từ Anthropic. Khả năng tư duy logic và"
-    echo "            suy luận sâu, quản lý ngữ cảnh dự án lớn và tự động sửa lỗi build C#."
+    echo "  Chi phí:   Trả phí (Yêu cầu Claude Pro / Max hoặc Anthropic API Key)"
+    echo "  Mô tả:     AI Coding Agent từ Anthropic"
     echo "  Khởi động: claude"
     print_line
     if command -v claude >/dev/null 2>&1; then
-        print_success "Claude Code CLI đã có sẵn trên hệ thống. Gõ 'claude' để chạy."
+        print_success "Claude Code CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: claude"
         return 0
     fi
     ensure_node_npm
@@ -370,15 +382,12 @@ install_claude() {
 
 install_codex() {
     print_header "CÀI ĐẶT OPENAI CODEX CLI"
-    echo "  Chi phí:  [TRẢ PHÍ - Paid API Key]"
-    echo "            Yêu cầu trả phí theo lượng token qua OpenAI API Key (OPENAI_API_KEY)"
-    echo "            hoặc tài khoản tổ chức OpenAI/ChatGPT trả phí."
-    echo "  Mô tả:    Autonomous Coding Agent CLI từ OpenAI, tự động tạo git commit,"
-    echo "            refactor mã nguồn và giải quyết issues trong git repository."
+    echo "  Chi phí:   Trả phí (Yêu cầu OpenAI API Key)"
+    echo "  Mô tả:     Coding Agent CLI từ OpenAI"
     echo "  Khởi động: codex"
     print_line
     if command -v codex >/dev/null 2>&1; then
-        print_success "Codex CLI đã có sẵn trên hệ thống. Gõ 'codex' để chạy."
+        print_success "Codex CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: codex"
         return 0
     fi
     ensure_node_npm
@@ -396,19 +405,16 @@ install_codex() {
 
 install_hermes() {
     print_header "CÀI ĐẶT HERMES AGENT CLI"
-    echo "  Chi phí:  [MIỄN PHÍ - Open Source & BYOK]"
-    echo "            100% mã nguồn mở tự do. Dùng được mô hình local miễn phí, tích hợp"
-    echo "            hơn 20+ nhà cung cấp (DeepSeek giá rẻ, Groq free tier, OpenRouter)."
-    echo "  Mô tả:    Trợ lý AI tự trị đa chức năng từ Nous Research. Tích hợp sẵn bộ công cụ,"
-    echo "            giao tiếp terminal, bộ nhớ dài hạn, kỹ năng mở rộng và điều phối subagents."
+    echo "  Chi phí:   Miễn phí (Mã nguồn mở, tự cấp API Key / BYOK hoặc dùng local model)"
+    echo "  Mô tả:     AI Agent Framework từ Nous Research"
     echo "  Khởi động: hermes"
     print_line
     if command -v hermes >/dev/null 2>&1; then
-        print_success "Hermes Agent CLI đã có sẵn trên hệ thống. Gõ 'hermes' để chạy."
+        print_success "Hermes Agent CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: hermes"
         return 0
     fi
-    print_info "Đang tải và cài đặt Hermes Agent..."
-    curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash 2>/dev/null || true
+    print_info "Đang cài đặt Hermes Agent..."
+    curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/install.sh | bash 2>/dev/null || true
     if ! command -v hermes >/dev/null 2>&1; then
         ensure_python_pip
         pip3 install --upgrade hermes-agent 2>/dev/null || pip install --upgrade hermes-agent 2>/dev/null || true
@@ -450,21 +456,21 @@ cmd_agent() {
             while true; do
                 clear_screen
                 banner "CÀI ĐẶT AI CODING AGENT" "Chọn Agent hỗ trợ VibeCoding Mod Stardew Valley"
-                printf "  ${CYAN}[1] OpenCode CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source]${RESET}\n"
-                printf "      Đa mô hình (DeepSeek, OpenAI, Claude, Ollama), cực nhẹ & tối ưu mobile.\n"
-                printf "      ${GRAY}Lệnh khởi động:${RESET} opencode\n\n"
-                printf "  ${CYAN}[2] Antigravity CLI${RESET} ${GREEN}[MIỄN PHÍ CÓ HẠN MỨC / Google Tier]${RESET}\n"
-                printf "      Autonomous Coding Agent từ Google, tự động đọc codebase & sửa lỗi C#.\n"
-                printf "      ${GRAY}Lệnh khởi động:${RESET} agy\n\n"
-                printf "  ${CYAN}[3] Claude Code${RESET} ${YELLOW}[TRẢ PHÍ / Claude Pro hoặc API Key]${RESET}\n"
-                printf "      Trợ lý AI chính thức từ Anthropic, tư duy suy luận sâu, quản lý project lớn.\n"
-                printf "      ${GRAY}Lệnh khởi động:${RESET} claude\n\n"
-                printf "  ${CYAN}[4] OpenAI Codex CLI${RESET} ${YELLOW}[TRẢ PHÍ / OpenAI API Key]${RESET}\n"
-                printf "      Autonomous Coding Agent từ OpenAI, tự động tạo git commit trong git repo.\n"
-                printf "      ${GRAY}Lệnh khởi động:${RESET} codex\n\n"
-                printf "  ${CYAN}[5] Hermes Agent CLI${RESET} ${GREEN}[MIỄN PHÍ / Open-Source & BYOK]${RESET}\n"
-                printf "      Trợ lý tự trị từ Nous Research, hỗ trợ tool-calling, terminal & đa agent.\n"
-                printf "      ${GRAY}Lệnh khởi động:${RESET} hermes\n\n"
+                printf "  ${CYAN}[1] OpenCode CLI v2${RESET} ${GREEN}[Miễn phí / Sẵn model free]${RESET}\n"
+                printf "      Tích hợp model free: Big Pickle, Muse Spark. Hỗ trợ BYOK.\n"
+                printf "      ${GRAY}Khởi động:${RESET} opencode\n\n"
+                printf "  ${CYAN}[2] Antigravity CLI${RESET} ${GREEN}[Miễn phí có hạn mức / Google]${RESET}\n"
+                printf "      Autonomous Coding Agent từ Google, dùng tài khoản Google.\n"
+                printf "      ${GRAY}Khởi động:${RESET} agy\n\n"
+                printf "  ${CYAN}[3] Claude Code${RESET} ${YELLOW}[Trả phí / Claude Pro hoặc API Key]${RESET}\n"
+                printf "      AI Coding Agent từ Anthropic.\n"
+                printf "      ${GRAY}Khởi động:${RESET} claude\n\n"
+                printf "  ${CYAN}[4] OpenAI Codex CLI${RESET} ${YELLOW}[Trả phí / OpenAI API Key]${RESET}\n"
+                printf "      Coding Agent CLI từ OpenAI.\n"
+                printf "      ${GRAY}Khởi động:${RESET} codex\n\n"
+                printf "  ${CYAN}[5] Hermes Agent CLI${RESET} ${GREEN}[Miễn phí / Mã nguồn mở & BYOK]${RESET}\n"
+                printf "      AI Agent Framework từ Nous Research.\n"
+                printf "      ${GRAY}Khởi động:${RESET} hermes\n\n"
                 printf "  ${GRAY}[0] Quay lại${RESET}\n"
                 print_line
 
