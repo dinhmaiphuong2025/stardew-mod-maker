@@ -147,38 +147,30 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ---
 
-## PHẦN 5: CẨM NANG "BẮT ĐỀN" AI KHI MOD CHƯA NHƯ Ý (DEBUG CHO VIBECODER)
+## PHẦN 5: TINH CHỈNH & SỬA LỖI VÒNG LẶP (FEEDBACK & DEBUG CHO VIBECODER)
 
-Khi bạn vào game test mà thấy chưa đúng ý, **tuyệt đối không cần mở file code ra xem**. Bạn chỉ cần "mô tả hiện tượng bằng mắt thấy" cho AI như sau:
+Trong VibeCoding, việc bản mod cần chỉnh sửa sau lần chạy đầu tiên là hoàn toàn bình thường. Bạn không cần đọc hay sửa code, chỉ cần mô tả chính xác hiện tượng trên màn hình để AI xử lý:
 
-### 1. Khi Terminal hiện chữ đỏ lúc build:
-Không cần đọc lỗi đó là gì, bạn chỉ cần nói:
-> *"Lệnh build đang bị báo lỗi chữ đỏ trên màn hình. Bạn hãy tự đọc log lỗi, tự sửa code trong ModEntry.cs rồi build lại cho tôi."*
+### 1. Khi lệnh build báo lỗi chữ đỏ trong Terminal:
+> *"Lệnh build bị lỗi ở trên. Hãy tự đọc log lỗi trình biên dịch, sửa lại mã nguồn trong ModEntry.cs và build lại."*
 
-### 2. Khi vào game mà bấm không thấy hiện tượng gì:
-Nói với AI:
-> *"Mod đã cài thành công vào game nhưng khi mình vào chơi thì không thấy có tác dụng gì cả. Bạn hãy kiểm tra lại xem điều kiện kích hoạt đã đúng chưa, và chèn thêm các dòng ghi chú log để mình kiểm tra nhé."*
+### 2. Khi vào game nhưng tính năng không phản hồi:
+> *"Mod đã cài vào game nhưng khi thực hiện thao tác [chạm nút / dùng vật phẩm / ngủ dậy] thì không thấy có phản hồi nào. Hãy kiểm tra lại điều kiện kích hoạt sự kiện và thêm các dòng log (Monitor.Log) để theo dõi luồng xử lý."*
 
-### 3. Khi hình vẽ bị trôi khỏi người nhân vật khi bước đi:
-Nói với AI:
-> *"Vòng sáng khi đứng yên thì thấy rất đẹp, nhưng khi mình đi ra ngoài nông trại thì nó bị trôi mất khỏi người nhân vật. Bạn hãy chỉnh lại để hình vẽ bám chặt vào tọa độ của nhân vật theo camera nhé."*
+### 3. Khi hình ảnh bị trôi hoặc lệch khi nhân vật di chuyển:
+> *"Hình ảnh hiển thị đúng vị trí khi đứng yên, nhưng khi nhân vật di chuyển thì bị trôi lệch khỏi màn hình. Hãy đảm bảo sự kiện vẽ dùng đúng tầng RenderedWorld và quy đổi tọa độ qua camera (GlobalToLocal)."*
 
-### 4. Khi vòng sáng bị đặt sai chỗ (ví dụ ngang bụng thay vì trên đầu):
-Nói với AI:
-> *"Vòng sáng hiện tại đang nằm ở ngang bụng nhân vật. Bạn hãy dời nó lên cao một chút, nằm ngay trên đỉnh đầu như một chiếc vương miện hào quang nhé."*
+### 4. Khi sai lệch vị trí, kích thước hoặc thời gian hoạt ảnh:
+> *"Vị trí [tên chi tiết] đang bị [quá cao / quá thấp / lệch sang trái / lệch sang phải] và kích thước [hơi to / hơi nhỏ]. Hãy điều chỉnh lại tọa độ offset, chỉnh kích thước và [tăng / giảm] tốc độ diễn hoạt cho mượt mà."*
 
-### 5. Khi hoạt ảnh diễn ra quá nhanh hoặc giật cục:
-Nói với AI:
-> *"Hiệu ứng tàu rơi xuống đất diễn ra quá nhanh khiến mình chưa kịp nhìn rõ. Bạn hãy kéo dài thời gian rơi ra thêm 2 giây, cho hiệu ứng rung màn hình kéo dài hơn một chút và tăng thêm bụi khói bốc lên khi va chạm nhé."*
-
-### 6. Khi game bị văng ra ngoài màn hình chính (Crash):
-Bạn mở Termux gõ:
+### 5. Khi game bị đơ hoặc văng ra màn hình chính (Crash):
+Chạy lệnh kiểm tra log trong Termux:
 ```bash
 stardew-mod logs 50
 ```
-Sau đó nhắn cho AI:
-> *"Game vừa bị văng ra ngoài. Đây là 50 dòng nhật ký lỗi cuối cùng của game: [Dán kết quả vừa hiện vào]. Bạn hãy đọc xem bị xung đột ở đâu và sửa lại bản mod cho tôi."*
+Sau đó gửi cho AI:
+> *"Game bị văng khi đang [mô tả hành động vừa làm]. Đây là 50 dòng log SMAPI cuối cùng: [Dán kết quả log]. Hãy phân tích nguyên nhân gây lỗi và cập nhật bản sửa lỗi."*
 
 ---
 
-**Tóm lại**: AI là người thợ kỹ thuật, bạn là đạo diễn. Hãy thoải mái vẽ nên câu chuyện, hoạt ảnh và hiệu ứng bạn muốn thấy — AI sẽ biến mọi ý tưởng đó thành mã nguồn thực tế!
+**Quy tắc cốt lõi**: Bạn nắm kịch bản và phản hồi trải nghiệm thực tế; AI chịu trách nhiệm biến phản hồi đó thành mã nguồn C# hoạt động chuẩn xác trên game.
