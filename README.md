@@ -75,6 +75,8 @@ Mở Agent vừa cài (ví dụ: `opencode`) và mô tả ý tưởng bằng ti�
 
 > **"Tạo cho tôi mod HaloGlowMod: Thêm hiệu ứng vòng tròn ánh sáng trắng phát quang (glow) quanh nhân vật theo phong cách thần thoại. Hãy tự tạo mod bằng stardew-mod, viết toàn bộ code C#, tự build sửa lỗi và deploy thẳng vào game cho tôi."**
 
+*(Xem chi tiết cẩm nang cơ chế mod, từ điển thuật ngữ game và công thức prompt 3 bước tại file [VIBECODE_PROMPT_TEMPLATE.md](VIBECODE_PROMPT_TEMPLATE.md)).*
+
 Trợ lý AI sẽ tự động xử lý toàn bộ:
 1. Tự khởi tạo khung dự án mod C# SMAPI.
 2. Viết mã nguồn logic đồ họa và sự kiện game.
