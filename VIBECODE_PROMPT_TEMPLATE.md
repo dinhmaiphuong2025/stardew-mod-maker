@@ -65,7 +65,7 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ### 2. Khung kịch bản 6 mảnh ghép điện ảnh (The 6-Layer Cinematic Formula)
 
-Để tạo một bản mod có chiều sâu (như mod **Saiyan Pod** của bạn), hãy mô tả cho AI theo 6 mảnh ghép sau:
+Để tạo một bản mod có chiều sâu và sống động, hãy mô tả cho AI theo 6 mảnh ghép sau:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -95,7 +95,7 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 Đây là ví dụ điển hình về cách một VibeCoder ra lệnh cho AI để tạo ra một bản mod điện ảnh hoàn hảo mà không cần viết một dòng code nào:
 
-> **"Chào AI, hãy đóng vai trò Senior SMAPI Mod Developer và tạo cho tôi mod SaiyanPodArrival cho Android Cinderbox theo đúng kịch bản chi tiết dưới đây:**
+> **"Tạo cho tôi mod SaiyanPodArrival cho Android Cinderbox theo đúng kịch bản chi tiết dưới đây:**
 >
 > #### 1. Kịch bản thời gian & Hoạt ảnh tàu rơi (Cutscene Timeline):
 > - **Giây 0 - 1**: Khi người chơi vừa bước chân ra nông trại vào sáng ngày đầu tiên, màn hình khóa di chuyển của nhân vật. Phát âm thanh tiếng gió rít xé gió từ trên cao (`Game1.playSound('wind')`).
@@ -124,7 +124,7 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ### 4. VÍ DỤ MẪU THỰC CHIẾN 2: MOD KỸ NĂNG / VẬT PHẨM THUẤN DI (BLINK DASH & TÀN ẢNH)
 
-> **"Chào AI, hãy tạo cho tôi mod BlinkDashSkill cho Android Cinderbox với tính năng thuấn di (dịch chuyển tức thời) đỉnh cao:**
+> **"Tạo cho tôi mod BlinkDashSkill cho Android Cinderbox với tính năng thuấn di (dịch chuyển tức thời):**
 >
 > #### 1. Cơ chế kích hoạt & Thao tác:
 > - Khi nhân vật cầm trên tay vật phẩm có tên là 'Ngọc Thuấn Di' (hoặc người chơi chạm vào nút kỹ năng 'Blink' ở thanh công cụ HUD):
