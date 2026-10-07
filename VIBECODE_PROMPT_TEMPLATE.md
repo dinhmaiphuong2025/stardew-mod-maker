@@ -122,18 +122,28 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ---
 
-### 4. VÍ DỤ MẪU NÂNG CAO 2: MOD BIẾN HÌNH SUPER SAIYAN & AURA KHÍ NĂNG
+### 4. VÍ DỤ MẪU THỰC CHIẾN 2: MOD KỸ NĂNG / VẬT PHẨM THUẤN DI (BLINK DASH & TÀN ẢNH)
 
-> **"Tạo cho tôi mod SuperSaiyanAura:**
-> - **Cách kích hoạt:** Vẽ một nút cảm ứng hình tia sét ở góc phải màn hình HUD. Khi chạm vào nút:
-> - **Hiệu ứng biến hình (VFX):**
->   1. Màn hình rung nhẹ liên tục. Phát âm thanh sấm sét vang rền.
->   2. Dưới chân nhân vật xuất hiện một luồng hào quang khí công (Aura) màu vàng rực bốc cháy cuộn trào từ dưới lên trên.
->   3. Tóc của nhân vật phát ánh sáng vàng.
->   4. Hiệu ứng Aura vàng phải bám sát từng bước chân khi nhân vật chạy nhảy (vẽ ở tầng `RenderedWorld`).
-> - **Tác động chỉ số:** Tăng gấp đôi tốc độ chạy (`Speed +5`), tăng bán kính hút đồ cực đại (`MagneticRadius`), và tăng sức mạnh đánh quái.
-> - **Tắt trạng thái:** Chạm lại vào nút tia sét một lần nữa để giải trừ biến hình.
-> - **Tự lo liệu:** Tự lập trình C#, tự biên dịch và đưa vào game cho tôi."
+> **"Chào AI, hãy tạo cho tôi mod BlinkDashSkill cho Android Cinderbox với tính năng thuấn di (dịch chuyển tức thời) đỉnh cao:**
+>
+> #### 1. Cơ chế kích hoạt & Thao tác:
+> - Khi nhân vật cầm trên tay vật phẩm có tên là 'Ngọc Thuấn Di' (hoặc người chơi chạm vào nút kỹ năng 'Blink' ở thanh công cụ HUD):
+> - Khi người chơi chạm vào bất kỳ điểm nào trên màn hình cảm ứng trong phạm vi bán kính tối đa 5 ô đất (5 tiles): Nhân vật lập tức thuấn di tức thời đến vị trí vừa chạm!
+>
+> #### 2. Cơ chế đi xuyên vật cản & Quy tắc an toàn:
+> - Cho phép dịch chuyển xuyên qua các chướng ngại vật mỏng (như hàng rào, tảng đá nhỏ, bụi cây, vách tường mỏng) với độ dày vật cản tối đa khoảng 3 ô đất.
+> - Nếu vật cản quá dày (hơn 3 ô, ví dụ vách núi lớn) hoặc điểm chạm là vị trí không thể đứng (như giữa lòng hồ nước sâu, ngoài rìa bản đồ): Tự động tìm ô đất trống an toàn gần nhất theo hướng đó để nhân vật đáp xuống, không để nhân vật bị kẹt vào vật thể hay rơi vào khoảng không.
+>
+> #### 3. Hiệu ứng thị giác (VFX) & Hoạt ảnh Tàn Ảnh (Afterimage):
+> - **Tại vị trí cũ:** Ngay khoảnh khắc biến mất, để lại một 'tàn ảnh' (bóng mờ silhouette màu xanh lam nhạt hoặc trắng trong suốt) giữ nguyên tư thế chuyển động vừa rồi của nhân vật. Tàn ảnh này mờ dần (fade out) và tan biến hoàn toàn sau 0.4 giây để tạo cảm giác dịch chuyển tức thời siêu tốc như ninja / anime!
+> - **Đường bay:** Xuất hiện một vệt bụi khói nhỏ hoặc tia chớp mảnh nối từ điểm cũ sang điểm mới.
+> - **Tại vị trí mới:** Chớp sáng nhẹ một vòng tròn năng lượng dưới chân khi nhân vật xuất hiện.
+>
+> #### 4. Âm thanh (SFX) & Cooldown:
+> - Phát âm thanh dịch chuyển chớp nhoáng (âm thanh tiếng vút gió hoặc phép thuật 'wand' / 'dwoop').
+> - Đặt thời gian hồi chiêu (Cooldown) là 1.5 giây giữa mỗi lần lướt để tránh bị spam liên tục gây lỗi game.
+>
+> **Hãy tự viết toàn bộ logic C# net10.0, tự tính toán tọa độ thế giới (RenderedWorld) cho tàn ảnh để tàn ảnh nằm đúng vị trí ô đất cũ, tự build và cài đặt vào game cho tôi."**
 
 ---
 
