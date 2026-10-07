@@ -1,97 +1,172 @@
-# CẨM NANG VIBECODING: CƠ CHẾ MOD & TỪ ĐIỂN THUẬT NGỮ STARDEW VALLEY
+# CẨM NANG VIBECODING: KIẾN TRÚC MÃ NGUỒN, ASSET & TỪ ĐIỂN MOD STARDEW VALLEY
 
-Tài liệu này giúp bạn hiểu rõ mod hoạt động như thế nào, các thành phần trong game được gọi là gì, và cách mô tả cho AI (OpenCode, Claude, ChatGPT) để AI viết đúng 100% tính năng bạn mong muốn.
-
----
-
-## 1. BẢN CHẤT MOD HOẠT ĐỘNG NHƯ THẾ NÀO?
-
-Một bản mod C# SMAPI **không thay đổi file gốc của game**. Thay vào đó, nó hoạt động như một "người lắng nghe thông minh":
-
-1. **Vòng lặp trò chơi (Game Loop)**:
-   - Stardew Valley chạy liên tục 60 khung hình mỗi giây (mỗi khung hình gọi là 1 `Tick`).
-2. **Sự kiện (Events - Khi nào hành động diễn ra)**:
-   - Khi có điều gì xảy ra trong game, SMAPI sẽ phát tín hiệu. Mod của bạn chỉ cần đăng ký "lắng nghe" sự kiện đó:
-     - `DayStarted`: Người chơi vừa thức dậy bắt đầu ngày mới.
-     - `ButtonPressed`: Người chơi vừa chạm vào màn hình hoặc bấm phím.
-     - `Warped`: Nhân vật vừa bước chuyển từ bản đồ này sang bản đồ khác.
-     - `RenderedWorld`: Game đang vẽ cảnh vật, cây cối, nhân vật trong thế giới.
-     - `RenderedHud`: Game đang vẽ giao diện phẳng lên màn hình (thanh máu, thanh công cụ, menu).
-3. **Thao tác (Actions - Làm cái gì)**:
-   - Khi sự kiện được kích hoạt, mã nguồn C# của bạn sẽ can thiệp: cộng tiền, hồi thể lực, vẽ hào quang, hoặc mở cửa sổ mới.
-
-> **Quy tắc vàng khi vẽ hình ảnh lên màn hình**:
-> - Muốn vẽ thứ **đi theo nhân vật** (như vòng sáng hào quang, bóng đổ): Phải vẽ ở tầng **World** và dùng tọa độ chuyển đổi camera (`Game1.GlobalToLocal`).
-> - Muốn vẽ thứ **đứng yên trên màn hình điện thoại** (nút bấm cảm ứng, bảng thông tin): Phải vẽ ở tầng **HUD** (`RenderedHud`).
+Tài liệu này là cẩm nang toàn diện dành cho người dùng VibeCoding: từ việc hiểu rõ cơ chế mã nguồn C# SMAPI, cách game nạp tài nguyên (Asset), từ điển thuật ngữ game, đến phương pháp viết Prompt chính xác để AI tạo mod không bao giờ bị lỗi.
 
 ---
 
-## 2. TỪ ĐIỂN THUẬT NGỮ GAME (DÀNH CHO NGƯỜI KHÔNG BIẾT CODE)
+## PHẦN 1: BẢN CHẤT KIẾN TRÚC MÃ NGUỒN C# SMAPI
 
-Khi chat với AI, bạn chỉ cần dùng đúng các từ khóa dưới đây, AI sẽ hiểu ngay lập tức:
-
-### A. Nhân vật & Sinh vật
-- **Farmer / Player (`Game1.player`)**: Nhân vật chính của người chơi.
-- **NPC / Villagers**: Dân làng (Robin, Pierre, Abigail...).
-- **Monsters**: Quái vật trong hầm mỏ (dơi, slime, bóng ma...).
-- **Sprite**: Hình ảnh 2D hoạt họa của nhân vật hoặc vật phẩm.
-
-### B. Chỉ số & Trạng thái
-- **Health**: Máu / Sinh lực (thanh màu đỏ).
-- **Stamina / Energy**: Thể lực / Năng lượng để dùng cuốc, rìu, câu cá (thanh màu xanh lá).
-- **Buff**: Hiệu ứng tăng cường tạm thời hoặc vĩnh viễn (Speed = chạy nhanh, Luck = may mắn, Magnetism = hút vật phẩm từ xa, Attack = tăng lực đánh).
-
-### C. Bản đồ & Tọa độ
-- **Location (`GameLocation`)**: Khu vực người chơi đang đứng (Farm = Nông trại, Town = Thị trấn, MineShaft = Hầm mỏ, FarmHouse = Trong nhà).
-- **Tile**: Ô đất trên bản đồ (mỗi ô vuông trong game rộng 64x64 pixel).
-- **Viewport / Camera**: Khung nhìn của camera điện thoại theo dõi nhân vật.
-
-### D. Giao diện (UI) & Điều khiển
-- **HUD (Heads-Up Display)**: Giao diện trực tiếp trên màn hình (đồng hồ ngày giờ, tiền vàng, thanh hotbar chứa đồ ăn và công cụ).
-- **Menu (`IClickableMenu`)**: Các bảng mở ra che màn hình (rương đồ, balo túi xách, bảng quan hệ dân làng, bảng chế tạo).
-- **Touch Button**: Nút bấm cảm ứng được vẽ lên màn hình điện thoại để ngón tay chạm vào kích hoạt tính năng.
-
----
-
-## 3. CÔNG THỨC VIẾT PROMPT CHUẨN XỊN (3 BƯỚC)
-
-Để AI viết code chính xác nhất, hãy mô tả ý tưởng theo công thức:
+Một bản mod C# SMAPI **không bao giờ can thiệp thô bạo hay ghi đè lên file cài đặt của game**. Nó chạy song song cùng game và tương tác thông qua 3 trụ cột kỹ thuật:
 
 ```text
-[MỤC TIÊU] + [THỜI ĐIỂM KÍCH HOẠT (SỰ KIỆN)] + [TÁC ĐỘNG CỤ THỂ VÀO GAME]
+┌────────────────────────────────────────────────────────┐
+│                   STARDEW VALLEY (Game)                │
+└───────────┬────────────────────────────────┬───────────┘
+            │ 1. Phát tín hiệu Sự kiện       │ 2. Yêu cầu nạp Tài nguyên
+            ▼                                ▼
+┌───────────────────────┐        ┌───────────────────────┐
+│     SMAPI EVENTS      │        │     ASSET PIPELINE    │
+│ (Game Loop, Input,    │        │ (Textures, Game Data, │
+│  DayStarted, Warped)  │        │  Shops, Objects)      │
+└───────────┬───────────┘        └───────────┬───────────┘
+            │                                │
+            └───────────────┬────────────────┘
+                            ▼
+               ┌─────────────────────────┐
+               │     BẢN MOD CỦA BẠN     │
+               │ (ModEntry.cs + Assets)  │
+               └────────────┬────────────┘
+                            │ (Khi cần can thiệp hàm private gốc)
+                            ▼
+               ┌─────────────────────────┐
+               │      HARMONY PATCH      │
+               │  (Prefix / Postfix)     │
+               └─────────────────────────┘
 ```
 
-### Ví dụ mẫu thực tế:
+### 1. Vòng lặp trò chơi (Game Loop & Ticks)
+- Game chạy liên tục ở tốc độ 60 khung hình/giây. Mỗi khung hình được gọi là 1 `Tick` (~16.6 mili-giây).
+- **Không bao giờ dùng vòng lặp vô tận (`while(true)`) hay `Thread.Sleep()` trong mod**: Điều này sẽ làm toàn bộ game trên điện thoại bị đơ ngay lập tức. Mọi hành động theo thời gian phải đếm qua số Tick (`GameLoop.UpdateTicked`).
 
-#### Mẫu 1: Mod tiện ích nông trại (Tự tưới cây & tăng tốc)
-> "Hãy tạo mod FarmHelper: Mỗi khi người chơi thức dậy vào buổi sáng (DayStarted), nếu người chơi đang ở nông trại, hãy tự động tưới nước cho toàn bộ các ô đất đã gieo hạt (HoeDirt) và tặng buff tăng 2 tốc độ chạy trong cả ngày."
-
-#### Mẫu 2: Mod đồ họa / Hào quang quanh người (Aura)
-> "Hãy tạo mod HaloGlowMod: Vẽ một vòng tròn hào quang màu trắng phát sáng trên đỉnh đầu nhân vật. Hiệu ứng phải vẽ ở sự kiện RenderedWorld và dùng tọa độ Game1.GlobalToLocal để vòng sáng bám chặt vào đầu nhân vật khi di chuyển, không bị trôi khi camera cuộn."
-
-#### Mẫu 3: Mod nút bấm cảm ứng trên Android
-> "Hãy tạo mod MobileQuickHeal: Vẽ một nút tròn hình trái tim ở góc trên bên phải màn hình (tầng RenderedHud, kích thước 64x64 pixel để ngón tay dễ chạm). Khi người chơi chạm vào nút này, tự động hồi phục đầy thanh máu và thể lực."
-
-#### Mẫu 4: Mod thám hiểm hầm mỏ (Bất tử & Hút đồ xa)
-> "Hãy tạo mod MineGod: Mỗi khi người chơi bước vào khu vực MineShaft, tự động kích hoạt buff tăng tầm nhặt đồ (Magnetism) lên cực đại và giữ cho thanh máu không bao giờ giảm xuống dưới 1."
+### 2. Hai tầng vẽ đồ họa (Render Pipeline)
+Khi mod muốn hiển thị hình ảnh (vòng sáng, icon, chữ viết), bạn bắt buộc phải chỉ định đúng tầng vẽ:
+- **Tầng thế giới (`RenderedWorld`)**:
+  - Dùng để vẽ các vật thể **thuộc về thế giới game** (vòng hào quang quanh nhân vật, hiệu ứng phép thuật trên mặt đất, bóng râm dưới gốc cây).
+  - *Bắt buộc chuyển đổi tọa độ qua Camera*: Điểm vẽ trên thế giới (`Tile` hoặc vị trí nhân vật) phải được đổi sang điểm ảnh màn hình bằng hàm `Game1.GlobalToLocal(Game1.viewport, vi_tri_the_gioi)`. Nếu thiếu hàm này, hình vẽ sẽ bị trôi dạt khi nhân vật bước đi.
+- **Tầng giao diện (`RenderedHud`)**:
+  - Dùng để vẽ các vật thể **dính cố định trên mặt kính điện thoại** (nút bấm cảm ứng, thanh máu phụ, đồng hồ đếm ngược, icon chỉ báo).
+  - Tọa độ ở tầng này được tính thẳng bằng pixel màn hình cảm ứng (`0, 0` là góc trên cùng bên trái của điện thoại).
 
 ---
 
-## 4. KHUNG PROMPT MẪU ĐỂ GỬI CHO AI (COPY DÁN NGUYÊN KHUNG NÀY)
+## PHẦN 2: TÀI NGUYÊN (ASSET PIPELINE) & DỮ LIỆU TẦNG MÃ NGUỒN
 
-Khi dùng ChatGPT, Claude, Gemini hoặc OpenCode, bạn copy đoạn dưới đây kèm ý tưởng của bạn:
+Trong Stardew Valley 1.6, toàn bộ hình ảnh và dữ liệu được quản lý tập trung thông qua **Asset Pipeline**. Đây là cách mod thêm đồ mới hoặc sửa đổi game:
 
-```markdown
-Chào AI, tôi đang làm một bản mod C# SMAPI cho Stardew Valley 1.6 trên Android (Cinderbox).
-Tôi không chuyên lập trình C#, hãy đóng vai trò là Senior SMAPI Mod Developer và hỗ trợ tôi viết code hoàn chỉnh.
+### 1. Cơ chế `AssetRequested` (Nạp & Sửa tài nguyên)
+Khi game cần nạp bất kỳ thứ gì, SMAPI sẽ gửi sự kiện `helper.Events.Content.AssetRequested`. Mod có 3 cách can thiệp:
+- **Chỉnh sửa dữ liệu (Data Edit)**: Sửa bảng thông số của game mà không cần vẽ lại ảnh.
+  - Ví dụ: Thay đổi giá bán cá, thêm hạt giống mới vào tiệm tạp hóa Pierre (`Data/Shops`), thêm công thức chế tạo (`Data/CraftingRecipes`).
+  - Dùng lệnh: `e.Edit(asset => { var data = asset.AsDictionary<string, ObjectData>().Data; ... });`
+- **Tải đè tài nguyên riêng (Load From Mod)**: Nạp file ảnh PNG riêng của mod vào game.
+  - Dùng lệnh: `e.LoadFromModFile<Texture2D>("assets/my_custom_sword.png", AssetLoadPriority.Medium);`
+- **Dán đè một phần ảnh (Apply Patch)**: Cắt một góc ảnh từ mod dán đè lên một vị trí trong sprite sheet của game.
 
-### Ý TƯỞNG TÍNH NĂNG CỦA TÔI:
-[Dán mô tả theo công thức 3 bước ở trên vào đây]
+### 2. Nạp tài nguyên trong code (`IModHelper`)
+- **`helper.ModContent.Load<Texture2D>("assets/halo.png")`**: Nạp file ảnh nằm bên trong thư mục mod của bạn để đưa vào RAM sử dụng.
+- **`helper.GameContent.Load<Texture2D>("LooseSprites/Cursors")`**: Lấy ra hình ảnh có sẵn của chính tựa game để tái sử dụng (ví dụ lấy icon con trỏ, icon trái tim).
 
-### QUY CHUẨN BẮT BUỘC TRÊN ANDROID CINDERBOX:
-1. TargetFramework bắt buộc: net10.0 (không dùng net6.0 hay net8.0).
-2. Nền tảng cảm ứng: Không gán phím chuột phải hay bàn phím cứng PC. Tương tác dựa trên chạm màn hình hoặc nút bấm HUD.
-3. Nếu vẽ hình ảnh theo nhân vật, bắt buộc dùng RenderedWorld + Game1.GlobalToLocal. Nếu vẽ menu/nút bấm, dùng RenderedHud.
-4. Kiểm tra Context.IsWorldReady trước khi truy cập Game1.player hoặc Game1.currentLocation.
-5. Cập nhật mã nguồn trực tiếp vào ModEntry.cs và hướng dẫn lệnh stardew-mod build để kiểm tra.
+### 3. Lưu trữ trạng thái tùy biến (`ModData` & Save Data)
+- **`ModData`**: Từ bản 1.6, mọi đối tượng trong game (`Farmer`, `NPC`, `Item`, `GameLocation`) đều có sẵn một từ điển dữ liệu chuỗi `modData`. Mod có thể gắn thẻ dữ liệu trực tiếp vào nhân vật mà không sợ làm hỏng file save game:
+  ```csharp
+  Game1.player.modData["YourName.ModId/HasGodBuff"] = "true";
+  ```
+- **File cấu hình (`config.json`)**: Dùng `helper.ReadConfig<ModConfig>()` để cho phép người chơi tự bật/tắt tính năng hoặc đổi màu sắc mà không cần sửa code.
+
+### 4. Can thiệp sâu bằng Harmony (`Harmony Patch`)
+Khi tính năng bạn muốn không có sẵn Event trong SMAPI (ví dụ: muốn sửa logic tính toán sát thương khi chém trúng quái, hoặc thay đổi quy tắc giật cần câu cá):
+- **Prefix**: Chạy một đoạn mã *ngay trước khi* hàm gốc của game thực thi (có thể chặn không cho hàm gốc chạy).
+- **Postfix**: Chạy một đoạn mã *ngay sau khi* hàm gốc của game hoàn tất (có thể sửa lại kết quả trả về).
+
+---
+
+## PHẦN 3: TỪ ĐIỂN THUẬT NGỮ STARDEW VALLEY (DÀNH CHO VIBECODING)
+
+Hãy dùng các thuật ngữ chuẩn này khi ra lệnh cho AI để AI gọi đúng hàm và biến của game:
+
+| Thuật ngữ | Tên mã nguồn C# | Ý nghĩa & Vị trí trong game |
+| :--- | :--- | :--- |
+| **Người chơi** | `Game1.player` (`Farmer`) | Nhân vật chính bạn điều khiển. Chứa máu, năng lượng, túi đồ. |
+| **Dân làng** | `NPC` | Các nhân vật NPC trong thị trấn (Robin, Haley, Pierre...). |
+| **Nông trại / Khu vực** | `GameLocation` | Bản đồ hiện tại (`Farm`, `Town`, `MineShaft`, `FarmHouse`). |
+| **Ô đất** | `Tile` / `Vector2` | Mỗi ô vuông trên mặt đất (kích thước chuẩn là 64x64 pixel). |
+| **Ống kính / Camera** | `Game1.viewport` | Vùng không gian game đang hiển thị vừa vặn trên màn hình điện thoại. |
+| **Máu** | `player.health` / `maxHealth` | Chỉ số sinh mệnh (thanh màu đỏ góc dưới bên phải). |
+| **Thể lực** | `player.stamina` / `maxStamina`| Năng lượng hoạt động (thanh màu xanh lá). |
+| **Hiệu ứng tăng cường** | `Buff` (`StardewValley.Buffs`) | Tăng tốc độ chạy (`Speed`), may mắn (`Luck`), hút đồ (`MagneticRadius`). |
+| **Túi đồ / Balo** | `player.Items` (`Inventory`) | Danh sách 12, 24 hoặc 36 ô chứa vật phẩm. |
+| **Thanh công cụ** | `Toolbar` (HUD) | Dãy 12 ô vật phẩm hiển thị trực tiếp trên màn hình cảm ứng. |
+| **Menu / Cửa sổ** | `IClickableMenu` | Các bảng giao diện che màn hình: hòm đồ, cửa hàng, bảng kỹ năng. |
+| **Bàn phím ảo Android** | `TitleTextInputMenu` | Bắt buộc dùng để kích hoạt bàn phím ảo gõ chữ trên Cinderbox Android. |
+| **Dữ liệu vật phẩm** | `Data/Objects` | File dữ liệu trung tâm định nghĩa tên, giá bán, công dụng của toàn bộ item. |
+| **Dữ liệu cửa hàng** | `Data/Shops` | Danh sách hàng hóa được bày bán ở các shop trong game. |
+
+---
+
+## PHẦN 4: NGHỆ THUẬT PROMPTING CHO VIBECODING
+
+### 1. Vì sao những câu lệnh chung chung thường thất bại?
+- **Prompt tồi**: *"Làm cho tôi mod câu cá dễ hơn"*
+  - **Hậu quả**: AI không biết bạn muốn gì. Nó có thể viết code xóa minigame, hoặc sửa thanh trượt câu cá, hoặc dùng phím C-Sharp trên PC mà Android không thể bấm được.
+- **Prompt chuẩn**: *"Hãy làm mod EasyFishing: Khi người chơi vào minigame câu cá (`BobberBar`), tự động giữ thanh bắt cá luôn nằm chính giữa con cá và thanh tiến trình câu không bao giờ bị tụt."*
+  - **Kết quả**: AI gọi đúng lớp `BobberBar`, xử lý đúng biến và hoạt động hoàn hảo 100%.
+
+---
+
+### 2. Công thức cấu trúc Prompt 4 phần (The 4-Pillar Formula)
+
+Mỗi khi ra lệnh cho AI viết mod, hãy điền theo 4 thành phần sau:
+
+```text
+1. [TÊN MOD & MỤC TIÊU]: Tên mod là gì, ý tưởng chính là gì?
+2. [THỜI ĐIỂM KÍCH HOẠT]: Khi nào tính năng chạy (Sự kiện: ngủ dậy, chạm màn hình, chuyển map, vào mỏ)?
+3. [TÁC ĐỘNG MÃ NGUỒN]: Sửa biến nào, vẽ ở tầng nào (HUD hay World), có can thiệp Asset nào không?
+4. [RÀNG BUỘC ANDROID CINDERBOX]: .NET 10.0, thao tác chạm cảm ứng, không dùng phím cứng PC.
 ```
+
+---
+
+### 3. Các Prompt Blueprint thực chiến theo từng nhóm mod
+
+#### Blueprint 1: Mod Can Thiệp Dữ Liệu & Cửa Hàng (Data / AssetRequested)
+> "Tạo cho tôi mod **SeedDiscount**:
+> - Sử dụng sự kiện `helper.Events.Content.AssetRequested` để can thiệp vào tài nguyên `Data/Shops`.
+> - Tìm cửa hàng của Pierre (`Game1.shop_generalStore`), giảm 50% giá vàng của tất cả các loại hạt giống vào mùa xuân.
+> - Đảm bảo mod tương thích Stardew Valley 1.6 và nền tảng Cinderbox .NET 10.0."
+
+#### Blueprint 2: Mod Đồ Họa & Hiệu Ứng Bám Theo Nhân Vật (World Render)
+> "Tạo cho tôi mod **HaloGlowMod**:
+> - Tạo hiệu ứng vòng tròn ánh sáng trắng phát quang (glow) lơ lửng ngay trên đầu người chơi.
+> - Đăng ký sự kiện vẽ tại `Display.RenderedWorld`.
+> - Bắt buộc dùng hàm `Game1.GlobalToLocal(Game1.viewport, vi_tri_dau_nhan_vat)` để tính tọa độ vẽ, đảm bảo vòng sáng bám chặt vào đầu nhân vật khi di chuyển, không bị trôi lệch khi camera cuộn.
+> - Tối ưu hiệu năng, giải phóng sprite hợp lý mỗi khung hình."
+
+#### Blueprint 3: Mod Giao Diện Cảm Ứng & Nút Bấm Trên Màn Hình (HUD & Touch Input)
+> "Tạo cho tôi mod **MobileTeleportButton**:
+> - Vẽ một nút bấm cảm ứng hình tròn màu xanh lam ở góc trên bên phải màn hình tại sự kiện `Display.RenderedHud` (kích thước vùng chạm 64x64 pixel để ngón tay dễ bấm).
+> - Lắng nghe sự kiện chạm màn hình qua `Input.ButtonPressed`: Nếu người chơi chạm vào vùng nút bấm, hiển thị một thông báo xác nhận và dịch chuyển tức thời nhân vật về cửa nhà nông trại (`FarmHouse`).
+> - Luôn kiểm tra `Context.IsWorldReady` và `Context.IsPlayerFree` trước khi thực thi dịch chuyển."
+
+#### Blueprint 4: Mod Tự Động Hóa Nông Trại (Game Events & Farming)
+> "Tạo cho tôi mod **AutoWaterMorning**:
+> - Khi người chơi vừa thức dậy bắt đầu ngày mới (`GameLoop.DayStarted`), nếu nhân vật đang ở nông trại (`Farm`), tự động duyệt qua danh sách các ô đất trồng trọt (`HoeDirt`) trong nông trại.
+> - Chuyển trạng thái của tất cả các ô đất có cây trồng sang trạng thái đã tưới nước (`state.Value = HoeDirt.watered`).
+> - In một thông báo nhỏ lên góc màn hình (`Game1.addHUDMessage`) thông báo số lượng ô đất đã được tưới tự động."
+
+---
+
+## PHẦN 5: CẨM NANG SỬA LỖI (DEBUG PROMPTING KHI GẶP SỰ CỐ)
+
+Khi bạn test mod mà gặp lỗi, đừng nói chung chung *"mod bị lỗi rồi"*. Hãy dùng các câu lệnh sau để AI sửa trong 1 nốt nhạc:
+
+### 1. Khi mod build bị báo lỗi đỏ trong Terminal
+> *"Lệnh `stardew-mod build` báo lỗi biên dịch sau đây: `[Dán toàn bộ đoạn mã lỗi CSxxxx vào đây]`. Hãy phân tích nguyên nhân, sửa trực tiếp vào `ModEntry.cs` và build lại cho tôi."*
+
+### 2. Khi mod build thành công nhưng vào game không thấy hiện tượng gì
+> *"Mod đã cài thành công vào game nhưng khi thực hiện thao tác thì không thấy hiệu ứng gì xảy ra. Hãy kiểm tra lại:
+> 1. Đã kiểm tra `Context.IsWorldReady` đúng chỗ chưa?
+> 2. Sự kiện đăng ký lắng nghe (Event Hook) có bị bỏ sót không?
+> 3. Hãy thêm các dòng `this.Monitor.Log('...', LogLevel.Info)` vào từng bước logic để tôi kiểm tra bằng lệnh `stardew-mod logs`."*
+
+### 3. Khi hình vẽ bị lệch / trôi khỏi nhân vật khi di chuyển
+> *"Hình ảnh đang bị lỗi trôi khỏi màn hình khi nhân vật di chuyển ra ngoài nông trại. Hãy kiểm tra lại tầng vẽ: chuyển sự kiện vẽ sang `Display.RenderedWorld` và dùng `Game1.GlobalToLocal(Game1.viewport, ...)` để quy đổi tọa độ thế giới sang tọa độ camera màn hình."*
