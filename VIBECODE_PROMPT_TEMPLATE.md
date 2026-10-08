@@ -163,13 +163,20 @@ Trong VibeCoding, việc bản mod cần chỉnh sửa sau lần chạy đầu t
 ### 4. Khi sai lệch vị trí, kích thước hoặc thời gian hoạt ảnh:
 > *"Vị trí [tên chi tiết] đang bị [quá cao / quá thấp / lệch sang trái / lệch sang phải] và kích thước [hơi to / hơi nhỏ]. Hãy điều chỉnh lại tọa độ offset, chỉnh kích thước và [tăng / giảm] tốc độ diễn hoạt cho mượt mà."*
 
-### 5. Khi game bị đơ hoặc văng ra màn hình chính (Crash):
+### 5. Khi game bị đơ hoặc văng ra màn hình chính (Crash / Xung đột mod):
 Chạy lệnh kiểm tra log trong Termux:
 ```bash
 stardew-mod logs 50
 ```
 Sau đó gửi cho AI:
 > *"Game bị văng khi đang [mô tả hành động vừa làm]. Đây là 50 dòng log SMAPI cuối cùng: [Dán kết quả log]. Hãy phân tích nguyên nhân gây lỗi và cập nhật bản sửa lỗi."*
+
+### 6. Khi nghi ngờ mod bị xung đột với các mod khác đã cài sẵn:
+> *"Bản mod mới tạo dường như đang xung đột với mod khác trong thư mục Mods (gây mất hình ảnh / đè tính năng / văng game khi dùng chung). Hãy kiểm tra lại:
+> 1. UniqueID trong manifest.json đã độc nhất chưa.
+> 2. Các Harmony patch có đang dùng Prefix chặn hàm gốc (return false) không, chuyển sang Postfix nếu có thể.
+> 3. AssetRequested có đang ghi đè toàn bộ file texture không, chuyển sang dùng Edit và PatchImage cục bộ.
+> 4. Khóa ModData đã gắn tiền tố UniqueID chưa."*
 
 ---
 

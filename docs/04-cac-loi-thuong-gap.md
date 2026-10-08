@@ -99,3 +99,75 @@ Vùng kiểm tra va chạm (hitbox) quá nhỏ (dưới 48px), hoặc chỉ ki�
    `/sdcard/StardewValley/desktop/ErrorLogs/SMAPI-crash.txt` hoặc `SMAPI-latest.txt`.
 2. Tìm tên mod của bạn trong file log để xác định nguyên nhân SMAPI từ chối tải file.
 3. Sao chép đoạn log lỗi đó gửi cho AI để nhận phương án xử lý tương ứng.
+
+---
+
+## 7. Xung đột giữa các mod (Mod Conflicts) trong Cinderbox
+
+Khi cài đặt nhiều mod cùng lúc trong thư mục `/sdcard/StardewValley/desktop/Mods/`, bạn có thể gặp hiện tượng xung đột: game giật lag, tính năng mod này ghi đè mod kia, hoặc game văng đột ngột (crash).
+
+### 7.1. Trùng lặp UniqueID trong `manifest.json`
+- **Hiện tượng**: SMAPI bỏ qua một trong hai mod hoặc báo lỗi:
+  ```
+  Skipped mod 'ModA': it has the same ID as 'ModB'
+  ```
+- **Nguyên nhân**: Copy template hoặc đặt UniqueID quá chung chung (ví dụ `Author.MyMod`).
+- **Khắc phục**: Yêu cầu AI đổi lại UniqueID mang tính duy nhất cao trong `manifest.json`:
+  ```json
+  "UniqueID": "AuthorName.ModName.StardewValley"
+  ```
+
+### 7.2. Xung đột Harmony Patch (Nhiều mod cùng can thiệp một hàm gốc)
+- **Hiện tượng**: Một trong hai mod mất tác dụng, hoặc văng game khi thực hiện hành động cụ thể (câu cá, đổi ngày, lưu game).
+- **Nguyên nhân**: Mod A dùng Harmony `Prefix` trả về `false` (chặn hàm gốc chạy tiếp), khiến mod B (cũng patch hàm đó) không nhận được dữ liệu hoặc làm sai lệch logic game.
+- **Khắc phục**:
+  1. Hạn chế tối đa dùng `Prefix` trả về `false` trừ khi bắt buộc phải thay thế hoàn toàn logic gốc.
+  2. Ưu tiên dùng `Postfix` để chỉ đọc kết quả hoặc bổ sung hiệu ứng sau khi hàm gốc đã xử lý xong.
+  3. Sử dụng `Priority` của Harmony để xếp thứ tự chạy rõ ràng nếu cần ưu tiên:
+     ```csharp
+     [HarmonyPriority(Priority.High)]
+     ```
+
+### 7.3. Tranh chấp Asset / Content Pipeline
+- **Hiện tượng**: Mod làm biến mất texture của mod khác, hoặc hình ảnh bị lỗi ô vuông tím/đen (missing texture).
+- **Nguyên nhân**: Cả hai mod cùng can thiệp sự kiện `AssetRequested` và ghi đè toàn bộ (`e.LoadFrom(...)`) cùng một tệp đồ họa gốc (như `Characters/Farmer/farmer_base` hoặc `TileSheets/tools`).
+- **Khắc phục**:
+  - Không ghi đè toàn bộ tệp trừ khi làm mod đại tu texture.
+  - Sử dụng phương thức chắp vá từng vùng ảnh (`e.Edit(...)` kết hợp `patch.AsImage().PatchImage(...)`) để chỉ sửa vùng pixel cần thiết, giúp các mod khác cùng chỉnh sửa mà không xung đột.
+
+### 7.4. Xung đột lưu dữ liệu (ModData collision)
+- **Hiện tượng**: Giá trị thuộc tính mod lưu vào nhân vật hoặc nông trại bị biến mất hoặc bị mod khác thay đổi.
+- **Nguyên nhân**: Đặt tên key trong `modData` quá ngắn (ví dụ `level`, `dash_cooldown`, `is_glowing`).
+- **Khắc phục**: Luôn gắn tiền tố UniqueID của mod vào trước key:
+  ```csharp
+  string key = $"{this.ModManifest.UniqueID}/DashCooldown";
+  Game1.player.modData[key] = "1.5";
+  ```
+
+### 7.5. Xung đột sự kiện phím bấm / Touch Input
+- **Hiện tượng**: Bấm một phím hoặc chạm màn hình làm kích hoạt đồng thời 2-3 tính năng của các mod khác nhau.
+- **Khắc phục**:
+  - Kiểm tra trạng thái trò chơi trước khi xử lý phím: `Context.IsPlayerFree` và `Context.IsWorldReady`.
+  - Hỗ trợ file cấu hình `config.json` để người chơi tự đổi nút nếu bị trùng với mod khác.
+
+---
+
+## 8. Quy trình 3 bước cô lập và giải quyết xung đột mod
+
+Khi nghi ngờ có lỗi xung đột giữa các mod:
+
+1. **Bước 1: Chẩn đoán bằng lệnh doctor và log**
+   ```bash
+   stardew-mod doctor --json
+   stardew-mod logs 100
+   ```
+   Tìm các dòng log màu đỏ `[ERROR]` hoặc vàng `[WARN]` có chứa từ khóa `Harmony`, `Duplicate`, hoặc `NullReferenceException`.
+
+2. **Bước 2: Phương pháp nhị phân (Binary Search Mod)**
+   - Tạm thời di chuyển một nửa số mod trong `/sdcard/StardewValley/desktop/Mods/` ra thư mục tạm.
+   - Mở game thử lại để xác định nửa nào chứa mod gây xung đột.
+   - Lặp lại cho đến khi tìm chính xác cặp mod không tương thích với nhau.
+
+3. **Bước 3: Đưa log cho AI phân tích**
+   Gửi cho AI thông báo lỗi và yêu cầu:
+   > *"Mod A của tôi đang bị xung đột với Mod B. Đây là đoạn log SMAPI khi văng game: [Dán log]. Hãy kiểm tra xem xung đột ở phần Harmony patch hay sự kiện Asset/Input và điều chỉnh mã nguồn Mod A để tương thích."*
