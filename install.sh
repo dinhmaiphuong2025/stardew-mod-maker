@@ -323,10 +323,10 @@ run_install_progress() {
         pct_str=$(printf "%3d%%" "$cur_pct")
 
         local buf="\033[H"
-        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\n"
+        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\033[K\n"
         buf+="  ${GRAY}"
         for ((l=0; l<cols-4 && l<46; l++)); do buf+="─"; done
-        buf+="${RESET}\n"
+        buf+="${RESET}\033[K\n"
 
         # DÒNG CỐ ĐỊNH TRÊN CÙNG: THANH TIẾN TRÌNH + % + TỐC ĐỘ MẠNG
         buf+="  ${CYAN}${spin_chars[$idx]}${RESET} [${GREEN}${bar_f}${RESET}${bar_e}] ${BOLD}${pct_str}${RESET}  ${CYAN}${sp_str}${RESET}\033[K\n\n"
@@ -363,10 +363,10 @@ run_install_progress() {
     if [ "$exit_code" -eq 0 ]; then
         history+=("$cur_label")
         local buf="\033[H"
-        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\n"
+        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\033[K\n"
         buf+="  ${GRAY}"
         for ((l=0; l<cols-4 && l<46; l++)); do buf+="─"; done
-        buf+="${RESET}\n"
+        buf+="${RESET}\033[K\n"
         buf+="  ${GREEN}✓${RESET} [${GREEN}${full_bar}${RESET}] ${BOLD}100%${RESET}           \033[K\n\n"
         for h in "${history[@]}"; do
             buf+="  ${GREEN}✓${RESET} ${WHITE}${h}${RESET}\033[K\n"

@@ -74,10 +74,10 @@ draw_all() {
     pct_str=$(printf "%3d%%" "$cur_pct")
 
     local buf="\033[H"
-    buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\n"
+    buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\033[K\n"
     buf+="  ${GRAY}"
     for ((l=0; l<cols-4 && l<46; l++)); do buf+="─"; done
-    buf+="${RESET}\n"
+    buf+="${RESET}\033[K\n"
 
     # DÒNG CỐ ĐỊNH DUY NHẤT TRÊN CÙNG: THANH TIẾN TRÌNH + % + TỐC ĐỘ MẠNG
     if [ "$is_done" = "1" ]; then
