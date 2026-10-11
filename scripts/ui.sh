@@ -169,17 +169,22 @@ step_task() {
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
     local i=0
-    local width=16
+    local cols
+    cols=$(get_term_cols)
+    local bar_w=$(( cols - 16 ))
+    [ "$bar_w" -lt 16 ] && bar_w=16
+    [ "$bar_w" -gt 42 ] && bar_w=42
+
     local prev_rx
     prev_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
     local cur_speed=""
 
-    # Tiến trình trước khi bắt đầu bước này (ví dụ bước 5/5 sẽ hiển thị 80% khi đang chạy, không hiển thị 100% quá sớm)
+    # Tiến trình trước khi bắt đầu bước này
     local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-    local start_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-    local start_empty=$(( width - start_filled ))
+    local start_filled=$(( CURRENT_STEP * bar_w / TOTAL_STEPS ))
+    local start_empty=$(( bar_w - start_filled ))
     local run_bar=""
-    for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}█"; done
+    for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}▆"; done
     for ((b=0; b<start_empty; b++)); do run_bar="${run_bar}░"; done
 
     printf "\033[?25l"
@@ -205,9 +210,14 @@ step_task() {
         local speed_str=""
         [ -n "$cur_speed" ] && speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
 
+        local max_label_w=$(( cols - 6 ))
+        [ "$max_label_w" -lt 20 ] && max_label_w=20
+        local display_label="${label:0:$max_label_w}"
+
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}%b\033[K" \
-            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label" "$speed_str"
+        # Xuất 2 dòng: Dòng 1 = Thanh tiến trình dài + % | Dòng 2 = Text đầy đủ + Tốc độ mạng
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[1A\r" \
+            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -218,18 +228,18 @@ step_task() {
 
     CURRENT_STEP=$((CURRENT_STEP + 1))
     local end_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
-    local end_filled=$(( CURRENT_STEP * width / TOTAL_STEPS ))
-    local end_empty=$(( width - end_filled ))
+    local end_filled=$(( CURRENT_STEP * bar_w / TOTAL_STEPS ))
+    local end_empty=$(( bar_w - end_filled ))
     local end_bar=""
-    for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}█"; done
+    for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}▆"; done
     for ((b=0; b<end_empty; b++)); do end_bar="${end_bar}░"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s hoàn tất${RESET}\033[K\n" \
             "$end_bar" "$end_pct" "$label"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
             "$end_bar" "$end_pct" "$label" "$exit_code"
         return "$exit_code"
     fi

@@ -256,10 +256,10 @@ run_install_progress() {
         local cols
         cols=$(get_term_cols)
 
-        # Tính độ rộng thanh tiến trình phù hợp khi zoom to
-        local bar_w=12
-        [ "$cols" -lt 48 ] && bar_w=8
-        [ "$cols" -ge 65 ] && bar_w=16
+        # Tính độ rộng thanh tiến trình kéo dài vừa vặn màn hình Termux
+        local bar_w=$(( cols - 16 ))
+        [ "$bar_w" -lt 16 ] && bar_w=16
+        [ "$bar_w" -gt 42 ] && bar_w=42
 
         # Đo tốc độ mạng mỗi 0.8 giây (10 chu kỳ x 0.08s)
         if [ $(( i % 10 )) -eq 0 ]; then
@@ -277,23 +277,11 @@ run_install_progress() {
             prev_rx="$now_rx"
         fi
 
-        # Định dạng chuỗi tốc độ mạng tùy theo độ rộng màn hình
+        # Định dạng chuỗi tốc độ mạng
         local speed_str=""
-        local speed_len=0
-        if [ -n "$cur_speed" ]; then
-            if [ "$cols" -ge 46 ]; then
-                speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
-                speed_len=$(( ${#cur_speed} + 3 ))
-            elif [ "$cols" -ge 38 ]; then
-                speed_str=" ${CYAN}${cur_speed}${RESET}"
-                speed_len=$(( ${#cur_speed} + 1 ))
-            fi
-        fi
+        [ -n "$cur_speed" ] && speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
 
-        # Tính độ dài nhãn để không bao giờ bị tràn dòng (wrap line)
-        local max_label_w=$(( cols - bar_w - 18 - speed_len ))
-        [ "$max_label_w" -lt 10 ] && max_label_w=10
-
+        # Đọc trạng thái từ do_install
         if [ -f "$STATUS_FILE" ]; then
             local status_line
             status_line=$(cat "$STATUS_FILE" 2>/dev/null || true)
@@ -316,13 +304,18 @@ run_install_progress() {
         local filled=$(( cur_pct * bar_w / 100 ))
         local empty=$(( bar_w - filled ))
         local bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
+        for ((b=0; b<filled; b++)); do bar="${bar}▆"; done
         for ((b=0; b<empty; b++)); do bar="${bar}░"; done
 
+        # Dòng dưới chứa toàn bộ text nhãn và tốc độ mạng, không bao giờ bị cắt ngắn
+        local max_label_w=$(( cols - 6 ))
+        [ "$max_label_w" -lt 20 ] && max_label_w=20
         local display_label="${cur_label:0:$max_label_w}"
+
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}%b\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$max_label_w" "$display_label" "$speed_str"
+        # Xuất 2 dòng: Dòng 1 = Thanh tiến trình dài + % | Dòng 2 = Nhãn text + Tốc độ mạng
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[1A\r" \
+            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -334,18 +327,18 @@ run_install_progress() {
 
     local cols
     cols=$(get_term_cols)
-    local bar_w=12
-    [ "$cols" -lt 48 ] && bar_w=8
-    [ "$cols" -ge 65 ] && bar_w=16
+    local bar_w=$(( cols - 16 ))
+    [ "$bar_w" -lt 16 ] && bar_w=16
+    [ "$bar_w" -gt 42 ] && bar_w=42
     local full_bar=""
-    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}█"; done
+    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
             "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
             "$bar" "$cur_pct" "$exit_code"
         if [ -f "$INSTALL_LOG" ]; then
             echo

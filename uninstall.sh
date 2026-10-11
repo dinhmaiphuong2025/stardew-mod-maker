@@ -96,11 +96,9 @@ run_single_progress() {
     while kill -0 "$pid" 2>/dev/null; do
         local cols
         cols=$(get_term_cols)
-        local bar_w=12
-        [ "$cols" -lt 48 ] && bar_w=8
-        [ "$cols" -ge 65 ] && bar_w=16
-        local max_label_w=$(( cols - bar_w - 18 ))
-        [ "$max_label_w" -lt 12 ] && max_label_w=12
+        local bar_w=$(( cols - 16 ))
+        [ "$bar_w" -lt 16 ] && bar_w=16
+        [ "$bar_w" -gt 42 ] && bar_w=42
 
         local idx=$(( i % n_chars ))
         if [ "$pct" -lt 90 ] && [ $(( i % 4 )) -eq 0 ]; then
@@ -109,12 +107,15 @@ run_single_progress() {
         local filled=$(( pct * bar_w / 100 ))
         local empty=$(( bar_w - filled ))
         local bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}█"; done
+        for ((b=0; b<filled; b++)); do bar="${bar}▆"; done
         for ((b=0; b<empty; b++)); do bar="${bar}░"; done
 
+        local max_label_w=$(( cols - 6 ))
+        [ "$max_label_w" -lt 20 ] && max_label_w=20
         local display_label="${label:0:$max_label_w}"
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$pct" "$max_label_w" "$display_label"
+
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}\033[K\033[1A\r" \
+            "${spin_chars[$idx]}" "$bar" "$pct" "$display_label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -125,14 +126,14 @@ run_single_progress() {
 
     local cols
     cols=$(get_term_cols)
-    local bar_w=12
-    [ "$cols" -lt 48 ] && bar_w=8
-    [ "$cols" -ge 65 ] && bar_w=16
+    local bar_w=$(( cols - 16 ))
+    [ "$bar_w" -lt 16 ] && bar_w=16
+    [ "$bar_w" -gt 42 ] && bar_w=42
     local full_bar=""
-    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}█"; done
+    for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}  ${WHITE}Gỡ bỏ hoàn tất${RESET}\033[K\n" "$full_bar"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n    ${WHITE}Gỡ bỏ hoàn tất${RESET}\033[K\n" "$full_bar"
         return 0
     else
         printf "\r  ${RED}✗${RESET} Gỡ bỏ thất bại (mã %d)\033[K\n" "$exit_code"
