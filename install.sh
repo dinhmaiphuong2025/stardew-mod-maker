@@ -233,8 +233,13 @@ do_install() {
     fi
 
     # 6. Cấu hình môi trường bên trong Ubuntu (.NET SDK, công cụ)
-    echo "80:Cài đặt thư viện hệ thống Ubuntu & .NET 10.0 SDK" > "$STATUS_FILE"
+    echo "75:Cập nhật kho gói & thư viện Ubuntu" > "$STATUS_FILE"
     tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >> "$INSTALL_LOG" 2>&1 || true
+    proot-distro login ubuntu -- bash -c '
+        echo "82:Cài đặt thư viện hệ thống Ubuntu" > /tmp/.stardew_install_status_sub
+        /root/stardew-env/scripts/setup-proot.sh --apt-only >> /tmp/stardew_install.log 2>&1 || true
+    ' >> "$INSTALL_LOG" 2>&1 || true
+    echo "85:Tải và cài đặt .NET 10.0 SDK" > "$STATUS_FILE"
     proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >> "$INSTALL_LOG" 2>&1 || true
 
     # 7. Khởi tạo template & CLI

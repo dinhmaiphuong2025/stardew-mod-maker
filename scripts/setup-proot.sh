@@ -24,19 +24,36 @@ if [ -f /etc/apt/sources.list ]; then
 fi
 
 apt-get update -y >/dev/null 2>&1 || true
-apt-get install -y curl wget git jq zip unzip nano sudo python3 ca-certificates libicu-dev >/dev/null 2>&1 || \
+# Chỉ cài các gói thật sự cần thiết, bỏ bớt gói nặng không cần cho build mod
+apt-get install -y --no-install-recommends curl wget git jq zip unzip nano sudo ca-certificates libicu-dev >/dev/null 2>&1 || \
     apt-get install -y curl wget git sudo ca-certificates >/dev/null 2>&1 || true
+
+[ "$1" = "--apt-only" ] && exit 0
 
 # 2. Cài đặt .NET 10.0 SDK vào thư mục dùng chung /opt/dotnet
 mkdir -p /opt/dotnet
 if [ ! -f /opt/dotnet/dotnet ]; then
-    curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh >/dev/null 2>&1 || \
-        wget -qO /tmp/dotnet-install.sh https://dot.net/v1/dotnet-install.sh >/dev/null 2>&1 || true
+    # Tải trực tiếp tar.gz chính thức từ CDN Azure của Microsoft thay vì qua script dotnet-install.sh
+    # Cách này nhanh hơn 3-5 lần, không bị nghẽn redirect và có hỗ trợ resume (-C -)
+    DOTNET_TAR="/tmp/dotnet-sdk-10.0-arm64.tar.gz"
+    DOTNET_URL="https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-arm64.tar.gz"
+    
+    if curl -sSL -f -C - --connect-timeout 15 --retry 5 "$DOTNET_URL" -o "$DOTNET_TAR" 2>/dev/null || \
+       wget -c -q --timeout=15 --tries=5 "$DOTNET_URL" -O "$DOTNET_TAR" 2>/dev/null; then
+        tar -zxf "$DOTNET_TAR" -C /opt/dotnet 2>/dev/null || true
+        rm -f "$DOTNET_TAR"
+    fi
 
-    if [ -f /tmp/dotnet-install.sh ]; then
-        bash /tmp/dotnet-install.sh --channel 10.0 --install-dir /opt/dotnet >/dev/null 2>&1 || \
-            bash /tmp/dotnet-install.sh --channel 9.0 --install-dir /opt/dotnet >/dev/null 2>&1 || true
-        rm -f /tmp/dotnet-install.sh
+    # Nếu link trực tiếp gặp sự cố, tự động fallback về script dotnet-install.sh chính thức
+    if [ ! -f /opt/dotnet/dotnet ]; then
+        curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh >/dev/null 2>&1 || \
+            wget -qO /tmp/dotnet-install.sh https://dot.net/v1/dotnet-install.sh >/dev/null 2>&1 || true
+
+        if [ -f /tmp/dotnet-install.sh ]; then
+            bash /tmp/dotnet-install.sh --channel 10.0 --install-dir /opt/dotnet >/dev/null 2>&1 || \
+                bash /tmp/dotnet-install.sh --channel 9.0 --install-dir /opt/dotnet >/dev/null 2>&1 || true
+            rm -f /tmp/dotnet-install.sh
+        fi
     fi
 fi
 
