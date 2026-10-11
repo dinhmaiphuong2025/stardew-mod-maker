@@ -221,8 +221,7 @@ cmd_deploy() {
     [ -d "assets" ] && cp -r assets "$target_mod_dir/"
 
     print_success "Đã cài đặt mod '$mod_name' vào game!"
-    print_box "Đích: $target_mod_dir"
-    echo "$target_mod_dir"
+    echo -e "  ${CYAN}•${RESET} Thư mục mod: ${WHITE}$target_mod_dir${RESET}"
 }
 
 # ------------------------------------------------------------------------------
@@ -254,18 +253,23 @@ cmd_logs() {
 cmd_list() {
     print_header "DANH SÁCH DỰ ÁN MOD TRONG WORKSPACE"
     if [ -d "$WORKSPACE/mods" ] && [ "$(ls -A "$WORKSPACE/mods" 2>/dev/null)" ]; then
-        ls -1 "$WORKSPACE/mods"
+        for m in "$WORKSPACE/mods"/*; do
+            [ -d "$m" ] && echo -e "  ${CYAN}•${RESET} ${WHITE}$(basename "$m")${RESET} ${GRAY}(mods/$(basename "$m"))${RESET}"
+        done
     else
         print_info "Chưa có dự án mod nào trong $WORKSPACE/mods"
     fi
 
     echo
-    print_header "DANH SÁCH MOD ĐÃ CÀI TRONG GAME (CINDERBOX)"
+    print_header "DANH SÁCH MOD TRONG GAME (/sdcard)"
     if [ -d "$MODS_DIR" ] && [ "$(ls -A "$MODS_DIR" 2>/dev/null)" ]; then
-        ls -1 "$MODS_DIR"
+        for m in "$MODS_DIR"/*; do
+            [ -d "$m" ] && echo -e "  ${GREEN}✓${RESET} ${WHITE}$(basename "$m")${RESET}"
+        done
     else
         print_info "Thư mục $MODS_DIR đang trống."
     fi
+    print_line
 }
 
 # ------------------------------------------------------------------------------
@@ -312,8 +316,10 @@ install_opencode() {
                 ;;
         esac
     fi
-    print_info "Đang tải và cài đặt OpenCode v2..."
-    curl -fsSL https://opencode.ai/v2/install | bash 2>/dev/null || curl -fsSL https://opencode.ai/install | bash 2>/dev/null || true
+    do_dl_opencode() {
+        curl -fsSL https://opencode.ai/v2/install | bash 2>/dev/null || curl -fsSL https://opencode.ai/install | bash 2>/dev/null || true
+    }
+    spin_task "Đang tải và cài đặt OpenCode v2" do_dl_opencode
     if [ -f "$HOME/.opencode/bin/opencode" ]; then
         sudo ln -sf "$HOME/.opencode/bin/opencode" /usr/local/bin/opencode 2>/dev/null || true
         [ -f "$HOME/.opencode/bin/opencode2" ] && ( sudo ln -sf "$HOME/.opencode/bin/opencode2" /usr/local/bin/opencode2 2>/dev/null || true )
@@ -348,8 +354,10 @@ install_antigravity() {
         print_success "Antigravity CLI đã có sẵn trên hệ thống. Khởi động bằng lệnh: agy"
         return 0
     fi
-    print_info "Đang tải và cài đặt Antigravity qua script chính thức..."
-    curl -fsSL https://antigravity.google/cli/install.sh | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/google/antigravity/main/install.sh | bash 2>/dev/null || true
+    do_dl_agy() {
+        curl -fsSL https://antigravity.google/cli/install.sh | bash 2>/dev/null || curl -fsSL https://raw.githubusercontent.com/google/antigravity/main/install.sh | bash 2>/dev/null || true
+    }
+    spin_task "Đang tải và cài đặt Antigravity" do_dl_agy
     if [ -f "$HOME/.local/bin/agy" ]; then
         sudo ln -sf "$HOME/.local/bin/agy" /usr/local/bin/agy 2>/dev/null || true
     fi

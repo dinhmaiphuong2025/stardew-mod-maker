@@ -27,7 +27,7 @@ print_info "Khởi động lần đầu: Vui lòng thiết lập tài khoản ng
 echo
 
 # 1. Nhập tên người dùng (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
-printf "  Nhập tên người dùng (viết thường không dấu, mặc định: stardew): "
+printf "  ${CYAN}❯${RESET} Nhập tên người dùng (mặc định: ${YELLOW}stardew${RESET}): "
 if [ -c /dev/tty ] && [ -r /dev/tty ]; then
     read -r INPUT_USER < /dev/tty 2>/dev/null || read -r INPUT_USER 2>/dev/null || INPUT_USER="stardew"
 else
@@ -37,7 +37,7 @@ INPUT_USER=$(echo "$INPUT_USER" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-'
 [ -z "$INPUT_USER" ] && INPUT_USER="stardew"
 
 # 2. Nhập mật khẩu (tùy chọn)
-printf "  Nhập mật khẩu (nhấn Enter để trống nếu không cần mật khẩu): "
+printf "  ${CYAN}❯${RESET} Nhập mật khẩu (nhấn Enter nếu không cần): "
 if [ -c /dev/tty ] && [ -r /dev/tty ]; then
     read -rs INPUT_PASS < /dev/tty 2>/dev/null || read -rs INPUT_PASS 2>/dev/null || INPUT_PASS=""
 else
@@ -47,7 +47,7 @@ echo
 
 # 3. Hỏi tắt hỏi mật khẩu sudo
 NOPASSWD=0
-if confirm_default_yes "  Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng cho Termux)"; then
+if confirm_default_yes "Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng)"; then
     NOPASSWD=1
 fi
 
@@ -119,9 +119,10 @@ if [ -f /usr/local/bin/ui.sh ]; then
     clear_screen
     banner "STARDEW MOD VIBECODING" "Không gian sáng tạo Mod Cinderbox Android"
     print_info "Cài đặt AI Coding Agent để bắt đầu:"
-    echo "  • OpenCode CLI v2: stardew-mod agent opencode"
-    echo "  • Antigravity CLI: stardew-mod agent antigravity"
-    echo "  • Chọn Agent khác: stardew-mod agent"
+    echo -e "  ${CYAN}•${RESET} OpenCode CLI v2: ${BOLD}${YELLOW}stardew-mod agent opencode${RESET}"
+    echo -e "  ${CYAN}•${RESET} Antigravity CLI: ${BOLD}${YELLOW}stardew-mod agent antigravity${RESET}"
+    echo -e "  ${CYAN}•${RESET} Danh sách Agent: ${BOLD}${YELLOW}stardew-mod agent${RESET}"
+    echo -e "  ${CYAN}•${RESET} Hướng dẫn lệnh:  ${BOLD}${YELLOW}stardew-mod help${RESET}"
     print_line
 fi
 cd ~/stardew-workspace
@@ -136,6 +137,7 @@ touch /etc/stardew-user-created
 
 echo
 print_success "Đã tạo tài khoản '$INPUT_USER' và cấp quyền sudo thành công!"
-print_box "Không gian làm việc: $USER_WORKSPACE"
+echo -e "  ${CYAN}•${RESET} Không gian làm việc: ${BOLD}${WHITE}$USER_WORKSPACE${RESET}"
+echo -e "  ${CYAN}•${RESET} Thư mục game /sdcard: ${GRAY}/sdcard/StardewValley${RESET}"
 echo
 sleep 1

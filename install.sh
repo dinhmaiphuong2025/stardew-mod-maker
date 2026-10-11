@@ -85,14 +85,39 @@ else
         [ -n "$2" ] && printf "  ${GRAY}%s${RESET}\n" "$2"
         print_line
     }
+    get_net_rx_bytes() {
+        local sum=0 iface rest rx
+        if [ -r /proc/net/dev ]; then
+            while IFS=":" read -r iface rest; do
+                iface="${iface// /}"
+                if [ "$iface" != "lo" ] && [ -n "$rest" ]; then
+                    set -- $rest
+                    rx="$1"
+                    if [ -n "$rx" ] && [ "$rx" -eq "$rx" ] 2>/dev/null; then
+                        sum=$(( sum + rx ))
+                    fi
+                fi
+            done < /proc/net/dev
+        fi
+        echo "$sum"
+    }
+    format_speed() {
+        local bps="$1"
+        if [ "$bps" -ge 1048576 ]; then
+            local mb=$(( bps / 1048576 ))
+            local dec=$(( (bps % 1048576) * 10 / 1048576 ))
+            printf "%d.%d MB/s" "$mb" "$dec"
+        elif [ "$bps" -ge 1024 ]; then
+            local kb=$(( bps / 1024 ))
+            printf "%d KB/s" "$kb"
+        elif [ "$bps" -gt 0 ]; then
+            printf "%d B/s" "$bps"
+        else
+            printf "0 KB/s"
+        fi
+    }
     print_box() {
-        local text="$1"
-        local len
-        len=$(LC_ALL=C.UTF-8 printf "%s" "$text" | wc -m 2>/dev/null || echo "${#text}")
-        len=$(echo "$len" | tr -d '[:space:]')
-        local border=""
-        for ((i=0; i<len+2; i++)); do border="${border}─"; done
-        printf "  ${GRAY}┌%s┐${RESET}\n  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n  ${GRAY}└%s┘${RESET}\n" "$border" "$text" "$border"
+        printf "  ${CYAN}⠿${RESET} ${BOLD}%s${RESET}\n" "$1"
     }
     confirm() {
         local msg="$1" resp=""
@@ -219,6 +244,9 @@ run_install_progress() {
     local i=0
     local cur_pct=5
     local cur_label="Đang chuẩn bị môi trường..."
+    local prev_rx
+    prev_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+    local cur_speed=""
 
     printf "\033[?25l"
     do_install </dev/null >/dev/null 2>&1 &
@@ -233,9 +261,38 @@ run_install_progress() {
         [ "$cols" -lt 48 ] && bar_w=8
         [ "$cols" -ge 65 ] && bar_w=16
 
+        # Đo tốc độ mạng mỗi 0.8 giây (10 chu kỳ x 0.08s)
+        if [ $(( i % 10 )) -eq 0 ]; then
+            local now_rx
+            now_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+            if [ -n "$prev_rx" ] && [ "$now_rx" -ge "$prev_rx" ] 2>/dev/null; then
+                local diff_rx=$(( now_rx - prev_rx ))
+                local rate=$(( diff_rx * 5 / 4 ))
+                if [ "$rate" -gt 1024 ]; then
+                    cur_speed=$(format_speed "$rate")
+                else
+                    cur_speed=""
+                fi
+            fi
+            prev_rx="$now_rx"
+        fi
+
+        # Định dạng chuỗi tốc độ mạng tùy theo độ rộng màn hình
+        local speed_str=""
+        local speed_len=0
+        if [ -n "$cur_speed" ]; then
+            if [ "$cols" -ge 46 ]; then
+                speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
+                speed_len=$(( ${#cur_speed} + 3 ))
+            elif [ "$cols" -ge 38 ]; then
+                speed_str=" ${CYAN}${cur_speed}${RESET}"
+                speed_len=$(( ${#cur_speed} + 1 ))
+            fi
+        fi
+
         # Tính độ dài nhãn để không bao giờ bị tràn dòng (wrap line)
-        local max_label_w=$(( cols - bar_w - 18 ))
-        [ "$max_label_w" -lt 12 ] && max_label_w=12
+        local max_label_w=$(( cols - bar_w - 18 - speed_len ))
+        [ "$max_label_w" -lt 10 ] && max_label_w=10
 
         if [ -f "$STATUS_FILE" ]; then
             local status_line
@@ -264,8 +321,8 @@ run_install_progress() {
 
         local display_label="${cur_label:0:$max_label_w}"
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$max_label_w" "$display_label"
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%-*s${RESET}%b\033[K" \
+            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$max_label_w" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -343,7 +400,8 @@ cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/Ubuntu" 2>/dev/null || true
 cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/stardew-code" 2>/dev/null || true
 
 echo
-print_box "Cài đặt thành công! Gõ 'ubuntu' để bắt đầu."
+print_success "Cài đặt thành công! Môi trường VibeCoding đã sẵn sàng."
+echo "  ${CYAN}•${RESET} Khởi động Ubuntu: ${BOLD}${YELLOW}ubuntu${RESET}"
 echo
 
 if confirm_default_yes "Khởi động vào Ubuntu ngay bây giờ?"; then

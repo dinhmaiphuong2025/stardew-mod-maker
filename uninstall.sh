@@ -62,19 +62,9 @@ banner() {
     print_line
 }
 
-# Khung bo góc quanh text (chuẩn hóa độ dài UTF-8 không bị lệch viền)
+# Điểm nhấn thông báo không kẻ ô (thay thế khung chữ nhật tránh lỗi hiển thị trên mobile)
 print_box() {
-    local text="$1"
-    local len
-    len=$(LC_ALL=C.UTF-8 printf "%s" "$text" | wc -m 2>/dev/null || echo "${#text}")
-    len=$(echo "$len" | tr -d '[:space:]')
-    local border=""
-    for ((i=0; i<len+2; i++)); do
-        border="${border}─"
-    done
-    printf "  ${GRAY}┌%s┐${RESET}\n" "$border"
-    printf "  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n" "$text"
-    printf "  ${GRAY}└%s┘${RESET}\n" "$border"
+    printf "  ${CYAN}⠿${RESET} ${BOLD}%s${RESET}\n" "$1"
 }
 
 confirm() {
@@ -204,8 +194,8 @@ run_single_progress "Đang dọn dẹp và gỡ bỏ toàn bộ môi trường..
 
 print_line
 echo
-print_box "Đã dọn sạch hệ thống! Sẵn sàng cài đặt lại."
+print_success "Đã dọn sạch toàn bộ hệ thống! Sẵn sàng cài đặt lại."
 echo
-print_info "Lệnh cài đặt lại bằng 1 dòng:"
-echo "  curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash"
+print_info "Lệnh cài đặt lại bằng 1 chạm:"
+echo -e "  ${CYAN}curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash${RESET}"
 echo

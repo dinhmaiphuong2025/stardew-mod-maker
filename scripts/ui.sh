@@ -111,19 +111,44 @@ print_menu() {
     print_line
 }
 
-# Khung bo góc quanh text (chuẩn hóa độ dài ký tự UTF-8 không bị lệch viền)
+# Đo tốc độ mạng từ /proc/net/dev (thuần Bash không phụ thuộc công cụ ngoài)
+get_net_rx_bytes() {
+    local sum=0 iface rest rx
+    if [ -r /proc/net/dev ]; then
+        while IFS=":" read -r iface rest; do
+            iface="${iface// /}"
+            if [ "$iface" != "lo" ] && [ -n "$rest" ]; then
+                set -- $rest
+                rx="$1"
+                if [ -n "$rx" ] && [ "$rx" -eq "$rx" ] 2>/dev/null; then
+                    sum=$(( sum + rx ))
+                fi
+            fi
+        done < /proc/net/dev
+    fi
+    echo "$sum"
+}
+
+format_speed() {
+    local bps="$1"
+    if [ "$bps" -ge 1048576 ]; then
+        local mb=$(( bps / 1048576 ))
+        local dec=$(( (bps % 1048576) * 10 / 1048576 ))
+        printf "%d.%d MB/s" "$mb" "$dec"
+    elif [ "$bps" -ge 1024 ]; then
+        local kb=$(( bps / 1024 ))
+        printf "%d KB/s" "$kb"
+    elif [ "$bps" -gt 0 ]; then
+        printf "%d B/s" "$bps"
+    else
+        printf "0 KB/s"
+    fi
+}
+
+# Điểm nhấn thông báo không kẻ ô (thay thế khung chữ nhật tránh lỗi hiển thị trên mobile)
 print_box() {
     local text="$1"
-    local len
-    len=$(LC_ALL=C.UTF-8 printf "%s" "$text" | wc -m 2>/dev/null || echo "${#text}")
-    len=$(echo "$len" | tr -d '[:space:]')
-    local border=""
-    for ((i=0; i<len+2; i++)); do
-        border="${border}─"
-    done
-    printf "  ${GRAY}┌%s┐${RESET}\n" "$border"
-    printf "  ${GRAY}│${RESET} %s ${GRAY}│${RESET}\n" "$text"
-    printf "  ${GRAY}└%s┘${RESET}\n" "$border"
+    printf "  ${CYAN}⠿${RESET} ${BOLD}%s${RESET}\n" "$text"
 }
 
 # ------------------------------------------------------------------------------
@@ -145,6 +170,9 @@ step_task() {
     local n_chars=${#spin_chars[@]}
     local i=0
     local width=16
+    local prev_rx
+    prev_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+    local cur_speed=""
 
     # Tiến trình trước khi bắt đầu bước này (ví dụ bước 5/5 sẽ hiển thị 80% khi đang chạy, không hiển thị 100% quá sớm)
     local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
@@ -159,9 +187,27 @@ step_task() {
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
+        if [ $(( i % 10 )) -eq 0 ]; then
+            local now_rx
+            now_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+            if [ -n "$prev_rx" ] && [ "$now_rx" -ge "$prev_rx" ] 2>/dev/null; then
+                local diff_rx=$(( now_rx - prev_rx ))
+                local rate=$(( diff_rx * 5 / 4 ))
+                if [ "$rate" -gt 1024 ]; then
+                    cur_speed=$(format_speed "$rate")
+                else
+                    cur_speed=""
+                fi
+            fi
+            prev_rx="$now_rx"
+        fi
+
+        local speed_str=""
+        [ -n "$cur_speed" ] && speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
+
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}\033[K" \
-            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label"
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}  ${WHITE}%s${RESET}%b\033[K" \
+            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -194,21 +240,42 @@ finish_progress() {
     print_line
 }
 
-# Spinner đơn cho các tác vụ như biên dịch mod
+# Spinner đơn cho các tác vụ như tải file hoặc xử lý
 spin_task() {
     local label="$1"
     shift
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
     local i=0
+    local prev_rx
+    prev_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+    local cur_speed=""
 
     printf "\033[?25l"
     "$@" </dev/null >/dev/null 2>&1 &
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
+        if [ $(( i % 10 )) -eq 0 ]; then
+            local now_rx
+            now_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
+            if [ -n "$prev_rx" ] && [ "$now_rx" -ge "$prev_rx" ] 2>/dev/null; then
+                local diff_rx=$(( now_rx - prev_rx ))
+                local rate=$(( diff_rx * 5 / 4 ))
+                if [ "$rate" -gt 1024 ]; then
+                    cur_speed=$(format_speed "$rate")
+                else
+                    cur_speed=""
+                fi
+            fi
+            prev_rx="$now_rx"
+        fi
+
+        local speed_str=""
+        [ -n "$cur_speed" ] && speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
+
         local idx=$(( i % n_chars ))
-        printf "\r  ${CYAN}%s${RESET}  ${WHITE}%s...${RESET}\033[K" "${spin_chars[$idx]}" "$label"
+        printf "\r  ${CYAN}%s${RESET}  ${WHITE}%s...${RESET}%b\033[K" "${spin_chars[$idx]}" "$label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
