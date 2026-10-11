@@ -21,13 +21,10 @@ if [ -f "/etc/stardew-user-created" ]; then
 fi
 
 clear_screen
-banner "KHỞI TẠO NGƯỜI DÙNG" "Thiết lập tài khoản sudo cho không gian làm việc"
+banner "KHỞI TẠO TÀI KHOẢN" "Thiết lập quyền sudo cho không gian làm việc Ubuntu"
 
-print_info "Khởi động lần đầu: Vui lòng thiết lập tài khoản người dùng cho Ubuntu."
-echo
-
-# 1. Nhập tên người dùng (hỗ trợ đọc từ /dev/tty khi chạy qua pipe)
-printf "  ${CYAN}❯${RESET} Nhập tên người dùng (mặc định: ${YELLOW}stardew${RESET}): "
+# 1. Nhập tên tài khoản (mặc định stardew)
+printf "  ${CYAN}❯${RESET} Tên người dùng [mặc định: ${YELLOW}stardew${RESET}]: "
 if [ -c /dev/tty ] && [ -r /dev/tty ]; then
     read -r INPUT_USER < /dev/tty 2>/dev/null || read -r INPUT_USER 2>/dev/null || INPUT_USER="stardew"
 else
@@ -36,8 +33,8 @@ fi
 INPUT_USER=$(echo "$INPUT_USER" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-')
 [ -z "$INPUT_USER" ] && INPUT_USER="stardew"
 
-# 2. Nhập mật khẩu (tùy chọn)
-printf "  ${CYAN}❯${RESET} Nhập mật khẩu (nhấn Enter nếu không cần): "
+# 2. Nhập mật khẩu (nhấn Enter để bỏ qua)
+printf "  ${CYAN}❯${RESET} Mật khẩu sudo [nhấn Enter để bỏ qua]: "
 if [ -c /dev/tty ] && [ -r /dev/tty ]; then
     read -rs INPUT_PASS < /dev/tty 2>/dev/null || read -rs INPUT_PASS 2>/dev/null || INPUT_PASS=""
 else
@@ -45,12 +42,29 @@ else
 fi
 echo
 
-# 3. Hỏi tắt hỏi mật khẩu sudo
-NOPASSWD=0
-if confirm_default_yes "Tắt hỏi mật khẩu khi sử dụng sudo? (Khuyên dùng)"; then
-    NOPASSWD=1
+# 3. Miễn hỏi mật khẩu sudo (mặc định Y)
+NOPASSWD=1
+NOPASSWD_TEXT="Có"
+printf "  ${CYAN}❯${RESET} Miễn hỏi mật khẩu khi sudo? (Y/n) [${GREEN}Y${RESET}]: "
+CONFIRM_SUDO=""
+if [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    read -r CONFIRM_SUDO < /dev/tty 2>/dev/null || read -r CONFIRM_SUDO 2>/dev/null || CONFIRM_SUDO="y"
+else
+    read -r CONFIRM_SUDO 2>/dev/null || CONFIRM_SUDO="y"
 fi
+[ -z "$CONFIRM_SUDO" ] && CONFIRM_SUDO="y"
+case "$CONFIRM_SUDO" in
+    [nN]|[nN][oO])
+        NOPASSWD=0
+        NOPASSWD_TEXT="Không"
+        ;;
+    *)
+        NOPASSWD=1
+        NOPASSWD_TEXT="Có"
+        ;;
+esac
 
+echo
 print_info "Đang khởi tạo tài khoản '$INPUT_USER'..."
 
 # Tạo user nếu chưa tồn tại
@@ -137,7 +151,8 @@ touch /etc/stardew-user-created
 
 echo
 print_success "Đã tạo tài khoản '$INPUT_USER' và cấp quyền sudo thành công!"
-echo -e "  ${CYAN}•${RESET} Không gian làm việc: ${BOLD}${WHITE}$USER_WORKSPACE${RESET}"
+echo -e "  ${CYAN}•${RESET} Không gian làm việc:  ${BOLD}${WHITE}$USER_WORKSPACE${RESET}"
+echo -e "  ${CYAN}•${RESET} Miễn mật khẩu sudo:    ${YELLOW}$NOPASSWD_TEXT${RESET}"
 echo -e "  ${CYAN}•${RESET} Thư mục game /sdcard: ${GRAY}/sdcard/StardewValley${RESET}"
 echo
 sleep 1

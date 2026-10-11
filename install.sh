@@ -198,20 +198,23 @@ rm -f "$STATUS_FILE" "$INSTALL_LOG"
 # Toàn bộ quy trình cài đặt thực hiện ngầm trong 1 luồng
 do_install() {
     set +e
-    # 1. Kiểm tra quyền bộ nhớ
-    echo "10:Kiểm tra bộ nhớ thiết bị" > "$STATUS_FILE"
+    # 1. Quyền bộ nhớ
+    echo "10:Kiểm tra quyền truy cập bộ nhớ thiết bị Android (/sdcard)" > "$STATUS_FILE"
     if [ ! -d "$HOME/storage/shared" ]; then
         termux-setup-storage >/dev/null 2>&1 || true
         sleep 1
     fi
 
-    # 2. Cài đặt các gói công cụ Termux
-    echo "25:Cài đặt gói công cụ Termux" > "$STATUS_FILE"
+    # 2. Cập nhật kho gói Termux
+    echo "22:Cập nhật danh sách kho gói Termux (apt update)" > "$STATUS_FILE"
     apt-get update -y >> "$INSTALL_LOG" 2>&1 || true
+
+    # 3. Cài đặt các gói công cụ lõi Termux
+    echo "35:Cài đặt gói công cụ lõi Termux (proot-distro, git, curl, jq)" > "$STATUS_FILE"
     apt-get install -y --no-install-recommends proot-distro git curl nodejs jq tar openssl >> "$INSTALL_LOG" 2>&1 || true
 
-    # 3. Cài đặt PRoot Ubuntu
-    echo "45:Thiết lập PRoot Ubuntu" > "$STATUS_FILE"
+    # 4. Tải và thiết lập PRoot Ubuntu
+    echo "50:Tải hệ điều hành PRoot Ubuntu 24.04 (rootfs aarch64)" > "$STATUS_FILE"
     if ! is_ubuntu_installed; then
         proot-distro remove ubuntu >> "$INSTALL_LOG" 2>&1 || true
         rm -rf "$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu" \
@@ -220,8 +223,8 @@ do_install() {
         proot-distro install ubuntu >> "$INSTALL_LOG" 2>&1 || proot-distro install ubuntu:24.04 >> "$INSTALL_LOG" 2>&1 || true
     fi
 
-    # 4. Cấu hình liên kết /sdcard
-    echo "70:Kết nối thư mục game /sdcard" > "$STATUS_FILE"
+    # 5. Cấu hình liên kết /sdcard
+    echo "65:Thiết lập container Ubuntu & liên kết thư mục /sdcard" > "$STATUS_FILE"
     local conf_dir="$PREFIX/etc/proot-distro"
     mkdir -p "$conf_dir"
     local override="$conf_dir/ubuntu.override.conf"
@@ -229,24 +232,28 @@ do_install() {
         echo "bind_directories+=('/sdcard:/sdcard')" >> "$override"
     fi
 
-    # 5. Cấu hình môi trường bên trong Ubuntu (.NET SDK, công cụ)
-    echo "85:Cấu hình .NET SDK & công cụ" > "$STATUS_FILE"
+    # 6. Cấu hình môi trường bên trong Ubuntu (.NET SDK, công cụ)
+    echo "80:Cài đặt thư viện hệ thống Ubuntu & .NET 10.0 SDK" > "$STATUS_FILE"
     tar -C "$SCRIPT_DIR" -cf - . | proot-distro login ubuntu -- bash -c 'mkdir -p /root/stardew-env && tar -C /root/stardew-env -xf -' >> "$INSTALL_LOG" 2>&1 || true
     proot-distro login ubuntu -- bash /root/stardew-env/scripts/setup-proot.sh >> "$INSTALL_LOG" 2>&1 || true
-    echo "100:Hoàn tất cài đặt môi trường" > "$STATUS_FILE"
+
+    # 7. Khởi tạo template & CLI
+    echo "100:Khởi tạo stardew-mod CLI, template dự án & môi trường VibeCoding" > "$STATUS_FILE"
     return 0
 }
 
-# Thanh tiến trình động duy nhất tự căn chỉnh theo độ rộng màn hình Termux (khi zoom)
+# Thanh tiến trình cố định trên cùng & lưu vết các bước bên dưới
 run_install_progress() {
     local spin_chars=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
     local n_chars=${#spin_chars[@]}
     local i=0
-    local cur_pct=5
-    local cur_label="Đang chuẩn bị môi trường..."
+    local cur_pct=3
+    local cur_label="Đang chuẩn bị môi trường cài đặt..."
     local prev_rx
     prev_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
     local cur_speed=""
+    local history=()
+    local last_step=""
 
     printf "\033[?25l"
     do_install </dev/null >/dev/null 2>&1 &
@@ -256,12 +263,11 @@ run_install_progress() {
         local cols
         cols=$(get_term_cols)
 
-        # Tính độ rộng thanh tiến trình kéo dài vừa vặn màn hình Termux
-        local bar_w=$(( cols - 16 ))
+        local bar_w=$(( cols - 28 ))
         [ "$bar_w" -lt 16 ] && bar_w=16
-        [ "$bar_w" -gt 42 ] && bar_w=42
+        [ "$bar_w" -gt 38 ] && bar_w=38
 
-        # Đo tốc độ mạng mỗi 0.8 giây (10 chu kỳ x 0.08s)
+        # Đo tốc độ mạng mỗi 0.8 giây
         if [ $(( i % 10 )) -eq 0 ]; then
             local now_rx
             now_rx=$(get_net_rx_bytes 2>/dev/null || echo 0)
@@ -277,9 +283,8 @@ run_install_progress() {
             prev_rx="$now_rx"
         fi
 
-        # Định dạng chuỗi tốc độ mạng
-        local speed_str=""
-        [ -n "$cur_speed" ] && speed_str=" ${GRAY}·${RESET} ${CYAN}${cur_speed}${RESET}"
+        local sp_str="         "
+        [ -n "$cur_speed" ] && sp_str=$(printf "%9s" "$cur_speed")
 
         # Đọc trạng thái từ do_install
         if [ -f "$STATUS_FILE" ]; then
@@ -288,7 +293,12 @@ run_install_progress() {
             if [ -n "$status_line" ]; then
                 local target_pct="${status_line%%:*}"
                 local label="${status_line#*:}"
-                [ -n "$label" ] && cur_label="$label"
+                if [ -n "$label" ] && [ "$label" != "$cur_label" ]; then
+                    if [ -n "$cur_label" ] && [ "$cur_label" != "Đang chuẩn bị môi trường cài đặt..." ]; then
+                        history+=("$cur_label")
+                    fi
+                    cur_label="$label"
+                fi
                 if [ -n "$target_pct" ] && [ "$target_pct" -ge 0 ] 2>/dev/null; then
                     if [ "$cur_pct" -lt "$target_pct" ]; then
                         cur_pct=$(( cur_pct + 1 ))
@@ -297,7 +307,7 @@ run_install_progress() {
             fi
         fi
 
-        if [ "$cur_pct" -lt 95 ] && [ $(( i % 15 )) -eq 0 ]; then
+        if [ "$cur_pct" -lt 96 ] && [ $(( i % 15 )) -eq 0 ]; then
             cur_pct=$(( cur_pct + 1 ))
         fi
 
@@ -308,15 +318,31 @@ run_install_progress() {
         for ((b=0; b<filled; b++)); do bar_f="${bar_f}▆"; done
         for ((b=0; b<empty; b++)); do bar_e="${bar_e} "; done
 
-        # Dòng dưới chứa toàn bộ text nhãn và tốc độ mạng, không bao giờ bị cắt ngắn
+        local idx=$(( i % n_chars ))
+        local pct_str
+        pct_str=$(printf "%3d%%" "$cur_pct")
+
+        local buf="\033[H"
+        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\n"
+        buf+="  ${GRAY}"
+        for ((l=0; l<cols-4 && l<46; l++)); do buf+="─"; done
+        buf+="${RESET}\n"
+
+        # DÒNG CỐ ĐỊNH TRÊN CÙNG: THANH TIẾN TRÌNH + % + TỐC ĐỘ MẠNG
+        buf+="  ${CYAN}${spin_chars[$idx]}${RESET} [${GREEN}${bar_f}${RESET}${bar_e}] ${BOLD}${pct_str}${RESET}  ${CYAN}${sp_str}${RESET}\033[K\n\n"
+
+        # CÁC BƯỚC ĐÃ XONG LƯU VẾT TÍCH XANH
+        for h in "${history[@]}"; do
+            buf+="  ${GREEN}✓${RESET} ${WHITE}${h}${RESET}\033[K\n"
+        done
+
+        # BƯỚC HIỆN TẠI ĐANG CHẠY
         local max_label_w=$(( cols - 6 ))
         [ "$max_label_w" -lt 20 ] && max_label_w=20
         local display_label="${cur_label:0:$max_label_w}"
+        buf+="  ${CYAN}❯${RESET} ${WHITE}${display_label}...${RESET}\033[K\n"
 
-        local idx=$(( i % n_chars ))
-        # Dòng 1: Thanh tiến trình mảnh + % | Dòng 2: Dòng trống cách biệt | Dòng 3: Nhãn text + Tốc độ mạng
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[2A\r" \
-            "${spin_chars[$idx]}" "$bar_f" "$bar_e" "$cur_pct" "$display_label" "$speed_str"
+        printf "%b" "$buf"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -328,19 +354,27 @@ run_install_progress() {
 
     local cols
     cols=$(get_term_cols)
-    local bar_w=$(( cols - 16 ))
+    local bar_w=$(( cols - 28 ))
     [ "$bar_w" -lt 16 ] && bar_w=16
-    [ "$bar_w" -gt 42 ] && bar_w=42
+    [ "$bar_w" -gt 38 ] && bar_w=38
     local full_bar=""
     for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
-            "$full_bar"
+        history+=("$cur_label")
+        local buf="\033[H"
+        buf+="  ${BOLD}${WHITE}STARDEW MOD VIBECODING${RESET}\n"
+        buf+="  ${GRAY}"
+        for ((l=0; l<cols-4 && l<46; l++)); do buf+="─"; done
+        buf+="${RESET}\n"
+        buf+="  ${GREEN}✓${RESET} [${GREEN}${full_bar}${RESET}] ${BOLD}100%${RESET}           \033[K\n\n"
+        for h in "${history[@]}"; do
+            buf+="  ${GREEN}✓${RESET} ${WHITE}${h}${RESET}\033[K\n"
+        done
+        printf "%b" "$buf"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
-            "$bar_f" "$bar_e" "$cur_pct" "$exit_code"
+        printf "\n  ${RED}✗ Cài đặt thất bại (mã %d)${RESET}\n" "$exit_code"
         if [ -f "$INSTALL_LOG" ]; then
             echo
             print_warning "Chi tiết lỗi:"
