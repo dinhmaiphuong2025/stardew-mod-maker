@@ -87,15 +87,22 @@ Khi AI báo xong, bạn chỉ cần mở game **Stardew Valley** trên điện t
 
 ---
 
-## 4. Các Lệnh Tiện Ích (Tùy Chọn)
+## 4. Danh Sách Lệnh `stardew-mod` Đầy Đủ
 
-Bạn không bắt buộc phải nhớ các lệnh này vì AI đã tự làm giúp bạn. Chỉ dùng khi bạn muốn tự kiểm tra:
+Bộ công cụ `stardew-mod` được cài đặt sẵn trong `PATH` của môi trường Ubuntu. Bạn hoặc AI có thể gọi trực tiếp các lệnh sau:
 
-| Lệnh | Chức năng |
+| Lệnh | Chức năng chi tiết |
 |---|---|
-| `stardew-mod` | Menu bảng điều khiển trực quan |
-| `stardew-mod update` | Cập nhật bộ công cụ lên bản mới nhất từ GitHub |
-| `stardew-mod logs` | Xem nhật ký SMAPI khi game gặp sự cố |
+| `stardew-mod help` | Hiển thị bảng hướng dẫn cú pháp và mô tả đầy đủ các lệnh |
+| `stardew-mod` | Mở menu bảng điều khiển tương tác trực quan bằng phím số |
+| `stardew-mod doctor [--json]` | Kiểm tra môi trường hệ thống: .NET 10.0 SDK, game files, SMAPI và bộ nhớ `/sdcard` |
+| `stardew-mod agent [TênAgent]` | Cài đặt nhanh AI Coding Agent (`opencode`, `antigravity`, `claude`, `codex`, `hermes`) |
+| `stardew-mod new <TênMod>` | Khởi tạo dự án mod mới tại `mods/<TênMod>/` theo template SMAPI net10.0 chuẩn |
+| `stardew-mod build [ĐườngDẫn]` | Biên dịch mã nguồn C# ra file DLL Release (mặc định tại thư mục hiện tại) |
+| `stardew-mod deploy [ĐườngDẫn]` | Đóng gói DLL, manifest và copy thẳng vào `/sdcard/StardewValley/desktop/Mods/` |
+| `stardew-mod list` | Liệt kê danh sách dự án mod trong workspace và danh sách mod đã cài trong game |
+| `stardew-mod logs [SốDòng]` | Đọc file log SMAPI mới nhất (`smapi-crash.txt`, `smapi-log.txt`) để chẩn đoán lỗi |
+| `stardew-mod update` | Tải và cập nhật bộ script `stardew-mod` và `ui.sh` lên phiên bản mới nhất từ GitHub |
 
 ---
 
