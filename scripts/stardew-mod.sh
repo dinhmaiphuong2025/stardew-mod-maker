@@ -148,6 +148,7 @@ cmd_new() {
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/deploy.sh" 2>/dev/null || true
 
     print_success "Đã tạo mod '$mod_name' tại: $target_dir"
+    echo -e "  ${CYAN}•${RESET} Để bắt đầu lập trình: ${BOLD}${YELLOW}cd mods/$mod_name && opencode${RESET}"
     echo "$target_dir"
 }
 
@@ -645,15 +646,30 @@ case "$1" in
         cmd_update
         ;;
     help|--help|-h)
-        print_header "STARDEW-MOD CLI (Agent & Human Friendly)"
-        echo "  stardew-mod doctor [--json]    Kiểm tra .NET SDK, game files & SMAPI"
-        echo "  stardew-mod agent [TênAgent]   Cài đặt AI Agent (opencode, antigravity, claude, codex, hermes)"
-        echo "  stardew-mod new <TênMod>        Khởi tạo dự án mod mới không cần hỏi lại"
-        echo "  stardew-mod build [ĐườngDẫn]   Biên dịch dự án mod ra bản Release"
-        echo "  stardew-mod deploy [ĐườngDẫn]  Đóng gói và copy trực tiếp vào game Mods/"
-        echo "  stardew-mod logs [SốDòng]       Đọc log SMAPI để phân tích lỗi crash"
-        echo "  stardew-mod list               Xem danh sách các mod trong workspace & game"
-        echo "  stardew-mod update             Tải và cập nhật stardew-mod mới nhất từ GitHub"
+        print_header "STARDEW-MOD CLI (HƯỚNG DẪN LỆNH)"
+        echo -e "  ${BOLD}${YELLOW}stardew-mod doctor${RESET} ${GRAY}[--json]${RESET}"
+        echo -e "    ${WHITE}Kiểm tra môi trường .NET SDK, game files & SMAPI${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod agent${RESET} ${GRAY}[TênAgent]${RESET}"
+        echo -e "    ${WHITE}Cài đặt AI Agent (opencode, antigravity, claude, codex, hermes)${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod new${RESET} ${CYAN}<TênMod>${RESET}"
+        echo -e "    ${WHITE}Khởi tạo dự án mod mới tại mods/<TênMod>/ và hướng dẫn bắt đầu${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod build${RESET} ${GRAY}[ĐườngDẫn]${RESET}"
+        echo -e "    ${WHITE}Biên dịch mã nguồn C# net10.0 ra file DLL Release${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod deploy${RESET} ${GRAY}[ĐườngDẫn]${RESET}"
+        echo -e "    ${WHITE}Đóng gói và copy trực tiếp vào thư mục Mods/ của game${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod logs${RESET} ${GRAY}[SốDòng]${RESET}"
+        echo -e "    ${WHITE}Đọc file nhật ký SMAPI mới nhất để phân tích lỗi crash${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod list${RESET}"
+        echo -e "    ${WHITE}Xem danh sách các dự án mod trong workspace & game${RESET}\n"
+
+        echo -e "  ${BOLD}${YELLOW}stardew-mod update${RESET}"
+        echo -e "    ${WHITE}Tải và cập nhật bộ công cụ stardew-mod mới nhất từ GitHub${RESET}"
         print_line
         ;;
     "")

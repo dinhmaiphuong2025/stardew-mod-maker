@@ -125,18 +125,37 @@ elif [ -f "/root/stardew-env/docs/05-agent-tools.md" ]; then
     cp /root/stardew-env/docs/05-agent-tools.md "$USER_WORKSPACE/AGENT_GUIDE.md"
 fi
 
-# Thêm banner khởi động vào .bashrc của user (gợi ý cài đặt Agent thay vì menu stardew-mod)
+# Thêm banner khởi động vào .bashrc của user (Tự động thích ứng thông minh)
 cat << 'EOF' >> "$USER_HOME/.bashrc"
 
 if [ -f /usr/local/bin/ui.sh ]; then
     source /usr/local/bin/ui.sh
     clear_screen
     banner "STARDEW MOD VIBECODING" "Không gian sáng tạo Mod Cinderbox Android"
-    print_info "Cài đặt AI Coding Agent để bắt đầu:"
-    echo -e "  ${CYAN}•${RESET} OpenCode CLI v2: ${BOLD}${YELLOW}stardew-mod agent opencode${RESET}"
-    echo -e "  ${CYAN}•${RESET} Antigravity CLI: ${BOLD}${YELLOW}stardew-mod agent antigravity${RESET}"
-    echo -e "  ${CYAN}•${RESET} Danh sách Agent: ${BOLD}${YELLOW}stardew-mod agent${RESET}"
-    echo -e "  ${CYAN}•${RESET} Hướng dẫn lệnh:  ${BOLD}${YELLOW}stardew-mod help${RESET}"
+
+    # Kiểm tra xem AI Agent nào đã được cài đặt
+    INSTALLED_AGENT=""
+    if command -v opencode >/dev/null 2>&1; then
+        INSTALLED_AGENT="opencode"
+    elif command -v agy >/dev/null 2>&1; then
+        INSTALLED_AGENT="agy"
+    elif command -v claude >/dev/null 2>&1; then
+        INSTALLED_AGENT="claude"
+    fi
+
+    if [ -n "$INSTALLED_AGENT" ]; then
+        echo -e "  ${GREEN}✓${RESET} AI Agent sẵn sàng: ${BOLD}${YELLOW}$INSTALLED_AGENT${RESET}"
+        echo -e "  ${CYAN}•${RESET} Khởi động AI:      ${BOLD}${YELLOW}$INSTALLED_AGENT${RESET}"
+        echo -e "  ${CYAN}•${RESET} Tạo mod mới:       ${BOLD}${WHITE}stardew-mod new <TênMod>${RESET}"
+        echo -e "  ${CYAN}•${RESET} Xem danh sách mod: ${BOLD}${WHITE}stardew-mod list${RESET}"
+        echo -e "  ${CYAN}•${RESET} Xem log lỗi game:  ${BOLD}${WHITE}stardew-mod logs${RESET}"
+    else
+        print_info "Cài đặt AI Coding Agent để bắt đầu:"
+        echo -e "  ${CYAN}•${RESET} OpenCode CLI v2: ${BOLD}${YELLOW}stardew-mod agent opencode${RESET}"
+        echo -e "  ${CYAN}•${RESET} Antigravity CLI: ${BOLD}${YELLOW}stardew-mod agent antigravity${RESET}"
+        echo -e "  ${CYAN}•${RESET} Danh sách Agent: ${BOLD}${YELLOW}stardew-mod agent${RESET}"
+        echo -e "  ${CYAN}•${RESET} Hướng dẫn lệnh:  ${BOLD}${YELLOW}stardew-mod help${RESET}"
+    fi
     print_line
 fi
 cd ~/stardew-workspace
