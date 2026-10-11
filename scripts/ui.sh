@@ -183,9 +183,10 @@ step_task() {
     local start_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
     local start_filled=$(( CURRENT_STEP * bar_w / TOTAL_STEPS ))
     local start_empty=$(( bar_w - start_filled ))
-    local run_bar=""
-    for ((b=0; b<start_filled; b++)); do run_bar="${run_bar}▆"; done
-    for ((b=0; b<start_empty; b++)); do run_bar="${run_bar}░"; done
+    local run_bar_f=""
+    local run_bar_e=""
+    for ((b=0; b<start_filled; b++)); do run_bar_f="${run_bar_f}▆"; done
+    for ((b=0; b<start_empty; b++)); do run_bar_e="${run_bar_e} "; done
 
     printf "\033[?25l"
     "$@" </dev/null >/dev/null 2>&1 &
@@ -215,9 +216,9 @@ step_task() {
         local display_label="${label:0:$max_label_w}"
 
         local idx=$(( i % n_chars ))
-        # Xuất 2 dòng: Dòng 1 = Thanh tiến trình dài + % | Dòng 2 = Text đầy đủ + Tốc độ mạng
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[1A\r" \
-            "${spin_chars[$idx]}" "$run_bar" "$start_pct" "$display_label" "$speed_str"
+        # Dòng 1: Thanh tiến trình mảnh + % | Dòng 2: Dòng trống cách biệt | Dòng 3: Text đầy đủ + Tốc độ mạng
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[2A\r" \
+            "${spin_chars[$idx]}" "$run_bar_f" "$run_bar_e" "$start_pct" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -230,17 +231,18 @@ step_task() {
     local end_pct=$(( CURRENT_STEP * 100 / TOTAL_STEPS ))
     local end_filled=$(( CURRENT_STEP * bar_w / TOTAL_STEPS ))
     local end_empty=$(( bar_w - end_filled ))
-    local end_bar=""
-    for ((b=0; b<end_filled; b++)); do end_bar="${end_bar}▆"; done
-    for ((b=0; b<end_empty; b++)); do end_bar="${end_bar}░"; done
+    local end_bar_f=""
+    local end_bar_e=""
+    for ((b=0; b<end_filled; b++)); do end_bar_f="${end_bar_f}▆"; done
+    for ((b=0; b<end_empty; b++)); do end_bar_e="${end_bar_e} "; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s hoàn tất${RESET}\033[K\n" \
-            "$end_bar" "$end_pct" "$label"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s hoàn tất${RESET}\033[K\n" \
+            "$end_bar_f" "$end_bar_e" "$end_pct" "$label"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
-            "$end_bar" "$end_pct" "$label" "$exit_code"
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s thất bại (mã lỗi %d)${RESET}\033[K\n" \
+            "$end_bar_f" "$end_bar_e" "$end_pct" "$label" "$exit_code"
         return "$exit_code"
     fi
 }

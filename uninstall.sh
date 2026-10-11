@@ -106,16 +106,17 @@ run_single_progress() {
         fi
         local filled=$(( pct * bar_w / 100 ))
         local empty=$(( bar_w - filled ))
-        local bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}▆"; done
-        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+        local bar_f=""
+        local bar_e=""
+        for ((b=0; b<filled; b++)); do bar_f="${bar_f}▆"; done
+        for ((b=0; b<empty; b++)); do bar_e="${bar_e} "; done
 
         local max_label_w=$(( cols - 6 ))
         [ "$max_label_w" -lt 20 ] && max_label_w=20
         local display_label="${label:0:$max_label_w}"
 
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}\033[K\033[1A\r" \
-            "${spin_chars[$idx]}" "$bar" "$pct" "$display_label"
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s${RESET}\033[K\033[2A\r" \
+            "${spin_chars[$idx]}" "$bar_f" "$bar_e" "$pct" "$display_label"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -133,10 +134,11 @@ run_single_progress() {
     for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n    ${WHITE}Gỡ bỏ hoàn tất${RESET}\033[K\n" "$full_bar"
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n\033[K\n    ${WHITE}Gỡ bỏ hoàn tất${RESET}\033[K\n" "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} Gỡ bỏ thất bại (mã %d)\033[K\n" "$exit_code"
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}Gỡ bỏ thất bại (mã %d)${RESET}\033[K\n" \
+            "$bar_f" "$bar_e" "$pct" "$exit_code"
         return "$exit_code"
     fi
 }

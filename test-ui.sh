@@ -18,7 +18,7 @@ clear_screen
 banner "STARDEW MOD VIBECODING" "Bản thử nghiệm giao diện TUI thuần túy (Test Local)"
 
 echo
-print_info "Đang chạy mô phỏng hoạt ảnh thanh tiến trình 2 dòng..."
+print_info "Đang chạy mô phỏng hoạt ảnh tiến trình (thanh dài mảnh & thoáng chữ)..."
 echo
 
 # Các bước mô phỏng thực tế với tốc độ mạng minh họa
@@ -61,14 +61,15 @@ for step in "${steps[@]}"; do
         cur_pct=$(( cur_pct + 1 ))
         filled=$(( cur_pct * bar_w / 100 ))
         empty=$(( bar_w - filled ))
-        bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}▆"; done
-        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+        bar_f=""
+        bar_e=""
+        for ((b=0; b<filled; b++)); do bar_f="${bar_f}▆"; done
+        for ((b=0; b<empty; b++)); do bar_e="${bar_e} "; done
 
         idx=$(( i % n_chars ))
-        # Xuất 2 dòng: Dòng 1 = Thanh tiến trình dài (giảm 20% độ dày) | Dòng 2 = Nhãn text đầy đủ + Tốc độ mạng
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[1A\r" \
-            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$display_label" "$speed_str"
+        # Dòng 1: Thanh tiến trình mảnh + % | Dòng 2: Dòng trống cách biệt | Dòng 3: Text đầy đủ + Tốc độ mạng
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[2A\r" \
+            "${spin_chars[$idx]}" "$bar_f" "$bar_e" "$cur_pct" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.05
     done
@@ -77,7 +78,7 @@ done
 
 full_bar=""
 for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
-printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" "$full_bar"
+printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" "$full_bar"
 printf "\033[?25h"
 
 echo

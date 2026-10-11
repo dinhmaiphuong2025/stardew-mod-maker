@@ -303,9 +303,10 @@ run_install_progress() {
 
         local filled=$(( cur_pct * bar_w / 100 ))
         local empty=$(( bar_w - filled ))
-        local bar=""
-        for ((b=0; b<filled; b++)); do bar="${bar}▆"; done
-        for ((b=0; b<empty; b++)); do bar="${bar}░"; done
+        local bar_f=""
+        local bar_e=""
+        for ((b=0; b<filled; b++)); do bar_f="${bar_f}▆"; done
+        for ((b=0; b<empty; b++)); do bar_e="${bar_e} "; done
 
         # Dòng dưới chứa toàn bộ text nhãn và tốc độ mạng, không bao giờ bị cắt ngắn
         local max_label_w=$(( cols - 6 ))
@@ -313,9 +314,9 @@ run_install_progress() {
         local display_label="${cur_label:0:$max_label_w}"
 
         local idx=$(( i % n_chars ))
-        # Xuất 2 dòng: Dòng 1 = Thanh tiến trình dài + % | Dòng 2 = Nhãn text + Tốc độ mạng
-        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[1A\r" \
-            "${spin_chars[$idx]}" "$bar" "$cur_pct" "$display_label" "$speed_str"
+        # Dòng 1: Thanh tiến trình mảnh + % | Dòng 2: Dòng trống cách biệt | Dòng 3: Nhãn text + Tốc độ mạng
+        printf "\r  ${CYAN}%s${RESET} [${GREEN}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}%s${RESET}%b\033[K\033[2A\r" \
+            "${spin_chars[$idx]}" "$bar_f" "$bar_e" "$cur_pct" "$display_label" "$speed_str"
         i=$(( i + 1 ))
         sleep 0.08
     done
@@ -334,12 +335,12 @@ run_install_progress() {
     for ((b=0; b<bar_w; b++)); do full_bar="${full_bar}▆"; done
 
     if [ "$exit_code" -eq 0 ]; then
-        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
+        printf "\r  ${GREEN}✓${RESET} [${GREEN}%s${RESET}] ${BOLD}100%%${RESET}\033[K\n\033[K\n    ${WHITE}Cài đặt hoàn tất${RESET}\033[K\n" \
             "$full_bar"
         return 0
     else
-        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}] ${BOLD}%3d%%${RESET}\033[K\n    ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
-            "$bar" "$cur_pct" "$exit_code"
+        printf "\r  ${RED}✗${RESET} [${RED}%s${RESET}%s] ${BOLD}%3d%%${RESET}\033[K\n\033[K\n    ${WHITE}Cài đặt thất bại (mã %d)${RESET}\033[K\n" \
+            "$bar_f" "$bar_e" "$cur_pct" "$exit_code"
         if [ -f "$INSTALL_LOG" ]; then
             echo
             print_warning "Chi tiết lỗi:"
