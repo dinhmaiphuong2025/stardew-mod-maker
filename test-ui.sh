@@ -163,6 +163,5 @@ echo -e "  ${CYAN}•${RESET} Không gian làm việc:  ${BOLD}${WHITE}/home/$IN
 echo -e "  ${CYAN}•${RESET} Miễn mật khẩu sudo:    ${YELLOW}$NOPASSWD${RESET}"
 echo -e "  ${CYAN}•${RESET} Thư mục game /sdcard: ${GRAY}/sdcard/StardewValley${RESET}"
 echo
-print_success "Cài đặt hoàn tất! Môi trường VibeCoding đã sẵn sàng."
-echo -e "  ${CYAN}•${RESET} Khởi động Ubuntu:      ${BOLD}${YELLOW}ubuntu${RESET}"
-echo
+print_success "Cài đặt thành công! Môi trường VibeCoding đã sẵn sàng."
+printf "  ${CYAN}•${RESET} Khởi động Ubuntu:      ${BOLD}${YELLOW}ubuntu${RESET}\n\n"

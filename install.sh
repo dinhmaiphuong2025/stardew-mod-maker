@@ -434,8 +434,7 @@ cp -f "$PREFIX/bin/ubuntu" "$PREFIX/bin/stardew-code" 2>/dev/null || true
 
 echo
 print_success "Cài đặt thành công! Môi trường VibeCoding đã sẵn sàng."
-echo "  ${CYAN}•${RESET} Khởi động Ubuntu: ${BOLD}${YELLOW}ubuntu${RESET}"
-echo
+printf "  ${CYAN}•${RESET} Khởi động Ubuntu: ${BOLD}${YELLOW}ubuntu${RESET}\n\n"
 
 if confirm_default_yes "Khởi động vào Ubuntu ngay bây giờ?"; then
     if [ -c /dev/tty ]; then

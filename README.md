@@ -2,6 +2,8 @@
 
 Làm mod C# SMAPI cho Stardew Valley trên điện thoại Android bằng AI (Thuần VibeCoding) — không cần PC, không cần Root, không cần biết lập trình hay gõ lệnh Linux.
 
+> 💡 **Ghi chú**: Toàn bộ tài liệu, công cụ và kịch bản tự động hóa trong dự án này cũng được hoàn thiện **90% bằng phương pháp VibeCoding** cùng AI Agent!
+
 ---
 
 ## 1. Chuẩn Bị & Link Tải Ứng Dụng
@@ -103,6 +105,15 @@ Bộ công cụ `stardew-mod` được cài đặt sẵn trong `PATH` của môi
 | `stardew-mod list` | Liệt kê danh sách dự án mod trong workspace và danh sách mod đã cài trong game |
 | `stardew-mod logs [SốDòng]` | Đọc file log SMAPI mới nhất (`smapi-crash.txt`, `smapi-log.txt`) để chẩn đoán lỗi |
 | `stardew-mod update` | Tải và cập nhật bộ script `stardew-mod` và `ui.sh` lên phiên bản mới nhất từ GitHub |
+
+---
+
+## 5. Minh Chứng VibeCoding Thực Tế
+
+Toàn bộ hệ thống công cụ, kịch bản PRoot Ubuntu, giao diện TUI và các hướng dẫn trong bộ tài liệu này đều được **hoàn thiện 90% bằng phương pháp VibeCoding** trực tiếp giữa người dùng và AI Coding Agent (Phoebe / Hermes / OpenCode):
+- **Phát triển trực tiếp trên thiết bị di động**: Tự động sinh mã nguồn Bash, thiết kế TUI tối giản cho mobile, xử lý cấu hình .NET 10.0 và SMAPI.
+- **Tự động chẩn đoán và khắc phục lỗi**: AI phân tích các vấn đề như nghẽn mạng Azure CDN, xung đột thư viện, căn chỉnh độ rộng màn hình Termux và sửa lỗi ngay trong phiên làm việc.
+- **Minh chứng sống cho người mới bắt đầu**: Bạn hoàn toàn có thể tự tay tạo ra các bản mod phức tạp mà không cần phải là một lập trình viên chuyên nghiệp!
 
 ---
 
