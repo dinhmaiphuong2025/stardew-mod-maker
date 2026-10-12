@@ -159,7 +159,25 @@ Bộ công cụ `stardew-mod` được cài đặt sẵn trong `PATH` của môi
 
 ---
 
-## 5. Nhật Ký Quá Trình Thử Nghiệm
+## 5. Minh Chứng Thực Tế Được Tạo Bằng VibeCoding (Showcase)
+
+Dưới đây là các dự án mod thực tế hoàn chỉnh đã được phát triển, kiểm thử và đóng gói trực tiếp bằng phương pháp VibeCoding trên môi trường di động này:
+
+1. **[Forage & NPC Radar](https://github.com/dinhmaiphuong2025/Forage-Radar)** (SMAPI C# Mod):
+   - Mod radar dò tìm vật phẩm thu lượm theo mùa, điểm đào giun (Artifact Spot), bụi dâu rừng và theo dõi Dân Làng (NPC Tracker) thời gian thực trên bản đồ.
+   - Vòng tròn radar neo trong không gian thế giới (world-space), cơ chế ẩn icon thông minh khi mục tiêu đã vào tầm mắt và giao diện quản lý 2 tab tối ưu màn hình cảm ứng.
+
+2. **[Saiyan Pod Teleport](https://github.com/dinhmaiphuong2025/SaiyanPodTeleport)** (SMAPI C# Mod):
+   - Mod dịch chuyển không gian lấy cảm hứng từ Dragon Ball với chuỗi hoạt cảnh cinematic điện ảnh (tàu rơi bốc khói lửa, rung chấn màn hình, mở buồng lái).
+   - Hỗ trợ 18 điểm dịch chuyển toàn bộ Thung lũng Pelican và Quần đảo Ginger, tính năng ghim tọa độ hạ cánh tùy ý và menu chia tab ngang chống chạm nhầm trên mobile.
+
+3. **[[CP] Chrono Merchant](https://github.com/dinhmaiphuong2025/ChronoMerchant)** (Content Patcher Add-on):
+   - Mod NPC độc lập bổ sung Thương Nhân Thời Không du mục xuất hiện tại Rừng Cindersap bán các dòng Saiyan Remote và vật phẩm quý hiếm.
+   - Tích hợp hiệu ứng xé rách không gian vũ trụ, hoạt ảnh búng đồng xu và lịch trình làm việc độc lập.
+
+---
+
+## 6. Nhật Ký Quá Trình Thử Nghiệm
 
 Bộ công cụ, kịch bản PRoot Ubuntu và các tài liệu này được hình thành trong quá trình tác giả **thử nghiệm phương pháp VibeCoding** trực tiếp trên điện thoại cùng AI Agent:
 - **Tự động hóa trên di động**: Dùng AI để sinh mã nguồn Bash, thiết kế TUI Termux gọn gàng cho màn hình cảm ứng, cấu hình SDK .NET và SMAPI.
@@ -168,7 +186,7 @@ Bộ công cụ, kịch bản PRoot Ubuntu và các tài liệu này được h�
 
 ---
 
-## 6. Định Hướng Hỗ Trợ Đa Nền Tảng (PC & Mobile 1.6)
+## 7. Định Hướng Hỗ Trợ Đa Nền Tảng (PC & Mobile 1.6)
 
 Template mặc định được thiết kế với mục tiêu thân thiện cho cả hai môi trường:
 - **Stardew Valley 1.6+**: Nhắm đến hệ sinh thái SMAPI 4.x hiện đại.
@@ -179,7 +197,7 @@ Template mặc định được thiết kế với mục tiêu thân thiện cho
 
 ---
 
-## 7. Đóng Góp & Chia Sẻ Ý Tưởng Cùng Cộng Đồng
+## 8. Đóng Góp & Chia Sẻ Ý Tưởng Cùng Cộng Đồng
 
 Dự án được mở hoàn toàn miễn phí vì mục đích học hỏi và chia sẻ kinh nghiệm:
 

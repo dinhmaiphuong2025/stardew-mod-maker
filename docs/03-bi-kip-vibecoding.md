@@ -54,6 +54,15 @@ Nếu bạn quen dùng các trang web AI trên trình duyệt:
 
 ---
 
+## Các dự án mẫu được tạo thực tế bằng phương pháp này
+
+Bạn có thể tham khảo trực tiếp mã nguồn của các bản mod hoàn chỉnh đã được phát triển và kiểm thử bằng phương pháp VibeCoding:
+- [Forage & NPC Radar](https://github.com/dinhmaiphuong2025/Forage-Radar): Mod C# SMAPI dò tìm vật phẩm thu lượm và theo dõi dân làng thời gian thực với vòng tròn radar và menu 2 tab tối ưu cảm ứng.
+- [Saiyan Pod Teleport](https://github.com/dinhmaiphuong2025/SaiyanPodTeleport): Mod C# SMAPI dịch chuyển điện ảnh với tàu rơi bốc khói lửa, rung chấn và hỗ trợ 18 địa điểm.
+- [[CP] Chrono Merchant](https://github.com/dinhmaiphuong2025/ChronoMerchant): Mod Content Patcher bổ sung Thương Nhân Thời Không du mục bán thiết bị tại Rừng Cindersap.
+
+---
+
 ## Xử lý khi gặp lỗi biên dịch
 
 Nếu xảy ra lỗi biên dịch:

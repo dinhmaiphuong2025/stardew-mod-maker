@@ -89,7 +89,7 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ### 3. VÍ DỤ MẪU THỰC CHIẾN ĐỈNH CAO: MOD PHI THUYỀN SAIYAN (SAIYAN POD)
 
-Đây là ví dụ điển hình về cách một VibeCoder ra lệnh cho AI để tạo ra một bản mod điện ảnh hoàn hảo mà không cần viết một dòng code nào:
+Đây là ví dụ điển hình về cách một VibeCoder ra lệnh cho AI để tạo ra một bản mod điện ảnh hoàn hảo mà không cần viết một dòng code nào *(mã nguồn dự án thực tế hoàn chỉnh đã phát hành tại [SaiyanPodTeleport](https://github.com/dinhmaiphuong2025/SaiyanPodTeleport) và [ChronoMerchant](https://github.com/dinhmaiphuong2025/ChronoMerchant))*:
 
 > **"Tạo cho tôi mod SaiyanPodArrival cho Android Cinderbox theo đúng kịch bản chi tiết dưới đây:**
 >
