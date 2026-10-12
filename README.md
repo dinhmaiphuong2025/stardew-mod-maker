@@ -117,6 +117,28 @@ Toàn bộ hệ thống công cụ, kịch bản PRoot Ubuntu, giao diện TUI v
 
 ---
 
+## 6. Khả Năng Tương Thích Đa Nền Tảng (Cross-Platform)
+
+Một trong những ưu điểm lớn nhất của bộ công cụ này là **tính tương thích hai chiều giữa PC và Android**:
+- **Một bản mod — Chơi cả hai nơi**: Mọi mod C# SMAPI được tạo ra từ template của bộ công cụ đều nhắm đến chuẩn **Stardew Valley 1.6+**. File DLL biên dịch xong có thể dùng trực tiếp trên Android Cinderbox hoặc copy sang thư mục `Mods` trên máy tính PC (Windows, macOS, Linux) mà không cần chỉnh sửa hay build lại!
+- **Cơ chế điều khiển lai (Hybrid Input)**:
+  - Trên **PC**: Hỗ trợ phím cứng (mặc định `F5`, tùy biến thoải mái trong `config.json`).
+  - Trên **Mobile**: Tự động hỗ trợ nút cảm ứng ảo HUD (`MobileTouchButton`) với khả năng co giãn theo tỷ lệ giao diện (`Game1.options.uiScale`), không bị lệch cảm ứng.
+- **Chia sẻ lên Nexus Mods**: Bạn hoàn toàn có thể chia sẻ các tác phẩm VibeCoding của mình lên cộng đồng quốc tế!
+
+---
+
+## 7. Kêu Gọi Đóng Góp & Đánh Giá Từ Cộng Đồng
+
+Dự án này được phát triển vì cộng đồng người chơi Stardew Valley tại Việt Nam và trên thế giới. Chúng mình rất mong nhận được sự chung tay của các bạn để bộ công cụ ngày càng hoàn thiện hơn:
+
+- **Thử nghiệm trên các dòng máy khác nhau**: Hãy chạy thử trên nhiều dòng chip (Snapdragon, MediaTek, Exynos) và chia sẻ trải nghiệm tốc độ/độ ổn định.
+- **Báo lỗi & Đóng góp ý tưởng**: Nếu gặp lỗi crash, lỗi xung đột mod hoặc có ý tưởng về tính năng mới, hãy mở một [Issue trên GitHub](https://github.com/dinhmaiphuong2025/stardew-mod-maker/issues) hoặc nhắn trong nhóm Telegram cộng đồng.
+- **Đóng góp mã nguồn (Pull Requests)**: Rất hoan nghênh các PR cải tiến script, bổ sung thêm template mod (Content Patcher, Custom NPC, Skill VFX) hoặc nâng cấp tài liệu hướng dẫn.
+- **Tặng 1 sao (Star ⭐)**: Nếu dự án hữu ích cho bạn, hãy nhấn Star trên GitHub để lan tỏa phong trào VibeCoding mod game không cần PC đến nhiều bạn trẻ hơn nữa!
+
+---
+
 ---
 
 ## HƯỚNG DẪN GỠ CÀI ĐẶT (UNINSTALL & RESET)

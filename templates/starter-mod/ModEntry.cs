@@ -1,56 +1,98 @@
 using System;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
 namespace StarterMod
 {
-    /// <summary>Lớp chính khởi chạy Mod Stardew Valley.</summary>
+    /// <summary>Cấu hình người dùng (tự động tạo config.json để đổi phím trên PC/Mobile).</summary>
+    public class ModConfig
+    {
+        /// <summary>Phím kích hoạt trên bàn phím (PC/Laptop).</summary>
+        public SButton ActivationKey { get; set; } = SButton.F5;
+
+        /// <summary>Hiển thị nút cảm ứng ảo trên HUD cho màn hình cảm ứng di động.</summary>
+        public bool ShowTouchButton { get; set; } = true;
+    }
+
+    /// <summary>Lớp chính khởi chạy Mod Stardew Valley tương thích đa nền tảng (PC 1.6 & Android Cinderbox 1.6).</summary>
     public class ModEntry : Mod
     {
-        /*********
-        ** Phương thức công khai
-        *********/
+        private ModConfig Config = null!;
+        private MobileTouchButton? TouchButton;
+
         /// <summary>Điểm khởi đầu của mod, được gọi ngay sau khi SMAPI tải mod vào game.</summary>
-        /// <param name="helper">Cung cấp các API đơn giản hóa việc viết mod.</param>
         public override void Entry(IModHelper helper)
         {
-            // Lắng nghe sự kiện bắt đầu một ngày mới trong game
+            // Tải cấu hình từ config.json (nếu chưa có SMAPI sẽ tự tạo)
+            this.Config = helper.ReadConfig<ModConfig>();
+
+            // Khởi tạo nút cảm ứng HUD cho thiết bị di động (ở góc trên bên phải màn hình)
+            if (this.Config.ShowTouchButton)
+            {
+                this.TouchButton = new MobileTouchButton(24, 260, 64, 64, "MOD", () =>
+                {
+                    this.ActivateModFeature();
+                });
+            }
+
+            // Lắng nghe các sự kiện vòng đời game
             helper.Events.GameLoop.DayStarted += this.OnDayStarted;
-
-            // Lắng nghe sự kiện người chơi bấm nút / chạm màn hình
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            helper.Events.Display.RenderedHud += this.OnRenderedHud;
 
-            this.Monitor.Log("StarterMod: Mod mẫu Cinderbox đã được nạp thành công!", LogLevel.Info);
+            this.Monitor.Log("StarterMod: Mod mẫu đa nền tảng Cinderbox & PC đã nạp thành công!", LogLevel.Info);
         }
 
-        /*********
-        ** Xử lý sự kiện riêng tư
-        *********/
         /// <summary>Được gọi tự động mỗi khi một ngày mới bắt đầu.</summary>
         private void OnDayStarted(object? sender, DayStartedEventArgs e)
         {
-            // Hiển thị thông báo góc màn hình (HUD Message) chào người chơi
             string greeting = $"Chào {Game1.player.Name}! Chúc bạn một ngày làm nông vui vẻ.";
             Game1.addHUDMessage(new HUDMessage(greeting, HUDMessage.achievement_type));
-
-            this.Monitor.Log($"Đã gửi lời chào buổi sáng tới {Game1.player.Name}.", LogLevel.Info);
         }
 
-        /// <summary>Được gọi khi người chơi bấm nút trên bàn phím hoặc chạm cảm ứng.</summary>
+        /// <summary>Được gọi khi người chơi bấm nút trên bàn phím (PC) hoặc chạm cảm ứng (Mobile).</summary>
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            // Bỏ qua nếu người chơi chưa vào game hoặc đang mở menu
+            // Bỏ qua nếu người chơi đang ở menu hoặc đang xem cutscene
             if (!Context.IsWorldReady || !Context.IsPlayerFree)
                 return;
 
-            // Ví dụ: Nhấn phím F5 hoặc nút kích hoạt
-            if (e.Button == SButton.F5)
+            // 1. Kiểm tra phím bấm PC (từ config.json)
+            if (e.Button == this.Config.ActivationKey)
             {
-                // Hồi phục 20 điểm năng lượng cho nhân vật
-                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina + 20);
-                Game1.addHUDMessage(new HUDMessage("Bạn vừa được hồi 20 Năng Lượng!", HUDMessage.stamina_type));
+                this.ActivateModFeature();
+                return;
             }
+
+            // 2. Kiểm tra thao tác chạm màn hình cảm ứng (Mobile Cinderbox)
+            if (this.TouchButton != null && this.TouchButton.TryHandleClick(e.Button))
+            {
+                // Nút cảm ứng đã được kích hoạt thành công
+                return;
+            }
+        }
+
+        /// <summary>Vẽ nút bấm cảm ứng HUD (không bị trôi camera theo nhân vật).</summary>
+        private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
+        {
+            if (!Context.IsWorldReady || !Context.IsPlayerFree)
+                return;
+
+            if (this.Config.ShowTouchButton && this.TouchButton != null)
+            {
+                this.TouchButton.Draw(e.SpriteBatch);
+            }
+        }
+
+        /// <summary>Hàm thực thi tính năng cốt lõi của mod.</summary>
+        private void ActivateModFeature()
+        {
+            // Ví dụ: Hồi phục 20 điểm năng lượng cho nhân vật
+            Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina + 20);
+            Game1.addHUDMessage(new HUDMessage("Bạn vừa được hồi 20 Năng Lượng!", HUDMessage.stamina_type));
+            this.Monitor.Log($"Người chơi đã kích hoạt tính năng mod.", LogLevel.Info);
         }
     }
 }
