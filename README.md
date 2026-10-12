@@ -6,25 +6,25 @@ Bộ công cụ thử nghiệm hỗ trợ làm mod C# SMAPI cho Stardew Valley 1
 
 ---
 
-## ⚠️ Lưu Ý Quan Trọng & Giới Hạn Thực Tế (Vui Lòng Đọc Kỹ)
+## Lưu Ý Quan Trọng & Giới Hạn Thực Tế (Vui Lòng Đọc Kỹ)
 
 Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ và phương pháp VibeCoding:
 
 1. **Yêu cầu kiến thức nền tảng theo mức độ ưu tiên**:
-   - 🔴 **[BẮT BUỘC — ĐIỀU KIỆN TIÊN QUYẾT] Kiến thức hệ điều hành & tệp tin**:
+   - **[BẮT BUỘC — ĐIỀU KIỆN TIÊN QUYẾT] Kiến thức hệ điều hành & tệp tin**:
      - Bạn **bắt buộc** phải hiểu các khái niệm tin học căn bản (đã có trong giáo trình THCS/THPT): **Đường dẫn (Path)**, **Thư mục (Folder / Directory)** và **Tệp tin (File)**; hiểu được mod được tạo ở đâu trong máy và game đọc mod từ thư mục nào.
-     - 🛑 **Lời khuyên chân thành**: *Nếu ngay cả khái niệm thư mục hay đường dẫn tệp tin bạn cũng chưa nắm được, bạn **nên dừng lại** và bổ sung kiến thức tin học cơ bản trước. Nếu không, bạn sẽ không thể biết file mod nằm ở đâu, game bị lỗi ở chỗ nào hay log lưu ở đâu, dẫn đến bế tắc và lãng phí thời gian.*
-   - 🟡 **[KHUYẾN KHÍCH — HỌC DẦN TRONG QUÁ TRÌNH DÙNG] Lệnh dòng lệnh cơ bản**:
-     - Các lệnh Linux/Termux quen thuộc như `cd` (chuyển thư mục), `ls` (xem danh sách file), `pwd` (xem vị trí hiện tại): **Biết thì càng tốt, chưa biết cũng không sao**. Bạn hoàn toàn có thể tự tra cứu Google hoặc hỏi AI giải thích ngay trong lúc làm.
-   - 🟢 **[KỸ NĂNG QUAN TRỌNG] Đọc thông báo & Kiên nhẫn**:
-     - Không hoảng sợ khi thấy chữ đỏ, biết mở file log SMAPI (`stardew-mod logs`) và mô tả lại hiện tượng cho AI sửa tiếp.
+     - *Lời khuyên chân thành*: Nếu ngay cả khái niệm thư mục hay đường dẫn tệp tin bạn cũng chưa nắm được, bạn **nên dừng lại** và bổ sung kiến thức tin học cơ bản trước. Nếu không, bạn sẽ không thể biết file mod nằm ở đâu, game bị lỗi ở chỗ nào hay log lưu ở đâu, dẫn đến bế tắc và lãng phí thời gian.
+   - **[KHUYẾN KHÍCH — HỌC DẦN TRONG QUÁ TRÌNH DÙNG] Lệnh dòng lệnh cơ bản**:
+     - Các lệnh Linux/Termux quen thuộc như `cd` (chuyển thư mục), `ls` (xem danh sách file), `pwd` (xem vị trí hiện tại): **Biết thì càng tốt, chưa biết cũng không sao**. Bạn hoàn toàn có thể tự tra cứu hoặc hỏi AI giải thích ngay trong lúc làm.
+   - **[KỸ NĂNG QUAN TRỌNG] Đọc thông báo & Kiên nhẫn**:
+     - Không hoảng sợ khi thấy thông báo lỗi, biết mở file log SMAPI (`stardew-mod logs`) và mô tả lại hiện tượng cho AI sửa tiếp.
 2. **AI không phải là phép thuật "một chạm ăn ngay"**:
    - AI Agent (đặc biệt là các mô hình miễn phí như Big Pickle, Muse Spark) có giới hạn về năng lực suy luận.
    - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
 3. **Lựa chọn Model: Miễn Phí vs Trả Phí (Bring Your Own Key)**:
-   - **Model miễn phí** (*Big Pickle, Muse Spark* trên OpenCode; *Google Free Tier* trên Antigravity): Tiết kiệm 100% chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
+   - **Model miễn phí** (*Big Pickle, Muse Spark* trên OpenCode; *Google Free Tier* trên Antigravity): Tiết kiệm chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
    - **Model cao cấp / Trả phí** (*Claude 3.5/3.7 Sonnet*, *OpenAI GPT-4o / Codex*): Khả năng lập trình C# SMAPI vượt trội, tỷ lệ thành công ngay lần đầu cao hơn nhiều. Bạn có thể tự cấp API Key cá nhân để dùng.
-   - 🔒 **Bảo mật**: Tuyệt đối **không bao giờ dán hay đẩy (commit) API Key cá nhân lên GitHub public** để tránh bị đánh cắp tài khoản. Hãy lưu key vào file môi trường cục bộ trong máy.
+   - **Bảo mật**: Tuyệt đối **không bao giờ dán hay đẩy (commit) API Key cá nhân lên GitHub public** để tránh bị đánh cắp tài khoản. Hãy lưu key vào file môi trường cục bộ trong máy.
 4. **Tinh thần mã nguồn mở**:
    - Dự án được chia sẻ miễn phí với tinh thần cùng thử nghiệm, học hỏi và đóng góp. Xin vui lòng không kỳ vọng đây là một sản phẩm thương mại hoàn chỉnh không có lỗi. Nếu gặp lỗi, hãy bình tĩnh kiểm tra log (`stardew-mod logs`) và cùng nhau tìm hướng giải quyết!
 
@@ -35,9 +35,9 @@ Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ 
 Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên điện thoại:
 
 1. **Ứng dụng Termux** *(Lưu ý: Không tải từ Google Play Store vì bản Play Store đã ngừng cập nhật từ lâu và bị lỗi kho gói)*:
-   - [Bản Termux Custom](https://github.com/dinhmaiphuong2025/termux-app/releases) (Khuyên dùng)
-   - [Termux trên GitHub Releases](https://github.com/termux/termux-app/releases)
-   - [Termux trên F-Droid](https://f-droid.org/packages/com.termux/)
+   - [Termux trên GitHub Releases](https://github.com/termux/termux-app/releases) (Bản chính thức)
+   - [Termux trên F-Droid](https://f-droid.org/packages/com.termux/) (Bản chính thức)
+   - [Bản Termux Custom](https://github.com/dinhmaiphuong2025/termux-app/releases) (Tùy chọn giao diện)
 
 2. **Trình chạy Cinderbox (Chạy Stardew Valley PC trên Android)**:
    - Tải file APK tại [GitHub Cinderbox v0.8.1 Releases](https://github.com/Ekyso/Cinderbox/releases/tag/0.8.1)
@@ -183,7 +183,7 @@ curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/
 - **Gỡ bỏ hoàn toàn container PRoot Ubuntu** và toàn bộ công cụ lập trình bên trong (.NET SDK, OpenCode, thư viện tạm).
 - **Xóa các lệnh tắt trên Termux** (`ubuntu`, `stardew-code`) để đưa Termux về trạng thái sạch sẽ ban đầu.
 - **Dọn sạch các cấu hình mount** liên kết bộ nhớ.
-- Hiển thị thanh tiến trình động duy nhất (`[██████████] 100%`) trực quan và báo kết quả rõ ràng.
+- Hiển thị thanh tiến trình tinh gọn (`[▆▆▆▆▆▆▆▆▆▆] 100%`) trực quan và báo kết quả rõ ràng.
 
 ### 3. Cam kết an toàn dữ liệu
 - **Bảo lưu an toàn 100%**: Thư mục game gốc, các file save và toàn bộ mod bạn đã cài đặt tại `/sdcard/StardewValley` **hoàn toàn KHÔNG bị ảnh hưởng hay xóa mất**.
