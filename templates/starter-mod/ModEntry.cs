@@ -40,11 +40,11 @@ namespace StarterMod
         /// <summary>Được gọi khi người chơi bấm nút trên bàn phím hoặc chạm cảm ứng.</summary>
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            // Bỏ qua nếu người chơi chưa vào game (đang ở menu chính)
-            if (!Context.IsWorldReady)
+            // Bỏ qua nếu người chơi chưa vào game hoặc đang mở menu
+            if (!Context.IsWorldReady || !Context.IsPlayerFree)
                 return;
 
-            // Nếu người chơi nhấn phím F5 (hoặc phím kích hoạt)
+            // Ví dụ: Nhấn phím F5 hoặc nút kích hoạt
             if (e.Button == SButton.F5)
             {
                 // Hồi phục 20 điểm năng lượng cho nhân vật

@@ -125,6 +125,10 @@ elif [ -f "/root/stardew-env/docs/05-agent-tools.md" ]; then
     cp /root/stardew-env/docs/05-agent-tools.md "$USER_WORKSPACE/AGENT_GUIDE.md"
 fi
 
+if [ -f "$TEMPLATE_SRC/templates/starter-mod/SMAPI_MOBILE_RULES.md" ]; then
+    cp "$TEMPLATE_SRC/templates/starter-mod/SMAPI_MOBILE_RULES.md" "$USER_WORKSPACE/SMAPI_MOBILE_RULES.md"
+fi
+
 # Thêm banner khởi động vào .bashrc của user (Tự động thích ứng thông minh)
 cat << 'EOF' >> "$USER_HOME/.bashrc"
 

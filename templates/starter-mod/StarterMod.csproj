@@ -9,26 +9,29 @@
 
   <!-- Cấu hình tham chiếu thư viện Stardew Valley & SMAPI trên Android Cinderbox -->
   <ItemGroup>
+    <!-- Fallback MonoGame.Framework qua NuGet chuẩn để không bao giờ thiếu khi build kể cả khi chưa có file game -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Stardew Valley">
-      <HintPath>/sdcard/StardewValley/desktop/GameFiles/Stardew Valley.dll</HintPath>
+      <HintPath Condition="Exists('/sdcard/StardewValley/desktop/GameFiles/Stardew Valley.dll')">/sdcard/StardewValley/desktop/GameFiles/Stardew Valley.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="StardewValley.GameData">
-      <HintPath>/sdcard/StardewValley/desktop/GameFiles/StardewValley.GameData.dll</HintPath>
+      <HintPath Condition="Exists('/sdcard/StardewValley/desktop/GameFiles/StardewValley.GameData.dll')">/sdcard/StardewValley/desktop/GameFiles/StardewValley.GameData.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="xTile">
-      <HintPath>/sdcard/StardewValley/desktop/GameFiles/xTile.dll</HintPath>
+      <HintPath Condition="Exists('/sdcard/StardewValley/desktop/GameFiles/xTile.dll')">/sdcard/StardewValley/desktop/GameFiles/xTile.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="StardewModdingAPI">
       <HintPath Condition="Exists('/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll')">/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll</HintPath>
-      <HintPath Condition="!Exists('/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll')">/sdcard/StardewValley/desktop/GameFiles/StardewModdingAPI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath Condition="Exists('/root/stardew-workspace/lib/MonoGame.Framework.dll')">/root/stardew-workspace/lib/MonoGame.Framework.dll</HintPath>
-      <HintPath Condition="Exists('/sdcard/StardewValley/desktop/GameFiles/MonoGame.Framework.dll')">/sdcard/StardewValley/desktop/GameFiles/MonoGame.Framework.dll</HintPath>
+      <HintPath Condition="!Exists('/sdcard/StardewValley/smapi-internal/StardewModdingAPI.dll') and Exists('/sdcard/StardewValley/desktop/GameFiles/StardewModdingAPI.dll')">/sdcard/StardewValley/desktop/GameFiles/StardewModdingAPI.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

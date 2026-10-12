@@ -67,11 +67,13 @@ cat << 'EOF' > /etc/profile.d/dotnet.sh
 export DOTNET_ROOT=/opt/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_GCHeapHardLimit=20000000
 EOF
 
 export DOTNET_ROOT=/opt/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_GCHeapHardLimit=20000000
 
 # 3. Lưu trữ template toàn cục và cài đặt các công cụ CLI
 TEMPLATE_STORE="/usr/local/share/stardew-template"

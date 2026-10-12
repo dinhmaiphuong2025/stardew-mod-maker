@@ -145,6 +145,7 @@ cmd_new() {
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/${mod_name}.csproj" 2>/dev/null || true
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/manifest.json" 2>/dev/null || true
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/ModEntry.cs" 2>/dev/null || true
+    sed -i "s/StarterMod/$mod_name/g" "$target_dir/MobileTouchButton.cs" 2>/dev/null || true
     sed -i "s/StarterMod/$mod_name/g" "$target_dir/deploy.sh" 2>/dev/null || true
 
     print_success "Đã tạo mod '$mod_name' tại: $target_dir"
@@ -169,6 +170,8 @@ cmd_build() {
     fi
 
     print_info "Đang biên dịch: $csproj..."
+    export DOTNET_GCHeapHardLimit=20000000
+    export DOTNET_CLI_TELEMETRY_OPTOUT=1
     if "$DOTNET_CMD" build "$csproj" -c Release; then
         print_success "Biên dịch thành công!"
         return 0
