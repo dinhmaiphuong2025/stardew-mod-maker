@@ -383,7 +383,7 @@ install_antigravity() {
 
 install_claude() {
     print_header "CÀI ĐẶT CLAUDE CODE CLI"
-    echo "  Mô hình:   Claude 3.7 Sonnet (Hybrid Thinking) / 3.5 Sonnet"
+    echo "  Mô hình:   Claude 3.7 Sonnet (Extended Thinking) / Claude Opus"
     echo "  Chi phí:   Yêu cầu gói Claude Pro/Team hoặc Anthropic Console API Key"
     echo "  Khởi động: claude"
     print_line
@@ -406,7 +406,7 @@ install_claude() {
 
 install_codex() {
     print_header "CÀI ĐẶT CODEX CLI (OPENAI)"
-    echo "  Mô hình:   OpenAI o3-mini, o1, GPT-4o (@openai/codex)"
+    echo "  Mô hình:   OpenAI o1, o3, GPT-4.5, GPT-4o (@openai/codex)"
     echo "  Chi phí:   Yêu cầu gói ChatGPT Plus/Pro hoặc OpenAI API Key"
     echo "  Khởi động: codex"
     print_line
