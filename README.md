@@ -1,8 +1,23 @@
 # Stardew Valley Cinderbox Modding Kit (PRoot Android)
 
-Làm mod C# SMAPI cho Stardew Valley trên điện thoại Android bằng AI (Thuần VibeCoding) — không cần PC, không cần Root, không cần biết lập trình hay gõ lệnh Linux.
+Bộ công cụ thử nghiệm hỗ trợ làm mod C# SMAPI cho Stardew Valley 1.6 trên Android Cinderbox với sự trợ giúp của AI Coding Agent (VibeCoding).
 
-> 💡 **Ghi chú**: Toàn bộ tài liệu, công cụ và kịch bản tự động hóa trong dự án này cũng được hoàn thiện **90% bằng phương pháp VibeCoding** cùng AI Agent!
+> 💡 **Ghi chú**: Dự án này là một thể nghiệm mã nguồn mở phi lợi nhuận, được xây dựng và tinh chỉnh trong quá trình tác giả tự vọc vạch làm mod cùng AI Agent.
+
+---
+
+## ⚠️ Lưu Ý Quan Trọng & Giới Hạn Thực Tế (Vui Lòng Đọc Kỹ)
+
+Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ và phương pháp VibeCoding:
+
+1. **AI không phải là phép thuật "một chạm ăn ngay"**:
+   - AI Agent (đặc biệt là các mô hình miễn phí như Big Pickle, Muse Spark) có giới hạn về năng lực suy luận.
+   - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
+2. **Vai trò của bộ công cụ này**:
+   - Dự án chỉ làm nhiệm vụ **dựng sẵn môi trường (.NET SDK, PRoot Ubuntu, SMAPI, mẫu dự án)** và cung cấp các lệnh đóng gói tự động (`stardew-mod build`, `deploy`).
+   - Bộ công cụ **không bảo đảm** mọi ý tưởng mod phức tạp đều sẽ tự động hoàn thiện hoàn hảo nếu không qua quá trình kiểm thử và tinh chỉnh.
+3. **Tinh thần mã nguồn mở**:
+   - Dự án được chia sẻ miễn phí với tinh thần cùng thử nghiệm, học hỏi và đóng góp. Xin vui lòng không kỳ vọng đây là một sản phẩm thương mại hoàn chỉnh không có lỗi. Nếu gặp lỗi, hãy bình tĩnh kiểm tra log (`stardew-mod logs`) và cùng nhau tìm hướng giải quyết!
 
 ---
 
@@ -108,34 +123,33 @@ Bộ công cụ `stardew-mod` được cài đặt sẵn trong `PATH` của môi
 
 ---
 
-## 5. Minh Chứng VibeCoding Thực Tế
+## 5. Nhật Ký Quá Trình Thử Nghiệm
 
-Toàn bộ hệ thống công cụ, kịch bản PRoot Ubuntu, giao diện TUI và các hướng dẫn trong bộ tài liệu này đều được **hoàn thiện 90% bằng phương pháp VibeCoding** trực tiếp giữa người dùng và AI Coding Agent (Phoebe / Hermes / OpenCode):
-- **Phát triển trực tiếp trên thiết bị di động**: Tự động sinh mã nguồn Bash, thiết kế TUI tối giản cho mobile, xử lý cấu hình .NET 10.0 và SMAPI.
-- **Tự động chẩn đoán và khắc phục lỗi**: AI phân tích các vấn đề như nghẽn mạng Azure CDN, xung đột thư viện, căn chỉnh độ rộng màn hình Termux và sửa lỗi ngay trong phiên làm việc.
-- **Minh chứng sống cho người mới bắt đầu**: Bạn hoàn toàn có thể tự tay tạo ra các bản mod phức tạp mà không cần phải là một lập trình viên chuyên nghiệp!
-
----
-
-## 6. Khả Năng Tương Thích Đa Nền Tảng (Cross-Platform)
-
-Một trong những ưu điểm lớn nhất của bộ công cụ này là **tính tương thích hai chiều giữa PC và Android**:
-- **Một bản mod — Chơi cả hai nơi**: Mọi mod C# SMAPI được tạo ra từ template của bộ công cụ đều nhắm đến chuẩn **Stardew Valley 1.6+**. File DLL biên dịch xong có thể dùng trực tiếp trên Android Cinderbox hoặc copy sang thư mục `Mods` trên máy tính PC (Windows, macOS, Linux) mà không cần chỉnh sửa hay build lại!
-- **Cơ chế điều khiển lai (Hybrid Input)**:
-  - Trên **PC**: Hỗ trợ phím cứng (mặc định `F5`, tùy biến thoải mái trong `config.json`).
-  - Trên **Mobile**: Tự động hỗ trợ nút cảm ứng ảo HUD (`MobileTouchButton`) với khả năng co giãn theo tỷ lệ giao diện (`Game1.options.uiScale`), không bị lệch cảm ứng.
-- **Chia sẻ lên Nexus Mods**: Bạn hoàn toàn có thể chia sẻ các tác phẩm VibeCoding của mình lên cộng đồng quốc tế!
+Bộ công cụ, kịch bản PRoot Ubuntu và các tài liệu này được hình thành trong quá trình tác giả **thử nghiệm phương pháp VibeCoding** trực tiếp trên điện thoại cùng AI Agent:
+- **Tự động hóa trên di động**: Dùng AI để sinh mã nguồn Bash, thiết kế TUI Termux gọn gàng cho màn hình cảm ứng, cấu hình SDK .NET và SMAPI.
+- **Vòng lặp sửa lỗi thực tế**: Quá trình phát triển đã phải trải qua nhiều lần thử-và-sai để tìm ra các giải pháp cho lỗi tràn RAM ảo GC 256 GiB, thiếu MonoGame hay lệch tọa độ cảm ứng UI Scale.
+- **Thông điệp**: AI là công cụ hỗ trợ đắc lực để biến ý tưởng thành mã nguồn, nhưng thành quả luôn đòi hỏi sự kiên nhẫn kiểm thử và phản hồi của người thực hiện.
 
 ---
 
-## 7. Kêu Gọi Đóng Góp & Đánh Giá Từ Cộng Đồng
+## 6. Định Hướng Hỗ Trợ Đa Nền Tảng (PC & Mobile 1.6)
 
-Dự án này được phát triển vì cộng đồng người chơi Stardew Valley tại Việt Nam và trên thế giới. Chúng mình rất mong nhận được sự chung tay của các bạn để bộ công cụ ngày càng hoàn thiện hơn:
+Template mặc định được thiết kế với mục tiêu thân thiện cho cả hai môi trường:
+- **Stardew Valley 1.6+**: Nhắm đến hệ sinh thái SMAPI 4.x hiện đại.
+- **Cơ chế điều khiển linh hoạt**:
+  - Hỗ trợ phím bấm bàn phím (mặc định `F5`, có thể đổi trong `config.json`).
+  - Hỗ trợ nút bấm cảm ứng HUD (`MobileTouchButton`) tự co giãn theo tỷ lệ giao diện (`Game1.options.uiScale`).
+- *Lưu ý*: Tùy thuộc vào độ phức tạp của từng tính năng, bạn có thể cần tự kiểm thử và điều chỉnh thêm trên từng thiết bị để đạt trải nghiệm ưng ý nhất.
 
-- **Thử nghiệm trên các dòng máy khác nhau**: Hãy chạy thử trên nhiều dòng chip (Snapdragon, MediaTek, Exynos) và chia sẻ trải nghiệm tốc độ/độ ổn định.
-- **Báo lỗi & Đóng góp ý tưởng**: Nếu gặp lỗi crash, lỗi xung đột mod hoặc có ý tưởng về tính năng mới, hãy mở một [Issue trên GitHub](https://github.com/dinhmaiphuong2025/stardew-mod-maker/issues) hoặc nhắn trong nhóm Telegram cộng đồng.
-- **Đóng góp mã nguồn (Pull Requests)**: Rất hoan nghênh các PR cải tiến script, bổ sung thêm template mod (Content Patcher, Custom NPC, Skill VFX) hoặc nâng cấp tài liệu hướng dẫn.
-- **Tặng 1 sao (Star ⭐)**: Nếu dự án hữu ích cho bạn, hãy nhấn Star trên GitHub để lan tỏa phong trào VibeCoding mod game không cần PC đến nhiều bạn trẻ hơn nữa!
+---
+
+## 7. Đóng Góp & Chia Sẻ Ý Tưởng Cùng Cộng Đồng
+
+Dự án được mở hoàn toàn miễn phí vì mục đích học hỏi và chia sẻ kinh nghiệm:
+
+- **Cùng kiểm thử thiết bị**: Nếu bạn thử nghiệm trên các dòng chip khác nhau (Snapdragon, MediaTek, Exynos), hãy chia sẻ trải nghiệm để cùng tối ưu script.
+- **Báo lỗi & Đóng góp giải pháp**: Khi gặp lỗi lạ hoặc tìm ra cách sửa lỗi hay, hãy mở [Issue](https://github.com/dinhmaiphuong2025/stardew-mod-maker/issues) hoặc gửi Pull Request để cùng hoàn thiện bộ công cụ.
+- **Giao lưu & Hỗ trợ**: Tham gia nhóm Telegram cộng đồng để trao đổi kinh nghiệm vọc vạch mod và chia sẻ các bản mod bạn tự làm được!
 
 ---
 
