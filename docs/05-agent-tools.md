@@ -33,8 +33,8 @@ Khi người dùng mô tả tính năng muốn tạo:
 |---|---|---|---|
 | **OpenCode CLI** | `opencode` | **Miễn phí** (Open-Source) | Dùng được local Ollama miễn phí hoặc tự cấp API Key cá nhân giá rẻ (DeepSeek, OpenRouter) |
 | **Antigravity CLI** | `agy` | **Miễn phí có hạn mức** (Google Tier) | Đăng nhập tài khoản Google, có quota miễn phí hàng ngày |
-| **Claude Code** | `claude` | **Trả phí** (Subscription / API) | Chạy Claude Opus 4, Opus 5, Claude 3.7 Sonnet (Extended Thinking). Yêu cầu gói Claude Pro/Team hoặc Anthropic Console API Key |
-| **Codex CLI** | `codex` | **Trả phí** (ChatGPT / API) | Coding Agent chính thức từ OpenAI (@openai/codex), hỗ trợ GPT-5, GPT-5.6 Sol, o3, o1. Yêu cầu gói ChatGPT Plus/Pro hoặc OpenAI API Key |
+| **Claude Code** | `claude` | **Trả phí** (Subscription / API) | Chạy Claude 3.7 Sonnet (Extended Thinking), Claude 3.5 Sonnet. Yêu cầu gói Claude Pro/Team hoặc Anthropic Console API Key |
+| **Codex CLI** | `codex` | **Trả phí** (ChatGPT / API) | Coding Agent chính thức từ OpenAI (@openai/codex), hỗ trợ o1, o3-mini, GPT-4o. Yêu cầu gói ChatGPT Plus/Pro hoặc OpenAI API Key |
 | **Hermes Agent CLI** | `hermes` | **Miễn phí** (Open-Source & BYOK) | 100% mã nguồn mở tự do, hỗ trợ 20+ provider và local models |
 
 ---

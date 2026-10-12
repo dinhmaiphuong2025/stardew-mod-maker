@@ -23,7 +23,7 @@ Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ 
    - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
 3. **Lựa chọn Model: Miễn Phí vs Trả Phí (Bring Your Own Key)**:
    - **Model miễn phí** (Big Pickle, Muse Spark trên OpenCode; Gemini Free Tier trên Antigravity): Tiết kiệm chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
-   - **Mô hình đầu bảng thế hệ mới (Flagship / Frontier SOTA)** (như Claude Opus 4 / Opus 5, Claude 3.7 Sonnet Extended Thinking, OpenAI GPT-5, GPT-5.6 Sol, o3, Fable 5, DeepSeek-R1): Sở hữu năng lực tư duy kiến trúc và sửa lỗi C# SMAPI ở đẳng cấp cao nhất, tỷ lệ tạo mod thành công ngay lần đầu vượt trội. Bạn có thể tự cấp API Key cá nhân hoặc dùng tài khoản bản quyền tương ứng.
+   - **Mô hình đầu bảng thực tế (Flagship Reasoning)** (như Claude 3.7 Sonnet với Extended Thinking, OpenAI o1, GPT-4o, hoặc DeepSeek-R1): Sở hữu năng lực tư duy kiến trúc và sửa lỗi C# SMAPI ở đẳng cấp cao nhất, tỷ lệ tạo mod thành công ngay lần đầu vượt trội. Bạn có thể tự cấp API Key cá nhân hoặc dùng tài khoản bản quyền tương ứng.
    - **Bảo mật**: Tuyệt đối **không bao giờ dán hay đẩy (commit) API Key cá nhân lên GitHub public** để tránh bị đánh cắp tài khoản. Hãy lưu key vào file môi trường cục bộ trong máy.
 4. **Tinh thần mã nguồn mở**:
    - Dự án được chia sẻ miễn phí với tinh thần cùng thử nghiệm, học hỏi và đóng góp. Xin vui lòng không kỳ vọng đây là một sản phẩm thương mại hoàn chỉnh không có lỗi. Nếu gặp lỗi, hãy bình tĩnh kiểm tra log (`stardew-mod logs`) và cùng nhau tìm hướng giải quyết!
@@ -84,8 +84,8 @@ stardew-mod agent
 Hệ thống sẽ hiển thị menu để bạn chọn:
 - Nhấn `1`: **OpenCode CLI v2** *(Mô hình đám mây miễn phí: Big Pickle, Muse Spark hoặc kết nối API Key tùy ý)*
 - Nhấn `2`: **Antigravity CLI** *(Tài khoản Google — miễn phí có hạn mức hàng ngày với Gemini 2.5 Pro / Flash)*
-- Nhấn `3`: **Claude Code** *(Sử dụng Claude Opus 4 / Opus 5, Claude 3.7 Sonnet Extended Thinking — yêu cầu tài khoản Claude Pro/Team hoặc Anthropic API Key)*
-- Nhấn `4`: **Codex CLI** *(Coding Agent chính thức từ OpenAI — sử dụng GPT-5, GPT-5.6 Sol, o3, o1 qua tài khoản ChatGPT hoặc OpenAI API Key)*
+- Nhấn `3`: **Claude Code** *(Sử dụng Claude 3.7 Sonnet Extended Thinking, Claude 3.5 Sonnet — yêu cầu tài khoản Claude Pro/Team hoặc Anthropic API Key)*
+- Nhấn `4`: **Codex CLI** *(Coding Agent chính thức từ OpenAI — sử dụng o1, o3-mini, GPT-4o qua tài khoản ChatGPT hoặc OpenAI API Key)*
 - Nhấn `5`: **Hermes Agent CLI** *(Mã nguồn mở từ Nous Research, hỗ trợ kết nối mọi mô hình đầu bảng)*
 
 *(Mẹo: Bạn cũng có thể cài nhanh trực tiếp bằng lệnh `stardew-mod agent opencode` hoặc `stardew-mod agent antigravity`).*
