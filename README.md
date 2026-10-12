@@ -10,13 +10,19 @@ Bộ công cụ thử nghiệm hỗ trợ làm mod C# SMAPI cho Stardew Valley 1
 
 Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ và phương pháp VibeCoding:
 
-1. **AI không phải là phép thuật "một chạm ăn ngay"**:
+1. **Yêu cầu kiến thức nền tảng tối thiểu**:
+   - Dự án **không dành cho người hoàn toàn không biết gì về máy tính**. Bạn cần có kiến thức tin học phổ thông (đã được học ở THCS/THPT):
+     - Hiểu khái niệm đường dẫn (**Path**), thư mục (**Folder/Directory**) và tệp tin (**File**).
+     - Biết các thao tác cơ bản trong dòng lệnh: copy/paste lệnh, di chuyển thư mục (`cd`), xem tệp (`ls`), đọc hiểu thông báo lỗi cơ bản.
+     - Biết cách đọc hiểu file log SMAPI và kiên nhẫn phối hợp mô tả lại hiện tượng cho AI.
+2. **AI không phải là phép thuật "một chạm ăn ngay"**:
    - AI Agent (đặc biệt là các mô hình miễn phí như Big Pickle, Muse Spark) có giới hạn về năng lực suy luận.
    - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
-2. **Vai trò của bộ công cụ này**:
-   - Dự án chỉ làm nhiệm vụ **dựng sẵn môi trường (.NET SDK, PRoot Ubuntu, SMAPI, mẫu dự án)** và cung cấp các lệnh đóng gói tự động (`stardew-mod build`, `deploy`).
-   - Bộ công cụ **không bảo đảm** mọi ý tưởng mod phức tạp đều sẽ tự động hoàn thiện hoàn hảo nếu không qua quá trình kiểm thử và tinh chỉnh.
-3. **Tinh thần mã nguồn mở**:
+3. **Lựa chọn Model: Miễn Phí vs Trả Phí (Bring Your Own Key)**:
+   - **Model miễn phí** (*Big Pickle, Muse Spark* trên OpenCode; *Google Free Tier* trên Antigravity): Tiết kiệm 100% chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
+   - **Model cao cấp / Trả phí** (*Claude 3.5/3.7 Sonnet*, *OpenAI GPT-4o / Codex*): Khả năng lập trình C# SMAPI vượt trội, tỷ lệ thành công ngay lần đầu cao hơn nhiều. Bạn có thể tự cấp API Key cá nhân để dùng.
+   - 🔒 **Bảo mật**: Tuyệt đối **không bao giờ dán hay đẩy (commit) API Key cá nhân lên GitHub public** để tránh bị đánh cắp tài khoản. Hãy lưu key vào file môi trường cục bộ trong máy.
+4. **Tinh thần mã nguồn mở**:
    - Dự án được chia sẻ miễn phí với tinh thần cùng thử nghiệm, học hỏi và đóng góp. Xin vui lòng không kỳ vọng đây là một sản phẩm thương mại hoàn chỉnh không có lỗi. Nếu gặp lỗi, hãy bình tĩnh kiểm tra log (`stardew-mod logs`) và cùng nhau tìm hướng giải quyết!
 
 ---
@@ -83,6 +89,8 @@ Hệ thống sẽ hiển thị menu để bạn chọn:
 *(Mẹo: Bạn cũng có thể cài nhanh trực tiếp bằng lệnh `stardew-mod agent opencode` hoặc `stardew-mod agent antigravity`).*
 
 Sau khi cài xong, bạn chỉ cần nhấn **Enter**, màn hình sẽ tự động xoá sạch để bạn gõ lệnh khởi động Agent (ví dụ: `opencode` hoặc `agy`).
+
+*(Lưu ý: Nếu sử dụng các Agent trả phí như Claude Code hoặc Codex, bạn đăng nhập tài khoản chính chủ qua lệnh của công cụ hoặc nhập API Key khi được hỏi trong terminal; không lưu khóa vào tệp công khai).*
 
 ---
 
