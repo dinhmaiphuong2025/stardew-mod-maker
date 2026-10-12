@@ -9,8 +9,9 @@ Tài liệu này hướng dẫn thiết lập toàn bộ môi trường lập tr
 Lưu ý: Không tải Termux từ Google Play Store vì các bản trên Play Store đã ngừng cập nhật từ lâu và sẽ phát sinh lỗi khi cài đặt gói.
 
 Các kênh tải chính thức:
+- Bản Termux Custom: https://github.com/dinhmaiphuong2025/termux-app/releases (Khuyên dùng)
+- GitHub Releases: https://github.com/termux/termux-app/releases (chọn bản arm64-v8a hoặc universal)
 - F-Droid: https://f-droid.org/en/packages/com.termux/
-- GitHub Releases: https://github.com/termux/termux-app/releases (chọn file apk phù hợp với thiết bị, thông thường là bản arm64-v8a hoặc universal).
 
 Sau khi cài đặt xong, mở ứng dụng Termux.
 
@@ -24,22 +25,22 @@ Trên màn hình Termux, dán và chạy duy nhất dòng lệnh sau:
 curl -sSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh | bash
 ```
 
-*(Hoặc: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/dinhmaiphuong2025/stardew-mod-maker/main/install.sh)"`)*
-
-Hệ thống sẽ hiển thị giao diện dòng lệnh hiện đại với thanh tiến trình theo từng bước (`[████░░] 60%`) cùng hiệu ứng loading spinner Braille sinh động và tiếng Việt đầy đủ dấu.
+Hệ thống sẽ hiển thị thanh tiến trình thanh thoát ở trên cùng kèm tốc độ mạng thực tế (`· X.X MB/s`), và tự động tích xanh lưu vết từng bước cài đặt bên dưới.
 
 ---
 
 ## 3. Các bước hệ thống xử lý tự động
 
-Kịch bản `install.sh` sẽ lần lượt thực hiện 6 bước:
-1. `[1/6]` Kiểm tra và yêu cầu cấp quyền truy cập bộ nhớ: Khi hộp thoại Android xuất hiện, chọn "Cho phép" (Allow).
-2. `[2/6]` Cài đặt các gói công cụ nền tảng Termux (`proot-distro`, `git`, `curl`, `jq`, `tar`).
-3. `[3/6]` Cài đặt môi trường Linux Ubuntu aarch64 qua PRoot Distro.
-4. `[4/6]` Cấu hình liên kết tự động thư mục `/sdcard` vào container để đồng bộ dữ liệu game.
-5. `[5/6]` Cài đặt .NET 10.0 SDK từ Microsoft vào `/opt/dotnet` cho toàn hệ thống.
-6. `[6/6]` Thiết lập tài khoản sudo riêng của bạn, tạo thư mục làm việc tại `~/stardew-workspace` và cài đặt OpenCode AI CLI.
-7. Tạo binary khởi động `ubuntu` trên Termux.
+Kịch bản `install.sh` sẽ lần lượt thực hiện các bước tự động:
+1. `Kiểm tra quyền truy cập bộ nhớ thiết bị Android (/sdcard)`: Khi hộp thoại xuất hiện, chọn Cho phép (Allow).
+2. `Cập nhật danh sách kho gói Termux (apt update)`.
+3. `Cài đặt gói công cụ lõi Termux (proot-distro, git, curl, jq)`.
+4. `Tải hệ điều hành PRoot Ubuntu 24.04 (rootfs aarch64)`.
+5. `Thiết lập container Ubuntu & liên kết thư mục /sdcard`.
+6. `Cập nhật kho gói Ubuntu & cài đặt thư viện phụ thuộc`.
+7. `Tải và cài đặt .NET 10.0 SDK & thư viện SMAPI`.
+8. `Khởi tạo stardew-mod CLI, template dự án & môi trường VibeCoding`.
+9. `Khởi tạo tài khoản sudo gọn gàng và thiết lập workspace tại ~/stardew-workspace`.
 
 ---
 

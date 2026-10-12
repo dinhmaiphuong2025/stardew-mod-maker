@@ -10,11 +10,14 @@ Bộ công cụ thử nghiệm hỗ trợ làm mod C# SMAPI cho Stardew Valley 1
 
 Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ và phương pháp VibeCoding:
 
-1. **Yêu cầu kiến thức nền tảng tối thiểu**:
-   - Dự án **không dành cho người hoàn toàn không biết gì về máy tính**. Bạn cần có kiến thức tin học phổ thông (đã được học ở THCS/THPT):
-     - Hiểu khái niệm đường dẫn (**Path**), thư mục (**Folder/Directory**) và tệp tin (**File**).
-     - Biết các thao tác cơ bản trong dòng lệnh: copy/paste lệnh, di chuyển thư mục (`cd`), xem tệp (`ls`), đọc hiểu thông báo lỗi cơ bản.
-     - Biết cách đọc hiểu file log SMAPI và kiên nhẫn phối hợp mô tả lại hiện tượng cho AI.
+1. **Yêu cầu kiến thức nền tảng theo mức độ ưu tiên**:
+   - 🔴 **[BẮT BUỘC — ĐIỀU KIỆN TIÊN QUYẾT] Kiến thức hệ điều hành & tệp tin**:
+     - Bạn **bắt buộc** phải hiểu các khái niệm tin học căn bản (đã có trong giáo trình THCS/THPT): **Đường dẫn (Path)**, **Thư mục (Folder / Directory)** và **Tệp tin (File)**; hiểu được mod được tạo ở đâu trong máy và game đọc mod từ thư mục nào.
+     - 🛑 **Lời khuyên chân thành**: *Nếu ngay cả khái niệm thư mục hay đường dẫn tệp tin bạn cũng chưa nắm được, bạn **nên dừng lại** và bổ sung kiến thức tin học cơ bản trước. Nếu không, bạn sẽ không thể biết file mod nằm ở đâu, game bị lỗi ở chỗ nào hay log lưu ở đâu, dẫn đến bế tắc và lãng phí thời gian.*
+   - 🟡 **[KHUYẾN KHÍCH — HỌC DẦN TRONG QUÁ TRÌNH DÙNG] Lệnh dòng lệnh cơ bản**:
+     - Các lệnh Linux/Termux quen thuộc như `cd` (chuyển thư mục), `ls` (xem danh sách file), `pwd` (xem vị trí hiện tại): **Biết thì càng tốt, chưa biết cũng không sao**. Bạn hoàn toàn có thể tự tra cứu Google hoặc hỏi AI giải thích ngay trong lúc làm.
+   - 🟢 **[KỸ NĂNG QUAN TRỌNG] Đọc thông báo & Kiên nhẫn**:
+     - Không hoảng sợ khi thấy chữ đỏ, biết mở file log SMAPI (`stardew-mod logs`) và mô tả lại hiện tượng cho AI sửa tiếp.
 2. **AI không phải là phép thuật "một chạm ăn ngay"**:
    - AI Agent (đặc biệt là các mô hình miễn phí như Big Pickle, Muse Spark) có giới hạn về năng lực suy luận.
    - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
@@ -31,11 +34,10 @@ Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ 
 
 Trước khi bắt đầu, bạn cần cài đặt các ứng dụng sau trên điện thoại:
 
-1. **Ứng dụng Termux** (tùy chọn nguồn tải theo nhu cầu của bạn):
-   - [Bản Termux Custom](https://github.com/dinhmaiphuong2025/termux-app/releases)
+1. **Ứng dụng Termux** *(Lưu ý: Không tải từ Google Play Store vì bản Play Store đã ngừng cập nhật từ lâu và bị lỗi kho gói)*:
+   - [Bản Termux Custom](https://github.com/dinhmaiphuong2025/termux-app/releases) (Khuyên dùng)
    - [Termux trên GitHub Releases](https://github.com/termux/termux-app/releases)
    - [Termux trên F-Droid](https://f-droid.org/packages/com.termux/)
-   - [Termux trên Google Play Store](https://play.google.com/store/apps/details?id=com.termux)
 
 2. **Trình chạy Cinderbox (Chạy Stardew Valley PC trên Android)**:
    - Tải file APK tại [GitHub Cinderbox v0.8.1 Releases](https://github.com/Ekyso/Cinderbox/releases/tag/0.8.1)
