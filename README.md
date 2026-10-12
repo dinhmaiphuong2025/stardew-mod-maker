@@ -82,21 +82,21 @@ stardew-mod agent
 ```
 
 Hệ thống sẽ hiển thị menu để bạn chọn:
-- Nhấn `1`: **OpenCode CLI v2** *(Miễn phí — tích hợp sẵn model Cloud free Big Pickle, Muse Spark)*
-- Nhấn `2`: **Antigravity CLI** *(Miễn phí có quota hàng ngày qua tài khoản Google)*
-- Nhấn `3`: **Claude Code** *(Trả phí qua gói Claude Pro hoặc Anthropic API Key)*
-- Nhấn `4`: **OpenAI Codex CLI** *(Trả phí qua OpenAI API Key)*
-- Nhấn `5`: **Hermes Agent CLI** *(Miễn phí — mã nguồn mở, hỗ trợ BYOK và local models)*
+- Nhấn `1`: **OpenCode CLI v2** *(Mô hình miễn phí: Big Pickle, Muse Spark)*
+- Nhấn `2`: **Antigravity CLI** *(Tài khoản Google — miễn phí có hạn mức hàng ngày)*
+- Nhấn `3`: **Claude Code** *(Yêu cầu tài khoản Claude Pro hoặc Anthropic API Key)*
+- Nhấn `4`: **OpenAI Codex CLI** *(Yêu cầu OpenAI API Key)*
+- Nhấn `5`: **Hermes Agent CLI** *(Mã nguồn mở, hỗ trợ nhiều nhà cung cấp API)*
 
 *(Mẹo: Bạn cũng có thể cài nhanh trực tiếp bằng lệnh `stardew-mod agent opencode` hoặc `stardew-mod agent antigravity`).*
 
 Sau khi cài xong, bạn chỉ cần nhấn **Enter**, màn hình sẽ tự động xoá sạch để bạn gõ lệnh khởi động Agent (ví dụ: `opencode` hoặc `agy`).
 
-*(Lưu ý: Nếu sử dụng các Agent trả phí như Claude Code hoặc Codex, bạn đăng nhập tài khoản chính chủ qua lệnh của công cụ hoặc nhập API Key khi được hỏi trong terminal; không lưu khóa vào tệp công khai).*
+*(Lưu ý: Với các Agent trả phí như Claude Code hoặc Codex, bạn đăng nhập tài khoản chính chủ hoặc nhập API Key trực tiếp trong terminal; không lưu khóa vào tệp công khai).*
 
 ---
 
-### Bước 2: Ra lệnh cho AI tạo mod (Prompt mẫu)
+### Bước 2: Ra lệnh cho AI tạo mod (Prompt mẫu khi làm mod mới)
 
 Mở Agent vừa cài (ví dụ: `opencode`) và mô tả ý tưởng bằng tiếng Việt:
 
@@ -111,6 +111,32 @@ Trợ lý AI sẽ tự động xử lý toàn bộ:
 4. Tự đưa mod vào đúng thư mục game Stardew Valley.
 
 Khi AI báo xong, bạn chỉ cần mở game **Stardew Valley** trên điện thoại lên và chơi!
+
+---
+
+### Bước 3: Quay lại tiếp tục làm mod sau khi tắt Termux
+
+Khi bạn tắt ứng dụng Termux, khởi động lại điện thoại hoặc thoát game ra làm việc khác, toàn bộ mã nguồn mod của bạn **vẫn được lưu nguyên vẹn** tại `~/stardew-workspace/mods/<TênMod>/`.
+
+Để tiếp tục phát triển hoặc sửa lỗi mod cũ:
+
+1. Mở Termux, gõ:
+   ```bash
+   ubuntu
+   ```
+2. Xem lại danh sách mod hiện có:
+   ```bash
+   stardew-mod list
+   ```
+3. Di chuyển thẳng vào thư mục của bản mod đó và khởi động AI Agent:
+   ```bash
+   cd mods/<TênMod>
+   opencode   # hoặc agy / claude
+   ```
+4. Ra lệnh cho AI tiếp tục hoàn thiện (không cần bảo AI tạo mới):
+   > **"Tiếp tục nâng cấp mod này: [mô tả tính năng muốn thêm hoặc lỗi vừa thấy trong game]. Hãy tự xem mã nguồn hiện tại trong ModEntry.cs, tự sửa code, tự chạy stardew-mod build và deploy lại vào game cho tôi."**
+
+*(Mẹo: Nếu game vừa bị văng (crash), hãy bảo AI: `"Game vừa bị crash, hãy tự chạy stardew-mod logs 50 để đọc log SMAPI và sửa lỗi giúp tôi."`)*
 
 ---
 

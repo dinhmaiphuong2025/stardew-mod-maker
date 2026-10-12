@@ -151,6 +151,15 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 Trong VibeCoding, việc bản mod cần chỉnh sửa sau lần chạy đầu tiên là hoàn toàn bình thường. Bạn không cần đọc hay sửa code, chỉ cần mô tả chính xác hiện tượng trên màn hình để AI xử lý:
 
+### 0. Khi mở lại Termux để tiếp tục nâng cấp hoặc sửa mod cũ:
+Mỗi khi mở lại máy, bạn chỉ cần di chuyển vào thư mục bản mod đó và mở AI:
+```bash
+cd mods/<TênMod>
+opencode   # hoặc agy / claude
+```
+Sau đó ra lệnh:
+> *"Tiếp tục sửa mod này: [mô tả tính năng muốn thêm hoặc lỗi cần khắc phục]. Hãy tự đọc mã nguồn hiện có trong ModEntry.cs, cập nhật logic, tự chạy stardew-mod build và deploy lại vào game cho tôi."*
+
 ### 1. Khi lệnh build báo lỗi chữ đỏ trong Terminal:
 > *"Lệnh build bị lỗi ở trên. Hãy tự đọc log lỗi trình biên dịch, sửa lại mã nguồn trong ModEntry.cs và build lại."*
 

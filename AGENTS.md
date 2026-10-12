@@ -85,9 +85,20 @@ Công cụ `stardew-mod` nằm sẵn trong PATH. Bạn hãy dùng các lệnh n�
 ---
 
 ## 4. QUY TRÌNH TỰ ĐỘNG HÓA THUẦN VIBECODING
-Khi người dùng đưa ra ý tưởng mod:
-1. Chạy `stardew-mod new <TênMod>` để tạo khung dự án.
+
+### Trường hợp 1: Tạo mod mới hoàn toàn (Lần đầu tiên)
+1. Chạy `stardew-mod new <TênMod>` để tạo khung dự án mẫu chuẩn net10.0.
 2. Viết mã nguồn logic vào `mods/<TênMod>/ModEntry.cs` và cập nhật `manifest.json`.
 3. Chạy `stardew-mod build mods/<TênMod>`, nếu lỗi thì tự đọc thông báo và sửa lại.
 4. Chạy `stardew-mod deploy mods/<TênMod>`.
 5. Báo cáo ngắn gọn cho người dùng biết mod đã cài xong và họ có thể mở Stardew Valley để trải nghiệm.
+
+### Trường hợp 2: Quay lại tiếp tục sửa hoặc nâng cấp mod đã có (Phiên làm việc mới)
+Khi người dùng mở lại terminal sau khi tắt Termux hoặc yêu cầu sửa/nâng cấp một mod đã tạo từ trước:
+1. **Tuyệt đối KHÔNG chạy lại `stardew-mod new`**: Thư mục mod đã tồn tại, chạy lại sẽ báo lỗi hoặc ghi đè mất mã nguồn cũ.
+2. **Đọc mã nguồn hiện tại**: Đọc tệp `mods/<TênMod>/ModEntry.cs` (và `manifest.json`) để hiểu logic đã viết ở phiên trước.
+3. **Nếu người dùng báo game bị crash**: Chạy `stardew-mod logs 50` để đọc nhật ký lỗi SMAPI gần nhất và xác định nguyên nhân (NullReferenceException, lỗi sự kiện, v.v.).
+4. **Cập nhật mã nguồn**: Sửa lỗi hoặc bổ sung tính năng mới vào `ModEntry.cs`.
+5. **Biên dịch**: Chạy `stardew-mod build mods/<TênMod>` để kiểm tra cú pháp và build ra DLL mới.
+6. **Triển khai**: Chạy `stardew-mod deploy mods/<TênMod>` để cập nhật bản mới nhất vào game.
+7. Báo cáo ngắn gọn những điểm vừa thay đổi để người dùng vào game kiểm tra lại.
