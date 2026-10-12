@@ -383,8 +383,8 @@ install_antigravity() {
 
 install_claude() {
     print_header "CÀI ĐẶT CLAUDE CODE CLI"
-    echo "  Chi phí:   Trả phí (Yêu cầu Claude Pro / Max hoặc Anthropic API Key)"
-    echo "  Mô tả:     AI Coding Agent từ Anthropic"
+    echo "  Mô hình:   Claude 3.7 Sonnet (Hybrid Thinking) / 3.5 Sonnet"
+    echo "  Chi phí:   Yêu cầu gói Claude Pro/Team hoặc Anthropic Console API Key"
     echo "  Khởi động: claude"
     print_line
     if command -v claude >/dev/null 2>&1; then
@@ -405,9 +405,9 @@ install_claude() {
 }
 
 install_codex() {
-    print_header "CÀI ĐẶT OPENAI CODEX CLI"
-    echo "  Chi phí:   Trả phí (Yêu cầu OpenAI API Key)"
-    echo "  Mô tả:     Coding Agent CLI từ OpenAI"
+    print_header "CÀI ĐẶT CODEX CLI (OPENAI)"
+    echo "  Mô hình:   OpenAI o3-mini, o1, GPT-4o (@openai/codex)"
+    echo "  Chi phí:   Yêu cầu gói ChatGPT Plus/Pro hoặc OpenAI API Key"
     echo "  Khởi động: codex"
     print_line
     if command -v codex >/dev/null 2>&1; then

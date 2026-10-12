@@ -65,29 +65,25 @@ Khi chat với AI, bạn chỉ cần dùng các từ quen thuộc trong game:
 
 ### 2. Khung kịch bản 6 mảnh ghép điện ảnh (The 6-Layer Cinematic Formula)
 
-Để tạo một bản mod có chiều sâu và sống động, hãy mô tả cho AI theo 6 mảnh ghép sau:
+Để tạo một bản mod có chiều sâu và sống động, hãy mô tả cho AI theo 6 mảnh ghép kịch bản sau:
 
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│ 1. DIỄN BIẾN THEO THỜI GIAN (Timeline Cutscene):                       │
-│    Giây thứ mấy có âm thanh gì, giây thứ mấy vật thể xuất hiện?        │
-│                                                                        │
-│ 2. VỊ TRÍ & TỌA ĐỘ TIẾP ĐẤT (Spawn Location):                          │
-│    Rơi ở đâu? Cách người chơi mấy ô đất? Rơi từ trên trời chéo xuống?  │
-│                                                                        │
-│ 3. HÌNH DÁNG, MÀU SẮC & KÍCH THƯỚC (Visuals & Geometry):               │
-│    Vật thể hình gì (hình cầu, vòm)? Rộng mấy ô đất? Màu sắc gì?        │
-│                                                                        │
-│ 4. HIỆU ỨNG MÔI TRƯỜNG & ÂM THANH (VFX & SFX Polish):                  │
-│    Rung màn hình, khói bụi bốc lên, vệt lửa cháy, tiếng nổ va chạm?    │
-│                                                                        │
-│ 5. HOẠT ẢNH & TRẠNG THÁI NHÂN VẬT (Player Animation & State):          │
-│    Nhân vật có bị đóng băng di chuyển không? Bước ra hay quỳ xuống?    │
-│                                                                        │
-│ 6. TƯƠNG TÁC SAU KHI TIẾP ĐẤT (Post-Interaction Gameplay):             │
-│    Con tàu nằm đó để làm gì? Chạm vào mở menu, hồi máu, hay dịch chuyển?│
-└────────────────────────────────────────────────────────────────────────┘
-```
+> **1. Diễn biến theo thời gian (Timeline Cutscene)**:
+> Giây thứ mấy có âm thanh gì? Giây thứ mấy vật thể xuất hiện hoặc phát nổ?
+>
+> **2. Vị trí & Tọa độ tiếp đất (Spawn Location)**:
+> Rơi ở đâu trên bản đồ? Cách người chơi mấy ô đất? Rơi thẳng đứng hay chéo góc?
+>
+> **3. Hình dáng, màu sắc & Kích thước (Visuals & Geometry)**:
+> Vật thể hình gì (hình cầu, vòm)? Chiếm mấy ô đất (ví dụ 2x2)? Tông màu kim loại, phát quang hay trong suốt?
+>
+> **4. Hiệu ứng môi trường & Âm thanh (VFX & SFX Polish)**:
+> Màn hình rung lắc, khói bụi bốc lên, vệt lửa cháy xém đất hay tiếng nổ va chạm vang dội?
+>
+> **5. Hoạt ảnh & Trạng thái nhân vật (Player Animation & State)**:
+> Người chơi có bị khóa di chuyển tạm thời để quan sát không? Tư thế ngỡ ngàng, né tránh hay bước lại gần?
+>
+> **6. Tương tác sau khi tiếp đất (Post-Interaction Gameplay)**:
+> Vật thể nằm đó có công dụng gì? Chạm ngón tay vào mở menu, buồng hồi máu hay truyền tống?
 
 ---
 

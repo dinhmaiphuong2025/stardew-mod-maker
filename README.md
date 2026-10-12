@@ -22,8 +22,8 @@ Trước khi bắt đầu, xin hãy hiểu đúng bản chất của công cụ 
    - AI Agent (đặc biệt là các mô hình miễn phí như Big Pickle, Muse Spark) có giới hạn về năng lực suy luận.
    - Khi bạn đưa ra một ý tưởng, việc mod phát sinh lỗi biên dịch, lỗi tọa độ hiển thị hoặc chưa hoạt động đúng ý ở 1–3 lần thử đầu tiên là **hoàn toàn bình thường**. Bạn cần kiên nhẫn phản hồi hiện tượng trong game để AI đọc log và sửa lại mã nguồn (theo quy trình vòng lặp tại `VIBECODE_PROMPT_TEMPLATE.md`).
 3. **Lựa chọn Model: Miễn Phí vs Trả Phí (Bring Your Own Key)**:
-   - **Model miễn phí** (*Big Pickle, Muse Spark* trên OpenCode; *Google Free Tier* trên Antigravity): Tiết kiệm chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
-   - **Model cao cấp / Trả phí** (*Claude 3.5/3.7 Sonnet*, *OpenAI GPT-4o / Codex*): Khả năng lập trình C# SMAPI vượt trội, tỷ lệ thành công ngay lần đầu cao hơn nhiều. Bạn có thể tự cấp API Key cá nhân để dùng.
+   - **Model miễn phí** (Big Pickle, Muse Spark trên OpenCode; Gemini 2.5 Flash / Pro Free Tier trên Antigravity): Tiết kiệm chi phí, thích hợp để trải nghiệm và làm các tính năng nhỏ. Đổi lại, bạn cần kiên nhẫn sửa lỗi qua lại nhiều lần hơn.
+   - **Model chuyên sâu / Trả phí** (Claude 3.7 Sonnet với Hybrid Thinking, OpenAI o3-mini / o1 / GPT-4o, hoặc DeepSeek-V3 / R1): Khả năng tư duy logic và sửa lỗi C# SMAPI vượt trội, tỷ lệ thành công ngay lần đầu cao hơn nhiều. Bạn có thể tự cấp API Key cá nhân hoặc kết nối tài khoản tương ứng.
    - **Bảo mật**: Tuyệt đối **không bao giờ dán hay đẩy (commit) API Key cá nhân lên GitHub public** để tránh bị đánh cắp tài khoản. Hãy lưu key vào file môi trường cục bộ trong máy.
 4. **Tinh thần mã nguồn mở**:
    - Dự án được chia sẻ miễn phí với tinh thần cùng thử nghiệm, học hỏi và đóng góp. Xin vui lòng không kỳ vọng đây là một sản phẩm thương mại hoàn chỉnh không có lỗi. Nếu gặp lỗi, hãy bình tĩnh kiểm tra log (`stardew-mod logs`) và cùng nhau tìm hướng giải quyết!
@@ -82,17 +82,17 @@ stardew-mod agent
 ```
 
 Hệ thống sẽ hiển thị menu để bạn chọn:
-- Nhấn `1`: **OpenCode CLI v2** *(Mô hình miễn phí: Big Pickle, Muse Spark)*
-- Nhấn `2`: **Antigravity CLI** *(Tài khoản Google — miễn phí có hạn mức hàng ngày)*
-- Nhấn `3`: **Claude Code** *(Yêu cầu tài khoản Claude Pro hoặc Anthropic API Key)*
-- Nhấn `4`: **OpenAI Codex CLI** *(Yêu cầu OpenAI API Key)*
-- Nhấn `5`: **Hermes Agent CLI** *(Mã nguồn mở, hỗ trợ nhiều nhà cung cấp API)*
+- Nhấn `1`: **OpenCode CLI v2** *(Mô hình đám mây miễn phí: Big Pickle, Muse Spark hoặc tự cấu hình API Key)*
+- Nhấn `2`: **Antigravity CLI** *(Tài khoản Google — miễn phí có hạn mức hàng ngày với Gemini 2.5 Flash / Pro)*
+- Nhấn `3`: **Claude Code** *(Sử dụng Claude 3.7 Sonnet / 3.5 Sonnet — yêu cầu tài khoản Claude Pro/Team hoặc Anthropic API Key)*
+- Nhấn `4`: **Codex CLI** *(Coding Agent chính thức từ OpenAI — sử dụng o3-mini, o1, GPT-4o qua tài khoản ChatGPT hoặc OpenAI API Key)*
+- Nhấn `5`: **Hermes Agent CLI** *(Mã nguồn mở từ Nous Research, hỗ trợ 20+ nhà cung cấp mô hình)*
 
 *(Mẹo: Bạn cũng có thể cài nhanh trực tiếp bằng lệnh `stardew-mod agent opencode` hoặc `stardew-mod agent antigravity`).*
 
 Sau khi cài xong, bạn chỉ cần nhấn **Enter**, màn hình sẽ tự động xoá sạch để bạn gõ lệnh khởi động Agent (ví dụ: `opencode` hoặc `agy`).
 
-*(Lưu ý: Với các Agent trả phí như Claude Code hoặc Codex, bạn đăng nhập tài khoản chính chủ hoặc nhập API Key trực tiếp trong terminal; không lưu khóa vào tệp công khai).*
+*(Lưu ý: Với các Agent yêu cầu đăng nhập như Claude Code hoặc Codex, bạn xác thực tài khoản chính chủ qua trình duyệt/mã thiết bị hoặc nhập API Key trực tiếp trong terminal; không lưu khóa vào tệp công khai).*
 
 ---
 
